@@ -156,13 +156,64 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| *(populated during roadmap creation)* | | |
+| SEC-01 | Phase 1: Foundation | Pending |
+| SEC-02 | Phase 1: Foundation | Pending |
+| SEC-08 | Phase 1: Foundation | Pending |
+| APP-01 | Phase 1: Foundation | Pending |
+| SRVR-07 | Phase 1: Foundation | Pending |
+| SRVR-01 | Phase 2: Server Management | Pending |
+| SRVR-02 | Phase 2: Server Management | Pending |
+| SRVR-03 | Phase 2: Server Management | Pending |
+| SRVR-04 | Phase 2: Server Management | Pending |
+| SRVR-05 | Phase 2: Server Management | Pending |
+| SRVR-06 | Phase 2: Server Management | Pending |
+| SRVR-08 | Phase 2: Server Management | Pending |
+| SRVR-09 | Phase 2: Server Management | Pending |
+| P2P-02 | Phase 3: P2P Networking | Pending |
+| SEC-06 | Phase 3: P2P Networking | Pending |
+| APP-02 | Phase 3: P2P Networking | Pending |
+| MSG-01 | Phase 4: Real-Time Chat | Pending |
+| MSG-02 | Phase 4: Real-Time Chat | Pending |
+| MSG-03 | Phase 4: Real-Time Chat | Pending |
+| MSG-04 | Phase 4: Real-Time Chat | Pending |
+| MSG-05 | Phase 4: Real-Time Chat | Pending |
+| MSG-06 | Phase 4: Real-Time Chat | Pending |
+| MSG-07 | Phase 4: Real-Time Chat | Pending |
+| MSG-08 | Phase 4: Real-Time Chat | Pending |
+| MSG-09 | Phase 4: Real-Time Chat | Pending |
+| SEC-03 | Phase 4: Real-Time Chat | Pending |
+| APP-03 | Phase 4: Real-Time Chat | Pending |
+| APP-05 | Phase 4: Real-Time Chat | Pending |
+| DM-01 | Phase 5: Direct Messages | Pending |
+| DM-02 | Phase 5: Direct Messages | Pending |
+| DM-03 | Phase 5: Direct Messages | Pending |
+| SEC-05 | Phase 5: Direct Messages | Pending |
+| SEC-07 | Phase 5: Direct Messages | Pending |
+| P2P-01 | Phase 6: Content Distribution | Pending |
+| P2P-03 | Phase 6: Content Distribution | Pending |
+| P2P-05 | Phase 6: Content Distribution | Pending |
+| P2P-06 | Phase 6: Content Distribution | Pending |
+| P2P-09 | Phase 6: Content Distribution | Pending |
+| P2P-10 | Phase 6: Content Distribution | Pending |
+| SEC-04 | Phase 6: Content Distribution | Pending |
+| APP-04 | Phase 6: Content Distribution | Pending |
+| MEDIA-01 | Phase 7: Media and Prefetching | Pending |
+| MEDIA-02 | Phase 7: Media and Prefetching | Pending |
+| MEDIA-03 | Phase 7: Media and Prefetching | Pending |
+| MEDIA-04 | Phase 7: Media and Prefetching | Pending |
+| P2P-04 | Phase 7: Media and Prefetching | Pending |
+| P2P-07 | Phase 7: Media and Prefetching | Pending |
+| P2P-08 | Phase 7: Media and Prefetching | Pending |
+| VOICE-01 | Phase 8: Voice Channels | Pending |
+| VOICE-02 | Phase 8: Voice Channels | Pending |
+| VOICE-03 | Phase 8: Voice Channels | Pending |
+| VOICE-04 | Phase 8: Voice Channels | Pending |
 
 **Coverage:**
-- v1 requirements: 40 total
-- Mapped to phases: 0
-- Unmapped: 40
+- v1 requirements: 52 total
+- Mapped to phases: 52
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after initial definition*
+*Last updated: 2026-02-22 after roadmap creation*

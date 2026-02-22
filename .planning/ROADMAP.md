@@ -1,0 +1,171 @@
+# Roadmap: UNITED
+
+## Overview
+
+UNITED delivers a self-hosted Discord alternative where all content is distributed peer-to-peer and voice is WebRTC mesh. The build order follows the system's dependency graph: a working Electron+Rust foundation first, then server structure, then the P2P networking mesh, then text chat on top of gossipsub, then encrypted DMs, then the content-addressed block pipeline for media distribution, then the user-facing media experience and prefetching, and finally voice channels. Each phase delivers a complete, verifiable capability that the next phase builds upon.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 1: Foundation** - Electron app shell, Rust coordination server, authentication, IPC bridge, and build pipeline
+- [ ] **Phase 2: Server Management** - Channel/category CRUD, roles and permissions, moderation, and invite-based onboarding
+- [ ] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
+- [ ] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
+- [ ] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators
+- [ ] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback
+- [ ] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching
+- [ ] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
+
+## Phase Details
+
+### Phase 1: Foundation
+**Goal**: Users can create accounts, log in, and see a working desktop application that loads instantly and connects to a self-hosted coordination server
+**Depends on**: Nothing (first phase)
+**Requirements**: SEC-01, SEC-02, SEC-08, APP-01, SRVR-07
+**Success Criteria** (what must be TRUE):
+  1. User can create an account with email and password and log in across browser sessions via JWT
+  2. App shell loads from local cache and the UI appears instantly without a loading spinner on subsequent launches
+  3. Server admin can set the server name, icon, and description and these appear in the client
+  4. Electron renderer runs with contextIsolation enabled, nodeIntegration disabled, and strict CSP enforced
+  5. IPC bridge between main process and renderer is operational with typed request-response and push event patterns
+**Plans**: TBD
+
+Plans:
+- [ ] 01-01: TBD
+- [ ] 01-02: TBD
+- [ ] 01-03: TBD
+
+### Phase 2: Server Management
+**Goal**: Server admins can fully structure their community with channels, categories, roles, and permissions, and new users can join via invite links
+**Depends on**: Phase 1
+**Requirements**: SRVR-01, SRVR-02, SRVR-03, SRVR-04, SRVR-05, SRVR-06, SRVR-08, SRVR-09
+**Success Criteria** (what must be TRUE):
+  1. Server admin can create, rename, and delete text and voice channels organized into named categories
+  2. Server admin can create roles with specific permissions (send messages, manage channels, kick/ban, admin) and assign them to users
+  3. Server admin can kick and ban users, with bans propagated so banned users cannot rejoin or have their content relayed
+  4. Server admin can generate invite links with optional expiration, and new users can join via those links
+  5. A newly joined user sees the channel list, category structure, and their assigned permissions immediately
+**Plans**: TBD
+
+Plans:
+- [ ] 02-01: TBD
+- [ ] 02-02: TBD
+
+### Phase 3: P2P Networking
+**Goal**: Peers discover each other and exchange messages over encrypted connections through a libp2p mesh, with NAT traversal ensuring connectivity across network configurations
+**Depends on**: Phase 2
+**Requirements**: P2P-02, SEC-06, APP-02
+**Success Criteria** (what must be TRUE):
+  1. Two clients on different networks can discover each other via the coordination server and establish a direct or relayed connection
+  2. Messages published to a gossipsub topic arrive at all subscribed peers within 100ms on a local network
+  3. All peer-to-peer communication is encrypted in transit (TLS for WebSocket to server, DTLS for WebRTC DataChannels between peers)
+  4. P2P connections persist when the user switches between channels — no reconnection or re-handshake occurs on navigation
+**Plans**: TBD
+
+Plans:
+- [ ] 03-01: TBD
+- [ ] 03-02: TBD
+- [ ] 03-03: TBD
+
+### Phase 4: Real-Time Chat
+**Goal**: Users can have real-time text conversations in channels with the full range of messaging features expected from a modern chat application
+**Depends on**: Phase 3
+**Requirements**: MSG-01, MSG-02, MSG-03, MSG-04, MSG-05, MSG-06, MSG-07, MSG-08, MSG-09, SEC-03, APP-03, APP-05
+**Success Criteria** (what must be TRUE):
+  1. User can send a text message and all connected peers in the channel see it appear in real-time with correct server-assigned ordering
+  2. User can scroll back through message history, loading older messages from peers or server fallback, with messages rendered in a virtualized list
+  3. User can format messages with markdown, react with emoji, and @mention users or roles — and recipients see these rendered correctly
+  4. User can see who is online/offline/away, see typing indicators in the current channel, and see unread indicators on channels with new messages
+  5. User receives desktop notifications for @mentions and can see other users' profiles (name, avatar, status) in the message list
+**Plans**: TBD
+
+Plans:
+- [ ] 04-01: TBD
+- [ ] 04-02: TBD
+- [ ] 04-03: TBD
+
+### Phase 5: Direct Messages
+**Goal**: Users can have private one-on-one conversations where only the participants can read the messages, even if the coordination server is compromised
+**Depends on**: Phase 4
+**Requirements**: DM-01, DM-02, DM-03, SEC-05, SEC-07
+**Success Criteria** (what must be TRUE):
+  1. User can send and receive direct messages that are end-to-end encrypted with X25519 key exchange — the server stores only encrypted blobs it cannot decrypt
+  2. User can receive DMs sent while they were offline, delivered via encrypted blobs stored on the coordination server
+  3. User can see DM conversations listed separately from channel messages in a dedicated DM section
+  4. User can see encryption indicators in the UI confirming that DMs are end-to-end encrypted and channel messages are signed
+**Plans**: TBD
+
+Plans:
+- [ ] 05-01: TBD
+- [ ] 05-02: TBD
+
+### Phase 6: Content Distribution
+**Goal**: Content is stored, replicated, and retrieved through a peer-to-peer block pipeline that makes the server optional for availability while keeping all local data encrypted at rest
+**Depends on**: Phase 4
+**Requirements**: P2P-01, P2P-03, P2P-05, P2P-06, P2P-09, P2P-10, SEC-04, APP-04
+**Success Criteria** (what must be TRUE):
+  1. All content is stored as content-addressed blocks (SHA-256 hashed) and the local block store is encrypted at rest with a user-derived AES-256-GCM key
+  2. Content resolves through the 5-layer cache cascade: memory, local store, hot peers (parallel fetching), DHT/swarm, then server fallback — and the server maintains encrypted copies for availability
+  3. Small content (<50KB messages and thumbnails) is inlined with gossip for instant rendering; larger content is referenced and pulled on demand
+  4. Content is managed in priority tiers (own messages never evicted, hot/warm/altruistic tiers with 7-day default TTL and LRU eviction)
+  5. Media attachments declare dimensions upfront and the layout is fixed — no reflow occurs while content loads from peers
+**Plans**: TBD
+
+Plans:
+- [ ] 06-01: TBD
+- [ ] 06-02: TBD
+- [ ] 06-03: TBD
+
+### Phase 7: Media and Prefetching
+**Goal**: Users can share and view rich media seamlessly, with the P2P distribution invisible behind fast loading and predictive prefetching
+**Depends on**: Phase 6
+**Requirements**: MEDIA-01, MEDIA-02, MEDIA-03, MEDIA-04, P2P-04, P2P-07, P2P-08
+**Success Criteria** (what must be TRUE):
+  1. User can upload and share files (images, video, documents) in channels and DMs, with media chunked into content-addressed blocks and distributed across the peer swarm
+  2. Images and videos render inline within messages — not as download links — with blurhash placeholders at exact aspect ratio shown while loading from peers
+  3. User can configure their local storage buffer size and see seeding/contribution indicators showing upload/download stats and blocks seeded
+  4. App prefetches content predictively: hovering the channel list begins pulling recent messages, scrolling near the bottom prefetches the next batch, and app launch pre-fetches top active channels
+**Plans**: TBD
+
+Plans:
+- [ ] 07-01: TBD
+- [ ] 07-02: TBD
+- [ ] 07-03: TBD
+
+### Phase 8: Voice Channels
+**Goal**: Users can join voice channels and talk to each other with peer-to-peer audio that feels as responsive as centralized alternatives
+**Depends on**: Phase 3
+**Requirements**: VOICE-01, VOICE-02, VOICE-03, VOICE-04
+**Success Criteria** (what must be TRUE):
+  1. User can join a voice channel and communicate with 2-8 simultaneous participants via WebRTC peer-to-peer audio with no media server
+  2. User can mute their microphone and deafen all incoming audio with immediate effect
+  3. User can see a visual indicator showing which participant is currently speaking
+  4. User can use push-to-talk as an alternative to voice activity detection
+**Plans**: TBD
+
+Plans:
+- [ ] 08-01: TBD
+- [ ] 08-02: TBD
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+
+Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in parallel with Phases 5-7 if desired, but is sequenced last because voice is architecturally independent and benefits from a stable platform.
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Foundation | 0/3 | Not started | - |
+| 2. Server Management | 0/2 | Not started | - |
+| 3. P2P Networking | 0/3 | Not started | - |
+| 4. Real-Time Chat | 0/3 | Not started | - |
+| 5. Direct Messages | 0/2 | Not started | - |
+| 6. Content Distribution | 0/3 | Not started | - |
+| 7. Media and Prefetching | 0/3 | Not started | - |
+| 8. Voice Channels | 0/2 | Not started | - |
