@@ -1,4 +1,4 @@
-# UNITED
+# U.N.I.T.E.D.
 
 **Unified Network for Independent, Trusted, Encrypted Dialogue**
 
