@@ -111,7 +111,7 @@ main                          (protected, always buildable, merges via PR)
 ### Commit Convention
 
 ```
-feat(server/auth): implement Argon2id password hashing
+feat(server/auth): implement Ed25519 challenge-response verification
 feat(client/ipc): add typed contextBridge API for auth
 fix(shared/proto): correct MessageEnvelope field ordering
 test(integration/m1): add auth end-to-end test
@@ -134,11 +134,11 @@ Before starting parallel work on each phase, both developers must agree on the c
 
 | Contract | Contents |
 |----------|----------|
-| `auth.proto` | RegisterRequest, LoginRequest, LoginResponse, RefreshRequest, JWT claims structure |
-| REST API | `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `GET /api/server/info` |
+| `auth.proto` | ChallengeRequest, ChallengeResponse, VerifyRequest, VerifyResponse, RefreshRequest, JWT claims structure |
+| REST API | `POST /api/auth/challenge`, `POST /api/auth/verify`, `POST /api/auth/refresh`, `POST /api/auth/recover`, `GET /api/server/info` |
 | WebSocket | Handshake: `ws://host/ws?token=JWT`, base message envelope: `{ type, payload, request_id? }` |
-| `ipc-bridge.ts` | Initial `window.united` API surface (auth stubs, server connection) |
-| SQLite schema | `users` table (id, email, password_hash, display_name, avatar_hash, created_at) |
+| `ipc-bridge.ts` | Initial `window.united` API surface (identity, auth stubs, server connection) |
+| SQLite schema | `users` table (id, public_key, fingerprint, display_name, avatar_hash, encrypted_blob, created_at) |
 
 ### Phase 2: Server Management
 

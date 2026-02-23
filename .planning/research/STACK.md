@@ -35,7 +35,7 @@ The chosen stack (Rust/tokio server, Electron/React client, libp2p P2P, SQLite D
 | **ed25519-dalek** | 2.2.0 (stable) | Message signing | Ed25519 signatures for author verification. Stable release, well-audited. Do NOT use 3.0.0-pre.x in production. | HIGH |
 | **x25519-dalek** | 2.0.1 (stable) | DH key exchange | X25519 for DM E2E encryption key agreement. Stable. Do NOT use 3.0.0-pre.x. | HIGH |
 | **aes-gcm** | 0.10.3 (stable) | Block encryption at rest | AES-256-GCM for encrypted block store. RustCrypto ecosystem. Stable release -- the 0.11.0-rc series is not production-ready. | MEDIUM |
-| **argon2** | 0.5.3 (stable) | KDF for user keys | Argon2id for deriving storage encryption keys from passwords. Stable. The 0.6.0-rc series is active but not finalized. | MEDIUM |
+| **argon2** | 0.5.3 (stable) | KDF for user keys | Argon2id for encrypting Ed25519 private keys with user passphrase (client-side) and deriving at-rest encryption keys. Stable. The 0.6.0-rc series is active but not finalized. | MEDIUM |
 | **rand** | 0.10.0 | CSPRNG | Cryptographic random number generation. | HIGH |
 | **blake3** | 1.8.3 | Fast hashing | Content-addressing for blocks. 2-3x faster than SHA-256, SIMD-accelerated, tree-hashable (parallel). Consider over SHA-256 for block hashing. | MEDIUM |
 

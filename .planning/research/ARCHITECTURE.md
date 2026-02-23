@@ -50,7 +50,7 @@ The system has three distinct tiers that communicate through well-defined interf
 
 | Component | Responsibility | Implementation |
 |-----------|----------------|----------------|
-| **Auth Module** | User registration, login, JWT issuance, session management | Argon2id password hashing, Ed25519 key pair generation, JWT with short expiry + refresh tokens |
+| **Auth Module** | Identity verification, challenge-response auth, JWT issuance, session management | Ed25519 challenge-response auth, encrypted identity blob storage, TOTP verification, JWT with short expiry + refresh tokens |
 | **Signaling Module** | WebRTC SDP/ICE exchange, peer discovery bootstrap, NAT traversal assistance | WebSocket relay for SDP offers/answers, STUN/TURN coordination |
 | **Content Index Module** | Maps content hashes to known peer locations, tracks which peers seed which blocks | In-memory hash table with SQLite persistence, probabilistic data structures (bloom filters) for peer-has queries |
 | **Message Ordering Module** | Assigns server-authoritative sequence numbers per channel, validates causal ordering | Monotonic counter per channel, accepts Lamport timestamps from clients, rejects out-of-order when causal deps missing |
@@ -87,9 +87,9 @@ united-server/
 │   │
 │   ├── auth/
 │   │   ├── mod.rs
-│   │   ├── handler.rs          # HTTP handlers: register, login, refresh
+│   │   ├── handler.rs          # HTTP handlers: challenge, verify, refresh, recover
 │   │   ├── jwt.rs              # JWT creation/validation (jsonwebtoken crate)
-│   │   ├── password.rs         # Argon2id hashing (argon2 crate)
+│   │   ├── identity.rs         # Challenge-response verification, identity blob storage (ed25519-dalek)
 │   │   └── middleware.rs       # Auth extraction middleware
 │   │
 │   ├── signaling/
@@ -497,7 +497,7 @@ Use **fixed-size 256KB blocks** for content-addressed storage:
 │   └── ...
 ├── index.sqlite              (block metadata, channel index, message index)
 └── keys/
-    ├── identity.key          (Ed25519 private key, encrypted with user password)
+    ├── identity.json         (Ed25519 keypair, private key encrypted with passphrase via Argon2id)
     └── dm_keys/              (per-conversation X25519 key pairs)
 ```
 
@@ -1046,9 +1046,9 @@ united-server/
 │   │
 │   ├── auth/
 │   │   ├── mod.rs
-│   │   ├── handler.rs        # register, login, refresh endpoints
+│   │   ├── handler.rs        # challenge, verify, refresh, recover endpoints
 │   │   ├── jwt.rs            # JWT creation/validation
-│   │   ├── password.rs       # Argon2id hashing
+│   │   ├── identity.rs       # Challenge-response verification, identity blob storage
 │   │   └── middleware.rs     # Auth extractor for Axum
 │   │
 │   ├── ws/
@@ -1414,7 +1414,7 @@ interface P2PEngineAPI {
 
 // Between Server Connection and IPC layer
 interface ServerAPI {
-  authenticate(email: string, password: string): Promise<AuthResult>;
+  authenticate(publicKey: Uint8Array, signedChallenge: Uint8Array): Promise<AuthResult>;
   getChannels(): Promise<Channel[]>;
   joinChannel(channelId: string): Promise<void>;
   getMessageHistory(channelId: string, before: number, limit: number): Promise<MessageEnvelope[]>;
