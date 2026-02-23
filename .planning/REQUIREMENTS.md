@@ -66,14 +66,18 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Security
 
-- [ ] **SEC-01**: User can create an account with email and password; credentials hashed with Argon2id
-- [ ] **SEC-02**: User session is managed via JWT tokens issued by the coordination server
+- [ ] **SEC-01**: User creates an identity by generating an Ed25519 keypair protected by a passphrase (Argon2id-encrypted); a 24-word mnemonic backup is displayed at creation; no email or password is stored on any server
+- [ ] **SEC-02**: User authenticates to servers via Ed25519 challenge-response signature; server issues JWT tokens (15min access + 7-day refresh) after successful verification
 - [ ] **SEC-03**: All messages are signed by the author's Ed25519 private key; receiving peers verify signatures before displaying
 - [ ] **SEC-04**: All content written to the local block store is encrypted with AES-256-GCM using a key derived from the user's credentials via Argon2id
 - [ ] **SEC-05**: DMs use per-conversation keys negotiated via X25519 key exchange; coordination server stores only encrypted blobs
 - [ ] **SEC-06**: All peer-to-peer communication is encrypted in transit (TLS for WebSocket, DTLS for WebRTC)
 - [ ] **SEC-07**: User can see encryption indicators in the UI confirming that DMs are end-to-end encrypted and channel messages are signed
 - [ ] **SEC-08**: Electron renderer uses strict CSP, content sanitization, contextIsolation enabled, nodeIntegration disabled
+- [ ] **SEC-09**: User's encrypted identity blob is stored on every server they join, enabling recovery from any server with the correct passphrase
+- [ ] **SEC-10**: Servers ship with TOTP two-factor authentication enabled by default (RFC 6238 compatible, admin-configurable)
+- [ ] **SEC-11**: User can rotate their identity key via signed rotation records broadcast to all joined servers, with a 72-hour cancellation window
+- [ ] **SEC-12**: User can provision a new device by scanning a QR code from an existing device (direct encrypted key transfer, no server involvement)
 
 ### Client Application
 
@@ -138,7 +142,8 @@ Explicitly excluded. Documented to prevent scope creep.
 |---------|--------|
 | Server federation | Enormous complexity (see Matrix). Each server is an isolated community. |
 | Platform-level content moderation | Incompatible with data sovereignty. Server admins moderate their own communities. |
-| OAuth / social login | Adds dependency on external providers, undermines self-hosted independence. |
+| OAuth / social login | Keypair-based identity eliminates need for external auth providers entirely. |
+| Email/password registration | Replaced by Ed25519 keypair identity with passphrase-encrypted local storage. See IDENTITY-ARCHITECTURE.md. |
 | Nitro-style monetization | Self-hosted model has no central entity to collect payment. |
 | Sticker packs | Large media assets expensive to distribute P2P. Low value relative to complexity. |
 | GIF picker / Tenor/Giphy integration | Sends search queries to third parties, undermining privacy. |
@@ -159,6 +164,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEC-01 | Phase 1: Foundation | Pending |
 | SEC-02 | Phase 1: Foundation | Pending |
 | SEC-08 | Phase 1: Foundation | Pending |
+| SEC-09 | Phase 1: Foundation | Pending |
+| SEC-10 | Phase 1: Foundation | Pending |
+| SEC-11 | Phase 1: Foundation | Pending |
+| SEC-12 | Phase 1: Foundation | Pending |
 | APP-01 | Phase 1: Foundation | Pending |
 | SRVR-07 | Phase 1: Foundation | Pending |
 | SRVR-01 | Phase 2: Server Management | Pending |
@@ -210,8 +219,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VOICE-04 | Phase 8: Voice Channels | Pending |
 
 **Coverage:**
-- v1 requirements: 52 total
-- Mapped to phases: 52
+- v1 requirements: 56 total
+- Mapped to phases: 56
 - Unmapped: 0
 
 ---

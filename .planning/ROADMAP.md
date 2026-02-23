@@ -24,15 +24,19 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Foundation
-**Goal**: Users can create accounts, log in, and see a working desktop application that loads instantly and connects to a self-hosted coordination server
+**Goal**: Users can create a self-sovereign identity, authenticate to a self-hosted coordination server, and see a working desktop application that loads instantly
 **Depends on**: Nothing (first phase)
-**Requirements**: SEC-01, SEC-02, SEC-08, APP-01, SRVR-07
+**Requirements**: SEC-01, SEC-02, SEC-08, SEC-09, SEC-10, SEC-11, SEC-12, APP-01, SRVR-07
+**Identity Architecture**: See [IDENTITY-ARCHITECTURE.md](IDENTITY-ARCHITECTURE.md) for full design
 **Success Criteria** (what must be TRUE):
-  1. User can create an account with email and password and log in across browser sessions via JWT
-  2. App shell loads from local cache and the UI appears instantly without a loading spinner on subsequent launches
-  3. Server admin can set the server name, icon, and description and these appear in the client
-  4. Electron renderer runs with contextIsolation enabled, nodeIntegration disabled, and strict CSP enforced
-  5. IPC bridge between main process and renderer is operational with typed request-response and push event patterns
+  1. User can create an Ed25519 keypair identity protected by a passphrase, with a 24-word mnemonic backup displayed at creation
+  2. User can authenticate to the coordination server via challenge-response signature and receive JWT session tokens
+  3. User's encrypted identity blob is stored on the server, and a new device can recover the identity by providing the correct passphrase
+  4. TOTP two-factor authentication is enabled by default and users can enroll via standard authenticator apps
+  5. App shell loads from local cache and the UI appears instantly without a loading spinner on subsequent launches
+  6. Server admin can set the server name, icon, and description and these appear in the client
+  7. Electron renderer runs with contextIsolation enabled, nodeIntegration disabled, and strict CSP enforced
+  8. IPC bridge between main process and renderer is operational with typed request-response and push event patterns
 **Plans**: TBD
 
 Plans:
