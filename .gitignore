@@ -43,6 +43,9 @@ release/
 # Claude Code
 .claude/
 
+# Personal writing
+PublishableWriting/
+
 # OS
 .DS_Store
 Thumbs.db
