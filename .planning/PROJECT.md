@@ -39,7 +39,7 @@ Users communicate in real-time with full data sovereignty — no third party eve
 - [ ] Tiered content retention (P1 own/pinned → P2 hot 24h → P3 warm 2-7d → P4 altruistic seeding)
 
 **Server & Trust:**
-- [ ] Thin coordination server (auth, signaling, content index, message ordering)
+- [ ] Thin coordination server (challenge-response auth, signaling, content index, message ordering)
 - [ ] Server as fallback super-seeder (encrypted block store)
 - [ ] Volunteer super-seeders (opt-in always-on nodes with larger storage, cosmetic rewards)
 - [ ] Server-admin moderation tools (kick, ban, delete messages) — no platform-level moderation
@@ -61,7 +61,8 @@ Users communicate in real-time with full data sovereignty — no third party eve
 
 - Mobile clients — desktop-only at launch; mobile P2P has severe OS restrictions (battery, background limits)
 - Server federation — each coordination server is an isolated island for v1
-- OAuth/social login — email/password sufficient; adds dependency on external providers
+- OAuth/social login — keypair-based identity eliminates need for external auth providers
+- Email/password registration — replaced by Ed25519 keypair identity (see IDENTITY-ARCHITECTURE.md)
 - Platform-level content moderation — sovereignty model delegates moderation to server admins
 - SFU for large voice channels — WebRTC mesh for v1; SFU deferred until scale demands it (20+ participants)
 
@@ -118,7 +119,7 @@ Users communicate in real-time with full data sovereignty — no third party eve
 - **Voice channel scaling:** WebRTC P2P mesh works for 2-10 people but creates O(n^2) connections. At what point is an SFU needed? Could a peer volunteer as SFU like super-seeders?
 - **Bot API scope:** "Discord-compatible" is enormous surface area. Which subset is realistic for v1? Gateway events + message CRUD + embeds?
 - **NAT traversal reliability:** How often do peers need TURN relay vs. direct hole-punch? If most need TURN, the server becomes a bandwidth bottleneck.
-- **Identity/account recovery:** User credentials derive the storage encryption key. Forgot password = lost data. Is there a recovery mechanism that doesn't compromise encryption?
+- ~~**Identity/account recovery:**~~ **RESOLVED** — See [IDENTITY-ARCHITECTURE.md](IDENTITY-ARCHITECTURE.md). Three-tier recovery: (1) 24-word BIP39 mnemonic paper backup, (2) encrypted identity blob replicated to every server user joins, (3) device-to-device QR provisioning. v2 adds Kintsugi-style threshold recovery across servers.
 - **Content pinning economics:** Pinned content bypasses 7-day TTL. What's the pin quota before storage budget overflows?
 
 ---
