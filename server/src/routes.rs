@@ -9,6 +9,7 @@ use crate::auth::middleware::JwtSecret;
 use crate::auth::totp;
 use crate::identity::{blob, registration, rotation};
 use crate::state::AppState;
+use crate::ws::handler as ws_handler;
 
 /// Inject the JWT secret into request extensions so the Claims extractor can find it.
 async fn inject_jwt_secret(
@@ -139,6 +140,12 @@ pub fn build_router(state: AppState) -> Router {
         axum::routing::put(settings::update_server_settings),
     );
 
+    // WebSocket endpoint (auth via query param, not JWT header)
+    let ws_routes = Router::new().route(
+        "/ws",
+        axum::routing::get(ws_handler::ws_upgrade),
+    );
+
     // Health check
     let health = Router::new().route("/health", axum::routing::get(health_check));
 
@@ -148,6 +155,7 @@ pub fn build_router(state: AppState) -> Router {
         .merge(public_routes)
         .merge(authenticated_routes)
         .merge(admin_routes)
+        .merge(ws_routes)
         .merge(health)
         .layer(middleware::from_fn_with_state(
             state.clone(),

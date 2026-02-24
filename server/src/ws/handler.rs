@@ -71,7 +71,8 @@ pub async fn ws_upgrade(
                     code: close_code,
                     reason: reason.into(),
                 };
-                let _ = socket.close(Some(close_frame)).await;
+                // Send a Close message with the appropriate close code
+                let _ = socket.send(Message::Close(Some(close_frame))).await;
             })
         }
     }

@@ -2,6 +2,7 @@ use dashmap::DashMap;
 use std::sync::Arc;
 
 use crate::db::DbPool;
+use crate::ws::ConnectionRegistry;
 
 /// Challenge stored in memory with expiry
 #[derive(Debug, Clone)]
@@ -21,6 +22,8 @@ pub struct AppState {
     pub jwt_secret: Vec<u8>,
     /// AES-256-GCM encryption key for TOTP secrets (256-bit random key)
     pub encryption_key: Vec<u8>,
+    /// Active WebSocket connections per user
+    pub connections: ConnectionRegistry,
     /// Server config
     pub registration_mode: String,
 }

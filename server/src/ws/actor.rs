@@ -58,7 +58,7 @@ pub async fn run_connection(
             ping_timer.tick().await;
 
             // Send ping
-            if ping_tx.send(Message::Ping(vec![1, 2, 3, 4])).is_err() {
+            if ping_tx.send(Message::Ping(vec![1, 2, 3, 4].into())).is_err() {
                 // Writer task has died — connection is gone
                 break;
             }
@@ -177,14 +177,15 @@ fn register_connection(state: &AppState, user_id: &str, tx: ConnectionSender) {
     );
 }
 
-/// Remove a specific connection sender from the registry.
-/// Identifies the sender by comparing raw pointers (same channel instance).
-fn unregister_connection(state: &AppState, user_id: &str, tx: &ConnectionSender) {
+/// Remove closed connections from the registry for a user.
+/// After the reader loop exits, the tx sender is dropped, so any
+/// corresponding receivers are closed. We remove senders that are closed.
+fn unregister_connection(state: &AppState, user_id: &str, _tx: &ConnectionSender) {
     let mut remove_user = false;
 
     if let Some(mut connections) = state.connections.get_mut(user_id) {
-        // Remove the specific sender by comparing channel identity
-        connections.retain(|existing| !existing.same_channel(tx));
+        // Remove senders that are closed (the receiver has been dropped)
+        connections.retain(|sender| !sender.is_closed());
         if connections.is_empty() {
             remove_user = true;
         }

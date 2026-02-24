@@ -6,6 +6,7 @@ mod identity;
 mod proto;
 mod routes;
 mod state;
+mod ws;
 
 use dashmap::DashMap;
 use std::net::SocketAddr;
@@ -79,6 +80,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         challenges: Arc::new(DashMap::new()),
         jwt_secret,
         encryption_key,
+        connections: ws::new_connection_registry(),
         registration_mode: config.registration_mode.clone(),
     };
 
