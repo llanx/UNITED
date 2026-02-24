@@ -1,0 +1,42 @@
+{
+  "name": "united-client",
+  "version": "0.1.0",
+  "description": "UNITED desktop client",
+  "license": "AGPL-3.0",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "postinstall": "electron-vite build",
+    "rebuild": "electron-rebuild",
+    "typecheck": "tsc --noEmit",
+    "proto:gen": "buf generate ../shared/proto"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.0",
+    "zustand": "^5.0.8",
+    "@tanstack/react-virtual": "^3.13.18",
+    "@bufbuild/protobuf": "^2.11.0",
+    "@scure/bip39": "^2.0.1",
+    "otpauth": "^9.4.1",
+    "qrcode.react": "^4.2.0",
+    "better-sqlite3": "^12.6.2",
+    "sodium-native": "^4.0.0",
+    "electron-store": "^10.0.0"
+  },
+  "devDependencies": {
+    "electron": "^40.0.0",
+    "electron-vite": "^3.0.0",
+    "@electron/rebuild": "^3.7.0",
+    "@bufbuild/protoc-gen-es": "^2.11.0",
+    "@bufbuild/buf": "^1.50.0",
+    "typescript": "^5.7.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/better-sqlite3": "^7.6.0",
+    "vite": "^6.0.0"
+  }
+}

@@ -26,6 +26,14 @@ release/
 *.dylib
 *.dll
 
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Generated protobuf (TypeScript)
+shared/types/generated/
+
 # Environment
 .env
 .env.local
