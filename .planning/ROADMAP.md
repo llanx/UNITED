@@ -168,7 +168,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/6 | Not started | - |
+| 1. Foundation | 1/6 | In Progress | - |
 | 2. Server Management | 0/2 | Not started | - |
 | 3. P2P Networking | 0/3 | Not started | - |
 | 4. Real-Time Chat | 0/3 | Not started | - |
