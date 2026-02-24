@@ -9,7 +9,7 @@
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "postinstall": "electron-vite build",
-    "rebuild": "electron-rebuild",
+    "rebuild": "electron-rebuild --version 40.6.0",
     "typecheck": "tsc --noEmit",
     "proto:gen": "buf generate ../shared/proto"
   },
