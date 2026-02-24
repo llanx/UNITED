@@ -59,6 +59,7 @@ Recent decisions affecting current work:
 - [01-03]: Dual-signature key rotation: old + new key both sign rotation payload
 - [01-03]: 72-hour cancellation deadline stored as ISO 8601 timestamp (not duration)
 - [01-03]: random_signing_key() helper avoids rand_core 0.6/0.9 version conflict in tests
+- [Phase 2+]: Selective TDD — use TDD for REST API endpoints, auth/crypto flows, and DB queries (write integration tests against proto contracts first). Use test-after for WebSocket stateful code and UI components. Protobuf schemas are the contract, no tests needed.
 
 ### Pending Todos
 
