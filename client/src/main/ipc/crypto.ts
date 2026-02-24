@@ -13,11 +13,11 @@ const ARGON2_M_COST = 262144 // 256 MB in KiB
 const ARGON2_T_COST = 3
 const ARGON2_P_COST = 4
 
-/** AES-256-GCM nonce size: 12 bytes per NIST standard */
-const NONCE_SIZE = 12
+/** XChaCha20-Poly1305 nonce size: 24 bytes */
+const NONCE_SIZE = 24
 /** Argon2id salt size */
 const SALT_SIZE = 16
-/** Derived key size for AES-256-GCM */
+/** Derived key size for XChaCha20-Poly1305 */
 const KEY_SIZE = 32
 
 // ============================================================
@@ -121,15 +121,15 @@ function deriveKey(passphrase: string, salt: Buffer): Buffer {
 }
 
 /**
- * Encrypt data with AES-256-GCM.
+ * Encrypt data with XChaCha20-Poly1305.
  */
-function encryptAesGcm(
+function encrypt(
   plaintext: Buffer,
   key: Buffer,
   nonce: Buffer
 ): Buffer {
-  const ciphertext = Buffer.alloc(plaintext.length + sodium.crypto_aead_aes256gcm_ABYTES)
-  sodium.crypto_aead_aes256gcm_encrypt(
+  const ciphertext = Buffer.alloc(plaintext.length + sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES)
+  sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
     ciphertext,
     plaintext,
     null, // no additional data
@@ -141,15 +141,15 @@ function encryptAesGcm(
 }
 
 /**
- * Decrypt data with AES-256-GCM.
+ * Decrypt data with XChaCha20-Poly1305.
  */
-function decryptAesGcm(
+function decrypt(
   ciphertext: Buffer,
   key: Buffer,
   nonce: Buffer
 ): Buffer {
-  const plaintext = Buffer.alloc(ciphertext.length - sodium.crypto_aead_aes256gcm_ABYTES)
-  sodium.crypto_aead_aes256gcm_decrypt(
+  const plaintext = Buffer.alloc(ciphertext.length - sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES)
+  sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
     plaintext,
     null, // unused nsec
     ciphertext,
@@ -188,10 +188,10 @@ export function createIdentity(passphrase: string): {
   sodium.randombytes_buf(salt)
   const derivedKey = deriveKey(passphrase, salt)
 
-  // 5. Encrypt secret key with AES-256-GCM
+  // 5. Encrypt secret key with XChaCha20-Poly1305
   const nonce = Buffer.alloc(NONCE_SIZE)
   sodium.randombytes_buf(nonce)
-  const encryptedPrivateKey = encryptAesGcm(secretKey, derivedKey, nonce)
+  const encryptedPrivateKey = encrypt(secretKey, derivedKey, nonce)
 
   // 6. Compute fingerprint
   const fingerprint = computeFingerprint(publicKey)
@@ -250,7 +250,7 @@ export function recoverIdentity(words: string[], passphrase: string): {
 
   const nonce = Buffer.alloc(NONCE_SIZE)
   sodium.randombytes_buf(nonce)
-  const encryptedPrivateKey = encryptAesGcm(secretKey, derivedKey, nonce)
+  const encryptedPrivateKey = encrypt(secretKey, derivedKey, nonce)
 
   // 4. Compute fingerprint
   const fingerprint = computeFingerprint(publicKey)
@@ -289,7 +289,7 @@ export function unlockIdentity(
 
   let secretKey: Buffer
   try {
-    secretKey = decryptAesGcm(encryptedPrivateKey, derivedKey, nonce)
+    secretKey = decrypt(encryptedPrivateKey, derivedKey, nonce)
   } catch {
     sodium.sodium_memzero(derivedKey)
     throw new Error('Incorrect passphrase')

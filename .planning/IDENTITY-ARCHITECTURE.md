@@ -9,7 +9,7 @@
 2. **No single server is a point of failure for identity.** Losing access to one server does not kill your identity.
 3. **Keypair management must be invisible to users.** Users pick a passphrase. They never see a hex string unless they choose to.
 4. **Security properties must hold on self-hosted single-machine deployments.** Don't assume HSMs, split-storage, or professional ops.
-5. **v1 uses only proven, audited components.** Ed25519, Argon2id, BIP39, AES-256-GCM, JWT — all battle-tested. No novel protocols.
+5. **v1 uses only proven, audited components.** Ed25519, Argon2id, BIP39, XChaCha20-Poly1305, JWT — all battle-tested. No novel protocols.
 
 ## Design Rationale
 
@@ -74,7 +74,7 @@ The private key is encrypted on the user's device:
 Key protection:
   1. User chooses a passphrase during identity creation
   2. Derive encryption key: Argon2id(passphrase, random_salt, m=256MB, t=3, p=4)
-  3. Encrypt private key: AES-256-GCM(derived_key, private_key)
+  3. Encrypt private key: XChaCha20-Poly1305(derived_key, private_key)
   4. Store on device:
      ~/.united/
        identity.json     # { fingerprint, public_key, salt, encrypted_private_key, nonce }
@@ -126,9 +126,9 @@ Encrypted backup blob:
   {
     fingerprint: "ABCDE-FGHIJ-KLMNO-PQRST",
     public_key: <32 bytes>,
-    encrypted_private_key: AES-256-GCM(Argon2id(passphrase), private_key),
+    encrypted_private_key: XChaCha20-Poly1305(Argon2id(passphrase), private_key),
     salt: <16 bytes>,
-    nonce: <12 bytes>,
+    nonce: <24 bytes>,
     created_at: timestamp
   }
 ```
@@ -376,7 +376,7 @@ Inspired by Bluesky's rotation key mechanism:
 
 - **ed25519-dalek** — Ed25519 key generation, signing, verification
 - **argon2** — Argon2id key derivation
-- **aes-gcm** — AES-256-GCM encryption of identity blobs
+- **chacha20poly1305** — XChaCha20-Poly1305 encryption of identity blobs
 - **jsonwebtoken** — JWT issuance and validation
 - **totp-rs** — TOTP generation and verification
 - **rand** — CSPRNG for key generation and nonces
