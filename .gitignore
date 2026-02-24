@@ -26,6 +26,17 @@ release/
 *.dylib
 *.dll
 
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Generated protobuf (TypeScript)
+shared/types/generated/
+
+# Test artifacts
+tests/integration/challenge_response.bin
+
 # Environment
 .env
 .env.local

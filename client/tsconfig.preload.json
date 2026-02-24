@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "outDir": "out/preload",
+    "lib": ["ES2022"],
+    "types": ["node"]
+  },
+  "include": ["src/preload/**/*.ts"]
+}

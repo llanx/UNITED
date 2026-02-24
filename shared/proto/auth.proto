@@ -1,0 +1,90 @@
+syntax = "proto3";
+package united.auth;
+
+// Challenge-response authentication flow
+// Client requests challenge -> signs it -> server verifies signature -> issues JWT
+
+message ChallengeRequest {
+  // Ed25519 public key fingerprint (SHA-256 truncated to 20 bytes, base32-encoded)
+  string fingerprint = 1;
+}
+
+message ChallengeResponse {
+  // Server-generated unique ID for this challenge
+  string challenge_id = 1;
+  // Random 32 bytes to be signed by the client
+  bytes challenge_bytes = 2;
+}
+
+message VerifyRequest {
+  // Challenge ID from ChallengeResponse
+  string challenge_id = 1;
+  // Ed25519 public key (32 bytes)
+  bytes public_key = 2;
+  // Ed25519 signature of challenge_bytes (64 bytes)
+  bytes signature = 3;
+  // Fingerprint for user lookup
+  string fingerprint = 4;
+}
+
+message VerifyResponse {
+  // JWT access token (15-minute expiry)
+  string access_token = 1;
+  // JWT refresh token (7-day expiry)
+  string refresh_token = 2;
+}
+
+message RefreshRequest {
+  // Current refresh token
+  string refresh_token = 1;
+}
+
+message RefreshResponse {
+  // New JWT access token
+  string access_token = 1;
+  // New JWT refresh token (rotation)
+  string refresh_token = 2;
+}
+
+message RegisterRequest {
+  // Ed25519 public key (32 bytes)
+  bytes public_key = 1;
+  // Public key fingerprint
+  string fingerprint = 2;
+  // Server-local display name (unique per server)
+  string display_name = 3;
+  // Client-encrypted identity blob for server-side backup
+  bytes encrypted_blob = 4;
+  // Optional: setup token for admin bootstrap (first user)
+  string setup_token = 5;
+}
+
+message RegisterResponse {
+  // Server-assigned user ID (UUIDv7)
+  string user_id = 1;
+}
+
+// TOTP 2FA enrollment and verification
+
+message TotpEnrollRequest {
+  // Empty - server generates secret for authenticated user
+}
+
+message TotpEnrollResponse {
+  // TOTP secret (base32-encoded)
+  string secret = 1;
+  // otpauth:// URI for authenticator apps
+  string otpauth_uri = 2;
+  // QR code data (PNG bytes) for scanning
+  bytes qr_png = 3;
+}
+
+message TotpVerifyRequest {
+  // 6-digit TOTP code from authenticator app
+  string code = 1;
+}
+
+message TotpVerifyResponse {
+  // Whether the code was valid
+  bool valid = 1;
+}

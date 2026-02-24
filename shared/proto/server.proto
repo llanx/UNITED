@@ -1,0 +1,47 @@
+syntax = "proto3";
+package united.server;
+
+// Server information and settings
+
+// Registration mode for the server
+enum RegistrationMode {
+  REGISTRATION_MODE_UNSPECIFIED = 0;
+  REGISTRATION_MODE_OPEN = 1;
+  REGISTRATION_MODE_INVITE_ONLY = 2;
+}
+
+// Public server information (visible to all connected users)
+message ServerInfo {
+  // Server display name
+  string name = 1;
+  // Server description
+  string description = 2;
+  // Server icon (PNG bytes, optional)
+  bytes icon_data = 3;
+  // Current registration mode
+  RegistrationMode registration_mode = 4;
+  // Server version string
+  string version = 5;
+}
+
+// Server settings (admin-only, superset of ServerInfo)
+message ServerSettings {
+  // Server display name
+  string name = 1;
+  // Server description
+  string description = 2;
+  // Server icon (PNG bytes, optional)
+  bytes icon_data = 3;
+  // Registration mode
+  RegistrationMode registration_mode = 4;
+}
+
+// Request to update server settings (admin-only)
+message UpdateSettingsRequest {
+  ServerSettings settings = 1;
+}
+
+// Response after updating settings
+message UpdateSettingsResponse {
+  ServerSettings settings = 1;
+}

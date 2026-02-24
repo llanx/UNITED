@@ -1,0 +1,14 @@
+[package]
+name = "proto-roundtrip"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "encode-challenge"
+path = "encode-challenge.rs"
+
+[dependencies]
+prost = "0.14"
+
+[build-dependencies]
+prost-build = "0.14"
