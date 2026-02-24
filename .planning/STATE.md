@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 1 of 8 (Foundation)
-Plan: 1 of 6 in current phase
+Plan: 2 of 6 in current phase
 Status: Executing plans
-Last activity: 2026-02-24 — Plan 01-01 (Shared Contracts) complete
+Last activity: 2026-02-24 — Plan 01-02 (Server Core) complete
 
-Progress: [█░░░░░░░░░] 2%
+Progress: [██░░░░░░░░] 4%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 19 min
-- Total execution time: 0.3 hours
+- Total plans completed: 2
+- Average duration: 18 min
+- Total execution time: 0.6 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 1/6 | 19 min | 19 min |
+| 01-foundation | 2/6 | 35 min | 18 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (19 min)
-- Trend: First plan
+- Last 5 plans: 01-01 (19 min), 01-02 (16 min)
+- Trend: Steady
 
 *Updated after each plan completion*
 
@@ -48,6 +48,11 @@ Recent decisions affecting current work:
 - [01-01]: Shared directory has own package.json for @bufbuild/protobuf type resolution
 - [01-01]: Electron rebuild needs explicit --version flag (auto-detection uses system Node)
 - [01-01]: Generated TypeScript protobuf files are gitignored (regenerated from buf generate)
+- [01-02]: PeerIpKeyExtractor for rate limiting requires ConnectInfo<SocketAddr> on axum::serve
+- [01-02]: DashMap for in-memory challenge store (60s expiry, periodic cleanup)
+- [01-02]: JWT refresh tokens stored as SHA-256 hash, single-use rotation
+- [01-02]: jsonwebtoken 10.3 requires explicit rust_crypto feature for CryptoProvider
+- [01-02]: Setup token regenerated on restart if no users exist (hash-only storage)
 
 ### Pending Todos
 
@@ -64,5 +69,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 01-01-PLAN.md (Shared Contracts)
-Resume file: .planning/phases/01-foundation/01-01-SUMMARY.md
+Stopped at: Completed 01-02-PLAN.md (Server Core)
+Resume file: .planning/phases/01-foundation/01-02-SUMMARY.md
