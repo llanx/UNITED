@@ -1,7 +1,24 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { UnitedAPI, ServerInfo, ServerSettings } from '@shared/ipc-bridge'
+import type { UnitedAPI, ServerInfo, ServerSettings, StorageAPI } from '@shared/ipc-bridge'
 import type { ConnectionStatus } from '@shared/ws-protocol'
 import { IPC } from '../main/ipc/channels'
+
+const storageApi: StorageAPI = {
+  hasIdentity: () =>
+    ipcRenderer.invoke(IPC.STORAGE_HAS_IDENTITY),
+
+  getActiveServer: () =>
+    ipcRenderer.invoke(IPC.STORAGE_GET_ACTIVE_SERVER),
+
+  getChannels: (serverId: string) =>
+    ipcRenderer.invoke(IPC.STORAGE_GET_CHANNELS, serverId),
+
+  getCachedState: <T>(key: string) =>
+    ipcRenderer.invoke(IPC.STORAGE_GET_CACHED_STATE, key) as Promise<T | null>,
+
+  setCachedState: (key: string, value: unknown) =>
+    ipcRenderer.invoke(IPC.STORAGE_SET_CACHED_STATE, key, value),
+}
 
 const api: UnitedAPI = {
   // Identity
@@ -37,6 +54,9 @@ const api: UnitedAPI = {
 
   updateServerSettings: (settings: ServerSettings) =>
     ipcRenderer.invoke(IPC.SERVER_UPDATE_SETTINGS, settings),
+
+  // Storage
+  storage: storageApi,
 
   // Push events (main -> renderer)
   onConnectionStatus: (callback: (status: ConnectionStatus) => void) => {
