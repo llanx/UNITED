@@ -1,0 +1,11 @@
+{
+  "name": "proto-roundtrip-test",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.11.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0"
+  }
+}

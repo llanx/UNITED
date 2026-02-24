@@ -34,6 +34,9 @@ release/
 # Generated protobuf (TypeScript)
 shared/types/generated/
 
+# Test artifacts
+tests/integration/challenge_response.bin
+
 # Environment
 .env
 .env.local
