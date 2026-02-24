@@ -26,7 +26,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ### Phase 1: Foundation
 **Goal**: Users can create a self-sovereign identity, authenticate to a self-hosted coordination server, and see a working desktop application that loads instantly
 **Depends on**: Nothing (first phase)
-**Requirements**: SEC-01, SEC-02, SEC-08, SEC-09, SEC-10, SEC-11, SEC-12, APP-01, SRVR-07
+**Requirements**: SEC-01, SEC-02, SEC-08, SEC-09, SEC-10, SEC-11, APP-01, SRVR-07
 **Identity Architecture**: See [IDENTITY-ARCHITECTURE.md](IDENTITY-ARCHITECTURE.md) for full design
 **Success Criteria** (what must be TRUE):
   1. User can create an Ed25519 keypair identity protected by a passphrase, with a 24-word mnemonic backup displayed at creation
@@ -37,17 +37,20 @@ Decimal phases appear between their surrounding integers in numeric order.
   6. Server admin can set the server name, icon, and description and these appear in the client
   7. Electron renderer runs with contextIsolation enabled, nodeIntegration disabled, and strict CSP enforced
   8. IPC bridge between main process and renderer is operational with typed request-response and push event patterns
-**Plans**: TBD
+**Plans**: 0/6 completed
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
-- [ ] 01-03: TBD
+- [ ] 01-01: Shared contracts and monorepo scaffold (Wave 1, both devs)
+- [ ] 01-02: Server core — config, SQLite, challenge-response auth, JWT, settings (Wave 2, matts)
+- [ ] 01-03: Server advanced auth — TOTP, identity blobs, key rotation, WebSocket, Docker (Wave 3, matts)
+- [ ] 01-04: Client infrastructure — Electron security, IPC bridge, SQLite, WebSocket client (Wave 2, benzybones)
+- [ ] 01-05: Client UI — React app shell, Zustand stores, Discord-style layout, components (Wave 2, benzybones)
+- [ ] 01-06: Client identity creation, auth flows, TOTP, server settings (Wave 3, benzybones)
 
 ### Phase 2: Server Management
 **Goal**: Server admins can fully structure their community with channels, categories, roles, and permissions, and new users can join via invite links
 **Depends on**: Phase 1
-**Requirements**: SRVR-01, SRVR-02, SRVR-03, SRVR-04, SRVR-05, SRVR-06, SRVR-08, SRVR-09
+**Requirements**: SRVR-01, SRVR-02, SRVR-03, SRVR-04, SRVR-05, SRVR-06, SRVR-08, SRVR-09, SEC-12
 **Success Criteria** (what must be TRUE):
   1. Server admin can create, rename, and delete text and voice channels organized into named categories
   2. Server admin can create roles with specific permissions (send messages, manage channels, kick/ban, admin) and assign them to users
@@ -165,7 +168,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/3 | Not started | - |
+| 1. Foundation | 0/6 | Not started | - |
 | 2. Server Management | 0/2 | Not started | - |
 | 3. P2P Networking | 0/3 | Not started | - |
 | 4. Real-Time Chat | 0/3 | Not started | - |
