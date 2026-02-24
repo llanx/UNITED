@@ -7,7 +7,10 @@
     "moduleResolution": "bundler",
     "outDir": "out/main",
     "lib": ["ES2022"],
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@shared/*": ["../shared/types/*"]
+    }
   },
   "include": ["src/main/**/*.ts"]
 }

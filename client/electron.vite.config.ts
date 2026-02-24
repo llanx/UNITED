@@ -11,6 +11,11 @@ export default defineConfig({
           index: resolve(__dirname, 'src/main/index.ts')
         }
       }
+    },
+    resolve: {
+      alias: {
+        '@shared': resolve(__dirname, '../shared/types')
+      }
     }
   },
   preload: {
@@ -21,6 +26,11 @@ export default defineConfig({
         input: {
           index: resolve(__dirname, 'src/preload/index.ts')
         }
+      }
+    },
+    resolve: {
+      alias: {
+        '@shared': resolve(__dirname, '../shared/types')
       }
     }
   },

@@ -1,8 +1,8 @@
 import { BrowserWindow, type IpcMain } from 'electron'
 import { IPC } from './channels'
 import { wsClient } from '../ws/client'
-import type { ConnectionStatus } from '../../../shared/types/ws-protocol'
-import type { ConnectResult, ServerInfo, ServerSettings } from '../../../shared/types/ipc-bridge'
+import type { ConnectionStatus } from '@shared/ws-protocol'
+import type { ConnectResult, ServerInfo, ServerSettings } from '@shared/ipc-bridge'
 
 const MOCK_SERVER_INFO: ServerInfo = {
   name: 'Mock Server',

@@ -5,7 +5,7 @@ import type {
   IdentityUnlockResult,
   RegisterResult,
   TotpEnrollResult
-} from '../../../shared/types/ipc-bridge'
+} from '@shared/ipc-bridge'
 
 /**
  * Register identity and auth IPC handlers.

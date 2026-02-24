@@ -5,7 +5,7 @@ import {
   WS_CLOSE_CODES,
   DEFAULT_RECONNECT_CONFIG,
   calculateReconnectDelay
-} from '../../../shared/types/ws-protocol'
+} from '@shared/ws-protocol'
 
 /**
  * WebSocket client with exponential backoff reconnection.
