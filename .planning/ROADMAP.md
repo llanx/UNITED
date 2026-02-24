@@ -37,11 +37,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   6. Server admin can set the server name, icon, and description and these appear in the client
   7. Electron renderer runs with contextIsolation enabled, nodeIntegration disabled, and strict CSP enforced
   8. IPC bridge between main process and renderer is operational with typed request-response and push event patterns
-**Plans**: 0/6 completed
+**Plans**: 2/6 completed
 
 Plans:
-- [ ] 01-01: Shared contracts and monorepo scaffold (Wave 1, both devs)
-- [ ] 01-02: Server core — config, SQLite, challenge-response auth, JWT, settings (Wave 2, matts)
+- [x] 01-01: Shared contracts and monorepo scaffold (Wave 1, both devs)
+- [x] 01-02: Server core — config, SQLite, challenge-response auth, JWT, settings (Wave 2, matts)
 - [ ] 01-03: Server advanced auth — TOTP, identity blobs, key rotation, WebSocket, Docker (Wave 3, matts)
 - [ ] 01-04: Client infrastructure — Electron security, IPC bridge, SQLite, WebSocket client (Wave 2, benzybones)
 - [ ] 01-05: Client UI — React app shell, Zustand stores, Discord-style layout, components (Wave 2, benzybones)
@@ -168,7 +168,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/6 | In Progress | - |
+| 1. Foundation | 2/6 | In Progress | - |
 | 2. Server Management | 0/2 | Not started | - |
 | 3. P2P Networking | 0/3 | Not started | - |
 | 4. Real-Time Chat | 0/3 | Not started | - |
