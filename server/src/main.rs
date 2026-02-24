@@ -55,6 +55,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load or generate JWT signing key (256-bit random, stored in data_dir)
     let jwt_secret = auth::jwt::load_or_generate_jwt_secret(&config.data_dir)?;
 
+    // Load or generate AES-256-GCM encryption key for TOTP secrets
+    let encryption_key = auth::jwt::load_or_generate_encryption_key(&config.data_dir)?;
+
     // Check for first-boot setup token
     match admin::setup::maybe_generate_setup_token(&db)? {
         Some(token) => {
@@ -75,6 +78,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         db,
         challenges: Arc::new(DashMap::new()),
         jwt_secret,
+        encryption_key,
         registration_mode: config.registration_mode.clone(),
     };
 

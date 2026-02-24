@@ -19,6 +19,8 @@ pub struct AppState {
     pub challenges: Arc<DashMap<String, ChallengeEntry>>,
     /// JWT signing secret (256-bit random key)
     pub jwt_secret: Vec<u8>,
+    /// AES-256-GCM encryption key for TOTP secrets (256-bit random key)
+    pub encryption_key: Vec<u8>,
     /// Server config
     pub registration_mode: String,
 }

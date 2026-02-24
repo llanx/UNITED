@@ -32,6 +32,30 @@ pub fn load_or_generate_jwt_secret(data_dir: &str) -> Result<Vec<u8>, Box<dyn st
     Ok(key.to_vec())
 }
 
+/// Load or generate the AES-256-GCM encryption key for TOTP secrets.
+/// Same pattern as JWT secret: 256-bit random key stored in data_dir.
+/// Per research: use random key + AES-256-GCM directly (no Argon2id needed server-side).
+pub fn load_or_generate_encryption_key(data_dir: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    let key_path = Path::new(data_dir).join("encryption_key");
+
+    if key_path.exists() {
+        let key = std::fs::read(&key_path)?;
+        if key.len() == 32 {
+            tracing::info!("Encryption key loaded from {}", key_path.display());
+            return Ok(key);
+        }
+        tracing::warn!(
+            "Encryption key file has wrong size ({}), regenerating",
+            key.len()
+        );
+    }
+
+    let key: [u8; 32] = rand::rng().random();
+    std::fs::write(&key_path, &key)?;
+    tracing::info!("Encryption key generated at {}", key_path.display());
+    Ok(key.to_vec())
+}
+
 /// Issue an access token (15-minute expiry).
 /// Claims: sub=user_id, fingerprint, is_owner, is_admin, iat, exp
 pub fn issue_access_token(
