@@ -86,6 +86,41 @@ export interface ServerSettings {
 }
 
 // ============================================================
+// Storage types (renderer-side mirrors of SQLite row shapes)
+// ============================================================
+
+export interface CachedServerInfo {
+  id: string;
+  url: string;
+  name: string;
+  description: string;
+  registrationMode: string;
+  displayName: string | null;
+  userId: string | null;
+}
+
+export interface CachedChannel {
+  id: string;
+  serverId: string;
+  name: string;
+  category: string | null;
+  position: number;
+}
+
+export interface StorageAPI {
+  /** Check whether a local identity exists in SQLite */
+  hasIdentity(): Promise<boolean>;
+  /** Get the active server (last connected), or null */
+  getActiveServer(): Promise<CachedServerInfo | null>;
+  /** Get channels for a given server ID */
+  getChannels(serverId: string): Promise<CachedChannel[]>;
+  /** Get a cached state value by key */
+  getCachedState<T>(key: string): Promise<T | null>;
+  /** Set a cached state value by key */
+  setCachedState(key: string, value: unknown): Promise<void>;
+}
+
+// ============================================================
 // Main API interface
 // ============================================================
 
@@ -171,6 +206,11 @@ export interface UnitedAPI {
    * @param settings - Partial settings to update
    */
   updateServerSettings(settings: ServerSettings): Promise<ServerInfo>;
+
+  // ---- Storage ----
+
+  /** Local SQLite storage access for cache hydration */
+  storage: StorageAPI;
 
   // ---- Push events (main -> renderer) ----
 
