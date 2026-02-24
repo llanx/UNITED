@@ -1,2 +1,60 @@
 syntax = "proto3";
 package united.ws;
+
+import "auth.proto";
+import "identity.proto";
+import "server.proto";
+
+// WebSocket envelope: all WS messages are wrapped in this type
+// Both client->server and server->client use the same envelope format
+// Binary protobuf encoding (no JSON) per CONTEXT.md decision
+
+message Envelope {
+  // Client-generated request ID, echoed in response for correlation
+  string request_id = 1;
+
+  oneof payload {
+    // Auth flow (challenge-response over WS)
+    united.auth.ChallengeRequest challenge_request = 10;
+    united.auth.ChallengeResponse challenge_response = 11;
+    united.auth.VerifyRequest verify_request = 12;
+    united.auth.VerifyResponse verify_response = 13;
+
+    // Server info
+    ServerInfoRequest server_info_request = 20;
+    ServerInfoResponse server_info_response = 21;
+
+    // Identity blob storage
+    united.identity.StoreBlobRequest store_blob_request = 30;
+    united.identity.StoreBlobResponse store_blob_response = 31;
+    united.identity.GetBlobRequest get_blob_request = 32;
+    united.identity.GetBlobResponse get_blob_response = 33;
+
+    // Key rotation
+    united.identity.RotateKeyRequest rotate_key_request = 40;
+    united.identity.RotateKeyResponse rotate_key_response = 41;
+    united.identity.CancelRotationRequest cancel_rotation_request = 42;
+    united.identity.CancelRotationResponse cancel_rotation_response = 43;
+
+    // Errors
+    ErrorResponse error = 99;
+  }
+}
+
+// Server info request (empty - just triggers info response)
+message ServerInfoRequest {}
+
+// Server info response
+message ServerInfoResponse {
+  united.server.ServerInfo info = 1;
+}
+
+// Generic error response
+message ErrorResponse {
+  // Error code (mirrors HTTP status codes where applicable)
+  uint32 code = 1;
+  // Human-readable error message
+  string message = 2;
+  // Optional: request_id of the failed request
+  string request_id = 3;
+}

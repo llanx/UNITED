@@ -1,2 +1,110 @@
 syntax = "proto3";
 package united.identity;
+
+// Identity blob: encrypted private key stored on servers for recovery
+// Server cannot decrypt this - encrypted with user's passphrase-derived key (Argon2id)
+
+message IdentityBlob {
+  // Public key fingerprint (stable identity across key rotations)
+  string fingerprint = 1;
+  // Ed25519 public key (32 bytes)
+  bytes public_key = 2;
+  // AES-256-GCM encrypted private key
+  bytes encrypted_private_key = 3;
+  // Argon2id salt (16 bytes)
+  bytes salt = 4;
+  // AES-256-GCM nonce (12 bytes)
+  bytes nonce = 5;
+  // Argon2id parameters used for key derivation
+  Argon2Params argon2_params = 6;
+  // When this blob was created/updated
+  string created_at = 7;
+}
+
+// Argon2id parameters stored alongside encrypted data
+// Both client and server must use identical params for decryption
+// See 01-RESEARCH.md Pitfall 8: parameter mismatch prevention
+message Argon2Params {
+  // Memory cost in KiB (e.g., 262144 for 256 MB)
+  uint32 m_cost = 1;
+  // Time cost / iterations (e.g., 3)
+  uint32 t_cost = 2;
+  // Parallelism (e.g., 4)
+  uint32 p_cost = 3;
+}
+
+// Genesis record: the immutable root of an identity's rotation chain
+// Identity fingerprint = SHA-256(genesis_record), truncated to 20 bytes
+message GenesisRecord {
+  // Initial Ed25519 public key (32 bytes)
+  bytes public_key = 1;
+  // ISO 8601 timestamp of creation
+  string created_at = 2;
+  // Self-signature by the initial private key
+  bytes signature = 3;
+}
+
+// Rotation record: signed proof of key change
+// Dual-signed: old key authorizes transfer, new key proves possession
+message RotationRecord {
+  // Previous Ed25519 public key being rotated away from
+  bytes prev_key = 1;
+  // New Ed25519 public key being rotated to
+  bytes new_key = 2;
+  // Reason for rotation
+  string reason = 3;  // "compromise", "scheduled", "device_loss"
+  // ISO 8601 timestamp
+  string timestamp = 4;
+  // Signature by the old (previous) private key
+  bytes signature_old = 5;
+  // Signature by the new private key
+  bytes signature_new = 6;
+}
+
+// Request to store/update an identity blob on the server
+message StoreBlobRequest {
+  // The encrypted identity blob
+  IdentityBlob blob = 1;
+}
+
+message StoreBlobResponse {
+  // Success confirmation
+  bool success = 1;
+}
+
+// Request to retrieve an identity blob by fingerprint
+message GetBlobRequest {
+  // Fingerprint to look up
+  string fingerprint = 1;
+}
+
+message GetBlobResponse {
+  // The encrypted identity blob (empty if not found)
+  IdentityBlob blob = 1;
+}
+
+// Key rotation request sent to servers
+message RotateKeyRequest {
+  // The rotation record with dual signatures
+  RotationRecord rotation = 1;
+}
+
+message RotateKeyResponse {
+  // Whether the rotation was accepted
+  bool accepted = 1;
+  // ISO 8601 deadline for cancellation (72 hours from now)
+  string cancellation_deadline = 2;
+}
+
+// Cancellation of a pending rotation (within 72-hour window)
+message CancelRotationRequest {
+  // Fingerprint of the identity
+  string fingerprint = 1;
+  // Signature by the OLD key proving the real owner is cancelling
+  bytes signature_old_key = 2;
+}
+
+message CancelRotationResponse {
+  // Whether the cancellation was accepted
+  bool cancelled = 1;
+}
