@@ -13,7 +13,7 @@ rusqlite_migration = "2.4"
 ed25519-dalek = { version = "2.2", features = ["rand_core"] }
 argon2 = "0.5"
 aes-gcm = "0.10"
-jsonwebtoken = "10.3"
+jsonwebtoken = { version = "10.3", features = ["rust_crypto"] }
 totp-rs = { version = "5.7", features = ["qr", "gen_secret"] }
 prost = "0.14"
 clap = { version = "4", features = ["derive", "env"] }

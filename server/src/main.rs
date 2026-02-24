@@ -8,6 +8,7 @@ mod routes;
 mod state;
 
 use dashmap::DashMap;
+use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 
@@ -85,7 +86,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind(&addr).await?;
     tracing::info!("Listening on {}", addr);
 
-    axum::serve(listener, app).await?;
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await?;
 
     Ok(())
 }
