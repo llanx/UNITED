@@ -21,6 +21,7 @@ release/
 *.snap
 
 # Build artifacts
+*.tsbuildinfo
 *.o
 *.so
 *.dylib

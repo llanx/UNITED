@@ -7,7 +7,10 @@
     "moduleResolution": "bundler",
     "outDir": "out/preload",
     "lib": ["ES2022"],
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@shared/*": ["../shared/types/*"]
+    }
   },
   "include": ["src/preload/**/*.ts"]
 }
