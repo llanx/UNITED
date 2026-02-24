@@ -2,6 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './styles.css'
 import App from './App'
+import { hydrate } from './stores'
+
+// Fire-and-forget: stores update reactively via Zustand subscriptions
+hydrate()
 
 const root = document.getElementById('root')
 if (!root) throw new Error('Root element not found')
