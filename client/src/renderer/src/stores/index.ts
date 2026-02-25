@@ -51,9 +51,17 @@ export async function hydrate(): Promise<void> {
       displayName: activeServer.displayName,
     })
 
-    const activeChannelId = await storage.getCachedState<string>('active_channel_id')
+    const [activeChannelId, welcomeDismissed] = await Promise.all([
+      storage.getCachedState<string>('active_channel_id'),
+      storage.getCachedState<Record<string, boolean>>('welcome_dismissed'),
+    ])
+
     if (activeChannelId) {
       useStore.setState({ activeChannelId })
+    }
+
+    if (welcomeDismissed) {
+      useStore.setState({ welcomeDismissed })
     }
   }
 }

@@ -43,7 +43,12 @@ export const IPC = {
 
   // Categories
   CATEGORIES_CREATE: 'categories:create',
+  CATEGORIES_UPDATE: 'categories:update',
   CATEGORIES_DELETE: 'categories:delete',
+  CATEGORIES_REORDER: 'categories:reorder',
+
+  // Members
+  MEMBERS_FETCH: 'members:fetch',
 
   // Roles
   ROLES_FETCH: 'roles:fetch',
@@ -54,10 +59,15 @@ export const IPC = {
   ROLES_REMOVE: 'roles:remove',
   ROLES_GET_USER: 'roles:get-user',
 
+  // Invites
+  INVITE_JOIN: 'invite:join',
+  INVITE_VALIDATE: 'invite:validate',
+
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',
   PUSH_AUTH_ERROR: 'auth:error',
   PUSH_SERVER_INFO_UPDATE: 'server:info-update',
   PUSH_CHANNEL_EVENT: 'channels:event',
   PUSH_ROLE_EVENT: 'roles:event',
+  PUSH_DEEP_LINK: 'deep-link:invite',
 } as const

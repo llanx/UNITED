@@ -123,11 +123,27 @@ export function registerChannelHandlers(ipcMain: IpcMain): void {
     return apiPost<CategoryResponse>(url, '/api/categories', { name }, token)
   })
 
+  ipcMain.handle(IPC.CATEGORIES_UPDATE, async (_event, id: string, name: string): Promise<CategoryResponse> => {
+    const url = getServerUrl()
+    const token = getAccessToken()
+    if (!url || !token) throw new Error('Not connected or not authenticated')
+
+    return apiPut<CategoryResponse>(url, `/api/categories/${id}`, { name }, token)
+  })
+
   ipcMain.handle(IPC.CATEGORIES_DELETE, async (_event, id: string): Promise<void> => {
     const url = getServerUrl()
     const token = getAccessToken()
     if (!url || !token) throw new Error('Not connected or not authenticated')
 
     await apiDelete(url, `/api/categories/${id}`, token)
+  })
+
+  ipcMain.handle(IPC.CATEGORIES_REORDER, async (_event, categories: Array<{ id: string; position: number }>): Promise<void> => {
+    const url = getServerUrl()
+    const token = getAccessToken()
+    if (!url || !token) throw new Error('Not connected or not authenticated')
+
+    await apiPut<unknown>(url, '/api/categories/reorder', { categories }, token)
   })
 }

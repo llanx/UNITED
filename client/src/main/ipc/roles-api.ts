@@ -1,7 +1,7 @@
 import type { IpcMain } from 'electron'
 import { IPC } from './channels'
 import { getAccessToken, getServerUrl } from './auth'
-import type { RoleResponse } from '@shared/ipc-bridge'
+import type { RoleResponse, MemberResponse } from '@shared/ipc-bridge'
 
 // ============================================================
 // HTTP helpers (main process only — CSP blocks renderer HTTP)
@@ -67,6 +67,14 @@ async function apiDelete(url: string, path: string, token?: string): Promise<voi
 // ============================================================
 
 export function registerRoleHandlers(ipcMain: IpcMain): void {
+  ipcMain.handle(IPC.MEMBERS_FETCH, async (): Promise<MemberResponse[]> => {
+    const url = getServerUrl()
+    const token = getAccessToken()
+    if (!url || !token) throw new Error('Not connected or not authenticated')
+
+    return apiGet<MemberResponse[]>(url, '/api/members', token)
+  })
+
   ipcMain.handle(IPC.ROLES_FETCH, async (): Promise<RoleResponse[]> => {
     const url = getServerUrl()
     const token = getAccessToken()

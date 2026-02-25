@@ -164,6 +164,7 @@ pub fn build_router(state: AppState) -> Router {
         .route("/api/categories", axum::routing::post(channel_crud::create_category))
         .route("/api/categories/{id}", axum::routing::delete(channel_crud::delete_category));
     let role_routes = Router::new()
+        .route("/api/members", axum::routing::get(role_assignment::list_members))
         .route("/api/roles", axum::routing::get(role_crud::list_roles))
         .route("/api/roles", axum::routing::post(role_crud::create_role))
         .route(

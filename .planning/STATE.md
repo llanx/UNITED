@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 2: Server Management
+**Current focus:** Phase 3: P2P Networking
 
 ## Current Position
 
-Phase: 2 of 8 (Server Management)
-Plan: 2 of 7 in current phase
-Status: Executing Phase 2
-Last activity: 2026-02-25 — Completed 02-05 (Device Provisioning)
+Phase: 3 of 8 (P2P Networking)
+Plan: 0 of 3 in current phase
+Status: Phase 2 complete, Phase 3 not yet planned
+Last activity: 2026-02-25 — Phase 2 complete (8/8 plans, human tests deferred)
 
-Progress: [██░░░░░░░░] 15%
+Progress: [███░░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration (GSD-tracked): 19 min
-- Total execution time (GSD-tracked): 1.5 hours
+- Total plans completed: 14
+- Average duration (GSD-tracked): 16 min
+- Total execution time (GSD-tracked): 1.7 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan | Notes |
 |-------|-------|-------|----------|-------|
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
-| 02-server-management | 2/7 | 11 min | 5.5 min | 02-01: schema, permissions, proto, broadcast; 02-05: device provisioning |
+| 02-server-management | 8/8 | 37 min | 5 min | 02-01: schema, permissions, proto, broadcast; 02-02 to 02-04: server endpoints; 02-05: device provisioning; 02-06: channel/role UI; 02-07: invite join flow; 02-08: SRVR-04 gap closure |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -74,10 +74,22 @@ Recent decisions affecting current work:
 - [02-05]: X25519 SPKI DER header (302a300506032b656e032100) for Node.js crypto key import/export
 - [02-05]: Transfer full encrypted identity blob alongside raw session keys so receiving device stores same format
 - [02-05]: Text input fallback for QR payload since Electron desktop lacks camera scanning
+- [02-06]: CRUD store actions re-fetch full state after mutation (no optimistic updates) — acceptable for admin-frequency operations
+- [02-06]: Admin gating uses isOwner flag — owner has all permissions implicitly per CONTEXT.md
+- [02-06]: Permission bitfield: send_messages(1), manage_channels(2), kick_members(4), ban_members(8), admin(16)
+- [02-06]: Right-click context menus for inline channel/category rename/delete (Discord pattern)
+- [02-08]: MemberResponse returns role_ids array (not full role objects) — client joins with local role cache
+- [02-08]: Owner members shown in UI but roles not editable — owner has all permissions implicitly
+- [02-08]: Default @everyone role excluded from toggle badges — auto-assigned to all
 
 ### Pending Todos
 
-None yet.
+- [ ] [Phase 2 UAT] Real-time WS channel event propagation — two clients, admin creates channel, second client sees it
+- [ ] [Phase 2 UAT] Non-admin panel access prevention — non-owner user should not see admin management panels
+- [ ] [Phase 2 UAT] Invite join flow navigates to #general — full invite code → join → channel sidebar
+- [ ] [Phase 2 UAT] Welcome overlay per-server dismissal — first join shows overlay, reconnect does not
+- [ ] [Phase 2 UAT] Ban notice full-screen block — WS close 4003 triggers red overlay, no auto-reconnect
+- [ ] [Phase 2 UAT] SEC-12 two-device round-trip — two Electron instances, QR payload transfer
 
 ### Blockers/Concerns
 
@@ -90,5 +102,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 02-05-PLAN.md (Device Provisioning)
-Resume file: .planning/phases/02-server-management/02-05-SUMMARY.md
+Stopped at: Phase 2 complete, ready for Phase 3 planning
+Resume file: .planning/phases/02-server-management/02-07-SUMMARY.md

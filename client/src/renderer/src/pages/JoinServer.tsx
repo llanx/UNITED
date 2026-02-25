@@ -1,15 +1,21 @@
-import { useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useCallback, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useStore } from '../stores'
+import InviteJoin from '../components/InviteJoin'
 
-type Step = 'url' | 'register' | 'unlock'
+type Step = 'choose' | 'url' | 'invite' | 'register' | 'unlock'
 
 export default function JoinServer() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const hasIdentity = useStore((s) => s.hasIdentity)
   const isUnlocked = useStore((s) => s.isUnlocked)
 
-  const [step, setStep] = useState<Step>('url')
+  // Deep link pre-fill from query params
+  const prefilledCode = searchParams.get('code') || undefined
+  const prefilledServerUrl = searchParams.get('server') || undefined
+
+  const [step, setStep] = useState<Step>(prefilledCode ? 'invite' : 'choose')
   const [serverUrl, setServerUrl] = useState('')
   const [urlError, setUrlError] = useState<string | null>(null)
   const [connecting, setConnecting] = useState(false)
@@ -19,6 +25,7 @@ export default function JoinServer() {
 
   const [displayName, setDisplayName] = useState('')
   const [setupToken, setSetupToken] = useState('')
+  const [inviteCode, setInviteCode] = useState(prefilledCode || '')
   const [registerError, setRegisterError] = useState<string | null>(null)
   const [registering, setRegistering] = useState(false)
 
@@ -26,6 +33,16 @@ export default function JoinServer() {
   const [passphrase, setPassphrase] = useState('')
   const [unlockError, setUnlockError] = useState<string | null>(null)
   const [unlocking, setUnlocking] = useState(false)
+
+  // Listen for deep link invite events
+  useEffect(() => {
+    const cleanup = window.united.onDeepLinkInvite((code, server) => {
+      setInviteCode(code)
+      if (server) setServerUrl(server)
+      setStep('invite')
+    })
+    return cleanup
+  }, [])
 
   const validateUrl = useCallback((url: string): boolean => {
     try {
@@ -58,6 +75,7 @@ export default function JoinServer() {
         setServerName(result.serverInfo.name)
         setServerDescription(result.serverInfo.description)
         setRegistrationMode(result.serverInfo.registrationMode)
+        setServerUrl(normalized)
 
         useStore.setState({
           serverUrl: normalized,
@@ -107,7 +125,7 @@ export default function JoinServer() {
     try {
       const result = await window.united.register(
         displayName.trim(),
-        setupToken.trim() || undefined
+        setupToken.trim() || inviteCode.trim() || undefined
       )
 
       useStore.setState({
@@ -116,6 +134,21 @@ export default function JoinServer() {
       })
       useStore.getState().setOwner(result.isOwner)
 
+      // Fetch channels and auto-select #general
+      const channelList = await window.united.channels.fetch()
+      useStore.setState({
+        categoriesWithChannels: channelList.categories
+      })
+
+      // Auto-select first text channel in first category (#general from starter template)
+      const firstCategory = channelList.categories[0]
+      if (firstCategory && firstCategory.channels.length > 0) {
+        const textChannel = firstCategory.channels.find(
+          (ch) => ch.channel_type === 'text'
+        ) || firstCategory.channels[0]
+        useStore.getState().setActiveChannel(textChannel.id)
+      }
+
       // Navigate to main app
       navigate('/app')
     } catch (err) {
@@ -123,17 +156,76 @@ export default function JoinServer() {
     } finally {
       setRegistering(false)
     }
-  }, [displayName, setupToken, serverUrl, navigate])
+  }, [displayName, setupToken, inviteCode, serverUrl, navigate])
+
+  const handleInviteJoinSuccess = useCallback(async (joinServerUrl: string) => {
+    setServerUrl(joinServerUrl)
+
+    // Server is now connected -- need to register
+    // If identity exists but not unlocked, need passphrase first
+    if (hasIdentity && !isUnlocked) {
+      setStep('unlock')
+    } else {
+      setStep('register')
+    }
+  }, [hasIdentity, isUnlocked])
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center bg-[var(--color-bg-primary)]">
       <div className="w-full max-w-md px-6">
-        {/* Step 1: Server URL */}
-        {step === 'url' && (
+        {/* Step: Choose join method */}
+        {step === 'choose' && (
           <>
             <div className="mb-6 text-center">
               <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
                 Join a Server
+              </h1>
+              <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+                Connect to a UNITED coordination server.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => setStep('invite')}
+                className="rounded-lg bg-[var(--color-accent)] px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              >
+                Join with Invite Code
+              </button>
+
+              <button
+                onClick={() => setStep('url')}
+                className="rounded-lg border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-colors hover:bg-white/10"
+              >
+                Connect with Server URL
+              </button>
+
+              <button
+                onClick={() => navigate(-1)}
+                className="mt-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+              >
+                Back
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Step: Invite code join flow */}
+        {step === 'invite' && (
+          <InviteJoin
+            initialCode={prefilledCode || inviteCode}
+            initialServerUrl={prefilledServerUrl || serverUrl || undefined}
+            onJoinSuccess={handleInviteJoinSuccess}
+            onBack={() => setStep('choose')}
+          />
+        )}
+
+        {/* Step: Direct server URL */}
+        {step === 'url' && (
+          <>
+            <div className="mb-6 text-center">
+              <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
+                Connect to Server
               </h1>
               <p className="mt-2 text-sm text-[var(--color-text-muted)]">
                 Enter the URL of a UNITED coordination server.
@@ -174,7 +266,7 @@ export default function JoinServer() {
               </button>
 
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => setStep('choose')}
                 className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
               >
                 Back
@@ -228,7 +320,7 @@ export default function JoinServer() {
           </>
         )}
 
-        {/* Step 2: Register display name */}
+        {/* Step: Register display name */}
         {step === 'register' && (
           <>
             <div className="mb-6 text-center">
@@ -240,9 +332,14 @@ export default function JoinServer() {
                   {serverDescription}
                 </p>
               )}
-              {registrationMode === 'invite_only' && (
+              {registrationMode === 'invite_only' && !inviteCode && (
                 <p className="mt-1 text-xs text-yellow-400">
                   This server requires an invite/setup token.
+                </p>
+              )}
+              {inviteCode && (
+                <p className="mt-1 text-xs text-green-400">
+                  Joining with invite: <span className="font-mono">{inviteCode}</span>
                 </p>
               )}
             </div>
@@ -263,21 +360,23 @@ export default function JoinServer() {
                 />
               </div>
 
-              <div>
-                <label className="mb-1 block text-xs text-[var(--color-text-muted)]">
-                  Setup token (optional — required for first user / admin)
-                </label>
-                <input
-                  type="text"
-                  value={setupToken}
-                  onChange={(e) => setSetupToken(e.target.value)}
-                  placeholder="Enter setup token from server console..."
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]/50 outline-none focus:border-[var(--color-accent)]"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleRegister()
-                  }}
-                />
-              </div>
+              {!inviteCode && (
+                <div>
+                  <label className="mb-1 block text-xs text-[var(--color-text-muted)]">
+                    Setup token (optional -- required for first user / admin)
+                  </label>
+                  <input
+                    type="text"
+                    value={setupToken}
+                    onChange={(e) => setSetupToken(e.target.value)}
+                    placeholder="Enter setup token from server console..."
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]/50 outline-none focus:border-[var(--color-accent)]"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleRegister()
+                    }}
+                  />
+                </div>
+              )}
 
               {registerError && (
                 <p className="text-sm text-red-400 text-center">{registerError}</p>
@@ -292,7 +391,7 @@ export default function JoinServer() {
               </button>
 
               <button
-                onClick={() => setStep('url')}
+                onClick={() => setStep('choose')}
                 className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
               >
                 Connect to a different server

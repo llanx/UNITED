@@ -71,7 +71,15 @@ const api: UnitedAPI = {
   // Categories
   categories: {
     create: (name: string) => ipcRenderer.invoke(IPC.CATEGORIES_CREATE, name),
+    update: (id: string, name: string) => ipcRenderer.invoke(IPC.CATEGORIES_UPDATE, id, name),
     delete: (id: string) => ipcRenderer.invoke(IPC.CATEGORIES_DELETE, id),
+    reorder: (categories: Array<{ id: string; position: number }>) =>
+      ipcRenderer.invoke(IPC.CATEGORIES_REORDER, categories),
+  },
+
+  // Members
+  members: {
+    fetch: () => ipcRenderer.invoke(IPC.MEMBERS_FETCH),
   },
 
   // Roles
@@ -88,6 +96,14 @@ const api: UnitedAPI = {
       ipcRenderer.invoke(IPC.ROLES_REMOVE, userId, roleId),
     getUserRoles: (userId: string) =>
       ipcRenderer.invoke(IPC.ROLES_GET_USER, userId),
+  },
+
+  // Invites
+  invite: {
+    validateInvite: (serverUrl: string, inviteCode: string) =>
+      ipcRenderer.invoke(IPC.INVITE_VALIDATE, serverUrl, inviteCode),
+    joinViaInvite: (serverUrl: string, inviteCode: string) =>
+      ipcRenderer.invoke(IPC.INVITE_JOIN, serverUrl, inviteCode),
   },
 
   // Device Provisioning (SEC-12)
@@ -139,6 +155,13 @@ const api: UnitedAPI = {
       callback(data)
     ipcRenderer.on(IPC.PUSH_ROLE_EVENT, listener)
     return () => { ipcRenderer.removeListener(IPC.PUSH_ROLE_EVENT, listener) }
+  },
+
+  onDeepLinkInvite: (callback: (inviteCode: string, serverUrl?: string) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, inviteCode: string, serverUrl?: string) =>
+      callback(inviteCode, serverUrl)
+    ipcRenderer.on(IPC.PUSH_DEEP_LINK, listener)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_DEEP_LINK, listener) }
   }
 }
 

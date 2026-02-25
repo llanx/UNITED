@@ -15,6 +15,14 @@ use crate::proto::roles as proto_roles;
 
 use super::crud::RoleResponse;
 
+#[derive(Debug, Serialize)]
+pub struct MemberResponse {
+    pub id: String,
+    pub display_name: String,
+    pub is_owner: bool,
+    pub role_ids: Vec<String>,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct AssignRoleRequest {
     pub user_id: String,
@@ -152,6 +160,63 @@ pub async fn remove_role(
     broadcast_to_all(&state.connections, &event);
 
     Ok(StatusCode::OK)
+}
+
+/// GET /api/members — List all server members with their role IDs.
+/// Any authenticated user can see the member list.
+pub async fn list_members(
+    State(state): State<AppState>,
+    _claims: Claims,
+) -> Result<Json<Vec<MemberResponse>>, (StatusCode, String)> {
+    let db = state.db.clone();
+
+    let members = tokio::task::spawn_blocking(move || {
+        let conn = db.lock().map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "DB lock".to_string()))?;
+
+        // Get all users ordered by owner first, then display name
+        let mut user_stmt = conn
+            .prepare("SELECT id, display_name, is_owner FROM users ORDER BY is_owner DESC, display_name ASC")
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Prepare users: {}", e)))?;
+
+        let users: Vec<(String, String, bool)> = user_stmt
+            .query_map([], |row| {
+                Ok((
+                    row.get::<_, String>(0)?,
+                    row.get::<_, String>(1)?,
+                    row.get::<_, bool>(2)?,
+                ))
+            })
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Query users: {}", e)))?
+            .filter_map(|r| r.ok())
+            .collect();
+
+        // For each user, get their assigned role IDs
+        let mut role_stmt = conn
+            .prepare("SELECT role_id FROM user_roles WHERE user_id = ?1")
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Prepare roles: {}", e)))?;
+
+        let mut members = Vec::with_capacity(users.len());
+        for (id, display_name, is_owner) in users {
+            let role_ids: Vec<String> = role_stmt
+                .query_map([&id], |row| row.get::<_, String>(0))
+                .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Query roles: {}", e)))?
+                .filter_map(|r| r.ok())
+                .collect();
+
+            members.push(MemberResponse {
+                id,
+                display_name,
+                is_owner,
+                role_ids,
+            });
+        }
+
+        Ok::<_, (StatusCode, String)>(members)
+    })
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Task join: {}", e)))??;
+
+    Ok(Json(members))
 }
 
 /// GET /api/roles/user/{user_id} — Get all roles assigned to a user.
