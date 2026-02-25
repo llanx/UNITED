@@ -71,7 +71,10 @@ const api: UnitedAPI = {
   // Categories
   categories: {
     create: (name: string) => ipcRenderer.invoke(IPC.CATEGORIES_CREATE, name),
+    update: (id: string, name: string) => ipcRenderer.invoke(IPC.CATEGORIES_UPDATE, id, name),
     delete: (id: string) => ipcRenderer.invoke(IPC.CATEGORIES_DELETE, id),
+    reorder: (categories: Array<{ id: string; position: number }>) =>
+      ipcRenderer.invoke(IPC.CATEGORIES_REORDER, categories),
   },
 
   // Roles

@@ -1,5 +1,7 @@
 import type { StateCreator } from 'zustand'
 import type {
+  ChannelResponse,
+  CategoryResponse,
   CategoryWithChannelsResponse,
   ChannelEvent
 } from '@shared/ipc-bridge'
@@ -12,6 +14,16 @@ export interface ChannelsSlice {
   fetchChannels: () => Promise<void>
   setActiveChannel: (id: string) => void
   handleChannelEvent: (event: ChannelEvent) => void
+
+  // CRUD actions
+  createChannel: (name: string, channelType: string, categoryId: string) => Promise<ChannelResponse>
+  renameChannel: (id: string, name: string) => Promise<ChannelResponse>
+  deleteChannel: (id: string) => Promise<void>
+  reorderChannels: (positions: Array<{ id: string; position: number }>) => Promise<void>
+  createCategory: (name: string) => Promise<CategoryResponse>
+  renameCategory: (id: string, name: string) => Promise<CategoryResponse>
+  deleteCategory: (id: string) => Promise<void>
+  reorderCategories: (positions: Array<{ id: string; position: number }>) => Promise<void>
 }
 
 export const createChannelsSlice: StateCreator<RootStore, [], [], ChannelsSlice> = (set, get) => ({
@@ -37,6 +49,54 @@ export const createChannelsSlice: StateCreator<RootStore, [], [], ChannelsSlice>
     set({ activeChannelId: id })
     // Persist to cache
     window.united.storage.setCachedState('active_channel_id', id).catch(() => {})
+  },
+
+  // CRUD actions — call IPC, then re-fetch to get consistent state
+  createChannel: async (name, channelType, categoryId) => {
+    const channel = await window.united.channels.create(name, channelType, categoryId)
+    await get().fetchChannels()
+    return channel
+  },
+
+  renameChannel: async (id, name) => {
+    const channel = await window.united.channels.update(id, name)
+    await get().fetchChannels()
+    return channel
+  },
+
+  deleteChannel: async (id) => {
+    await window.united.channels.delete(id)
+    if (get().activeChannelId === id) {
+      set({ activeChannelId: null })
+    }
+    await get().fetchChannels()
+  },
+
+  reorderChannels: async (positions) => {
+    await window.united.channels.reorder(positions)
+    await get().fetchChannels()
+  },
+
+  createCategory: async (name) => {
+    const category = await window.united.categories.create(name)
+    await get().fetchChannels()
+    return category
+  },
+
+  renameCategory: async (id, name) => {
+    const category = await window.united.categories.update(id, name)
+    await get().fetchChannels()
+    return category
+  },
+
+  deleteCategory: async (id) => {
+    await window.united.categories.delete(id)
+    await get().fetchChannels()
+  },
+
+  reorderCategories: async (positions) => {
+    await window.united.categories.reorder(positions)
+    await get().fetchChannels()
   },
 
   handleChannelEvent: (event: ChannelEvent) => {

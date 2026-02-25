@@ -285,7 +285,9 @@ export interface UnitedAPI {
   /** Category CRUD operations */
   categories: {
     create(name: string): Promise<CategoryResponse>;
+    update(id: string, name: string): Promise<CategoryResponse>;
     delete(id: string): Promise<void>;
+    reorder(categories: Array<{ id: string; position: number }>): Promise<void>;
   };
 
   // ---- Roles ----

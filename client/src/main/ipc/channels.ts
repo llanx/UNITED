@@ -43,7 +43,9 @@ export const IPC = {
 
   // Categories
   CATEGORIES_CREATE: 'categories:create',
+  CATEGORIES_UPDATE: 'categories:update',
   CATEGORIES_DELETE: 'categories:delete',
+  CATEGORIES_REORDER: 'categories:reorder',
 
   // Roles
   ROLES_FETCH: 'roles:fetch',
