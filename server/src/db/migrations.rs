@@ -71,5 +71,74 @@ CREATE TABLE challenges (
 );
 ",
         ),
+        M::up(
+            "-- Migration 2: Server Management (Phase 2)
+
+CREATE TABLE categories (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE channels (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    channel_type TEXT NOT NULL DEFAULT 'text',
+    category_id TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0,
+    topic TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE INDEX idx_channels_category ON channels(category_id);
+
+CREATE TABLE roles (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    permissions INTEGER NOT NULL DEFAULT 0,
+    color TEXT,
+    position INTEGER NOT NULL DEFAULT 0,
+    is_default INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+CREATE TABLE user_roles (
+    user_id TEXT NOT NULL,
+    role_id TEXT NOT NULL,
+    assigned_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+CREATE INDEX idx_user_roles_user ON user_roles(user_id);
+CREATE INDEX idx_user_roles_role ON user_roles(role_id);
+
+CREATE TABLE bans (
+    id TEXT PRIMARY KEY,
+    fingerprint TEXT NOT NULL,
+    banned_by TEXT NOT NULL,
+    reason TEXT,
+    expires_at TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (banned_by) REFERENCES users(id)
+);
+
+CREATE UNIQUE INDEX idx_bans_fingerprint ON bans(fingerprint);
+
+CREATE TABLE invites (
+    code TEXT PRIMARY KEY,
+    created_by TEXT NOT NULL,
+    max_uses INTEGER,
+    use_count INTEGER NOT NULL DEFAULT 0,
+    expires_at TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+",
+        ),
     ])
 }

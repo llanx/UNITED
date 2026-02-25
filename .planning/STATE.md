@@ -10,27 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 2 of 8 (Server Management)
-Plan: 0 of TBD in current phase
-Status: Phase 1 complete, ready to execute Phase 2
-Last activity: 2026-02-24 — Phase 1 fully complete (all 6 plans)
+Plan: 1 of 7 in current phase
+Status: Executing Phase 2
+Last activity: 2026-02-25 — Completed 02-01 (Server Management Foundation)
 
-Progress: [██░░░░░░░░] 12%
+Progress: [██░░░░░░░░] 14%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration (GSD-tracked): 27 min
-- Total execution time (GSD-tracked): 1.3 hours
+- Total plans completed: 7
+- Average duration (GSD-tracked): 21 min
+- Total execution time (GSD-tracked): 1.4 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan | Notes |
 |-------|-------|-------|----------|-------|
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
+| 02-server-management | 1/7 | 5 min | 5 min | 02-01: schema, permissions, proto, broadcast |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -66,6 +67,9 @@ Recent decisions affecting current work:
 - [01-06]: Severity-based error UX: 4001 silent refresh, 4002 redirect with explanation, 4003 full-screen ban
 - [01-06]: QR code generated client-side via qrcode.react (removed qr_png from server response)
 - [01-06]: Hex encoding for public keys and signatures (not base64)
+- [02-01]: WS envelope field allocation: channels 50-59, roles 60-69, moderation 70-79, invites 80-89, overflow 100-105
+- [02-01]: Protobuf packages follow existing convention: united.channels, united.roles, united.moderation, united.invite
+- [02-01]: invite.proto imports channels.proto and roles.proto for JoinServerResponse (channel list + role list on join)
 
 ### Pending Todos
 
@@ -81,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-24
-Stopped at: Phase 1 fully reconciled. Ready to execute Phase 2.
-Resume file: .planning/phases/02-server-management/02-CONTEXT.md
+Last session: 2026-02-25
+Stopped at: Completed 02-01-PLAN.md (Server Management Foundation)
+Resume file: .planning/phases/02-server-management/02-01-SUMMARY.md

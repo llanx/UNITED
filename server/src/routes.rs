@@ -149,12 +149,23 @@ pub fn build_router(state: AppState) -> Router {
     // Health check
     let health = Router::new().route("/health", axum::routing::get(health_check));
 
+    // Phase 2: Placeholder route groups for channels, roles, moderation, invites.
+    // These are empty scaffolds that plans 02-02, 02-03, 02-04 will populate.
+    let channel_routes = Router::new();
+    let role_routes = Router::new();
+    let moderation_routes = Router::new();
+    let invite_routes = Router::new();
+
     Router::new()
         .merge(auth_routes)
         .merge(public_identity_routes)
         .merge(public_routes)
         .merge(authenticated_routes)
         .merge(admin_routes)
+        .merge(channel_routes)
+        .merge(role_routes)
+        .merge(moderation_routes)
+        .merge(invite_routes)
         .merge(ws_routes)
         .merge(health)
         .layer(middleware::from_fn_with_state(

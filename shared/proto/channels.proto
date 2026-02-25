@@ -1,0 +1,106 @@
+syntax = "proto3";
+package united.channels;
+
+// Channel and category protobuf messages for server management.
+// Channels belong to categories (flat, no nesting).
+// Position integers control display order.
+
+message Channel {
+  string id = 1;
+  string name = 2;
+  string channel_type = 3;  // "text" or "voice"
+  string category_id = 4;
+  int64 position = 5;
+  string topic = 6;
+}
+
+message Category {
+  string id = 1;
+  string name = 2;
+  int64 position = 3;
+}
+
+// --- Requests ---
+
+message CreateChannelRequest {
+  string name = 1;
+  string channel_type = 2;  // "text" or "voice"
+  string category_id = 3;
+}
+
+message RenameChannelRequest {
+  string channel_id = 1;
+  string name = 2;
+}
+
+message DeleteChannelRequest {
+  string channel_id = 1;
+}
+
+message ChannelPositionEntry {
+  string id = 1;
+  int64 position = 2;
+}
+
+message ReorderChannelsRequest {
+  repeated ChannelPositionEntry entries = 1;
+}
+
+message CreateCategoryRequest {
+  string name = 1;
+}
+
+message RenameCategoryRequest {
+  string category_id = 1;
+  string name = 2;
+}
+
+message DeleteCategoryRequest {
+  string category_id = 1;
+}
+
+message CategoryPositionEntry {
+  string id = 1;
+  int64 position = 2;
+}
+
+message ReorderCategoriesRequest {
+  repeated CategoryPositionEntry entries = 1;
+}
+
+// --- Responses ---
+
+message CategoryWithChannels {
+  Category category = 1;
+  repeated Channel channels = 2;
+}
+
+message ChannelListResponse {
+  repeated CategoryWithChannels categories = 1;
+}
+
+// --- Events (server -> client push) ---
+
+message ChannelCreatedEvent {
+  Channel channel = 1;
+}
+
+message ChannelUpdatedEvent {
+  Channel channel = 1;
+}
+
+message ChannelDeletedEvent {
+  string channel_id = 1;
+}
+
+message CategoryCreatedEvent {
+  Category category = 1;
+}
+
+message CategoryUpdatedEvent {
+  Category category = 1;
+}
+
+message CategoryDeletedEvent {
+  string category_id = 1;
+}

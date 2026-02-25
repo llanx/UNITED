@@ -1,0 +1,48 @@
+syntax = "proto3";
+package united.moderation;
+
+// Moderation protobuf messages for kick and ban actions.
+// Kick = soft removal (can rejoin with invite).
+// Ban = hard removal (by fingerprint, survives key rotation).
+
+message BanInfo {
+  string id = 1;
+  string fingerprint = 2;
+  string banned_by = 3;
+  string reason = 4;
+  string expires_at = 5;
+  string created_at = 6;
+}
+
+// --- Requests ---
+
+message KickRequest {
+  string user_id = 1;
+  string reason = 2;
+}
+
+message BanRequest {
+  string user_id = 1;
+  string reason = 2;
+  string expires_at = 3;  // Optional ISO 8601 expiration; empty = permanent
+}
+
+message UnbanRequest {
+  string fingerprint = 1;
+}
+
+// --- Events (server -> client push) ---
+
+message UserKickedEvent {
+  string user_id = 1;
+  string reason = 2;
+}
+
+message UserBannedEvent {
+  string user_id = 1;
+  string reason = 2;
+}
+
+message UserUnbannedEvent {
+  string fingerprint = 1;
+}

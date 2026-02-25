@@ -4,6 +4,7 @@ mod config;
 mod db;
 mod identity;
 mod proto;
+mod roles;
 mod routes;
 mod state;
 mod ws;
