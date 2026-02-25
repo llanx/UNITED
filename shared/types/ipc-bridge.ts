@@ -129,6 +129,28 @@ export interface RoleResponse {
   is_default: boolean;
 }
 
+export interface MemberResponse {
+  id: string;
+  display_name: string;
+  is_owner: boolean;
+  role_ids: string[];
+}
+
+// ============================================================
+// Invite types
+// ============================================================
+
+export interface JoinResult {
+  serverUrl: string;
+  channels: ChannelListResponse;
+  roles: RoleResponse[];
+}
+
+export interface InviteValidateResult {
+  valid: boolean;
+  serverName?: string;
+}
+
 // ============================================================
 // Push event types
 // ============================================================
@@ -290,6 +312,13 @@ export interface UnitedAPI {
     reorder(categories: Array<{ id: string; position: number }>): Promise<void>;
   };
 
+  // ---- Members ----
+
+  /** Member listing operations */
+  members: {
+    fetch(): Promise<MemberResponse[]>;
+  };
+
   // ---- Roles ----
 
   /** Role CRUD and assignment operations */
@@ -301,6 +330,16 @@ export interface UnitedAPI {
     assign(userId: string, roleId: string): Promise<void>;
     remove(userId: string, roleId: string): Promise<void>;
     getUserRoles(userId: string): Promise<RoleResponse[]>;
+  };
+
+  // ---- Invites ----
+
+  /** Invite join and validation operations */
+  invite: {
+    /** Validate an invite code against a server */
+    validateInvite(serverUrl: string, inviteCode: string): Promise<InviteValidateResult>;
+    /** Join a server via invite code (fetches channels/roles after auth) */
+    joinViaInvite(serverUrl: string, inviteCode: string): Promise<JoinResult>;
   };
 
   // ---- Device Provisioning (SEC-12) ----
@@ -366,6 +405,13 @@ export interface UnitedAPI {
    * @returns Cleanup function to unsubscribe
    */
   onRoleEvent(callback: (event: RoleEvent) => void): () => void;
+
+  /**
+   * Subscribe to deep link invite events (united:// protocol handler).
+   * @param callback - Receives the invite code and optional server URL
+   * @returns Cleanup function to unsubscribe
+   */
+  onDeepLinkInvite(callback: (inviteCode: string, serverUrl?: string) => void): () => void;
 }
 
 // ============================================================

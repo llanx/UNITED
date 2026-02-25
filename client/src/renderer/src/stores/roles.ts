@@ -1,5 +1,5 @@
 import type { StateCreator } from 'zustand'
-import type { RoleResponse, RoleEvent } from '@shared/ipc-bridge'
+import type { RoleResponse, RoleEvent, MemberResponse } from '@shared/ipc-bridge'
 import type { RootStore } from './index'
 
 // Permission flags — must match server-side bitfield values
@@ -30,6 +30,11 @@ export interface RolesSlice {
   fetchRoles: () => Promise<void>
   handleRoleEvent: (event: RoleEvent) => void
 
+  // Members
+  members: MemberResponse[]
+  membersLoading: boolean
+  fetchMembers: () => Promise<void>
+
   // CRUD actions
   createRole: (name: string, permissions: number, color?: string) => Promise<RoleResponse>
   updateRole: (id: string, name?: string, permissions?: number, color?: string) => Promise<RoleResponse>
@@ -41,6 +46,21 @@ export interface RolesSlice {
 export const createRolesSlice: StateCreator<RootStore, [], [], RolesSlice> = (set, get) => ({
   roles: [],
   rolesLoading: false,
+
+  // Members
+  members: [],
+  membersLoading: false,
+
+  fetchMembers: async () => {
+    set({ membersLoading: true })
+    try {
+      const members = await window.united.members.fetch()
+      set({ members, membersLoading: false })
+    } catch (err) {
+      console.error('Failed to fetch members:', err)
+      set({ membersLoading: false })
+    }
+  },
 
   fetchRoles: async () => {
     set({ rolesLoading: true })
@@ -73,10 +93,12 @@ export const createRolesSlice: StateCreator<RootStore, [], [], RolesSlice> = (se
 
   assignRole: async (userId, roleId) => {
     await window.united.roles.assign(userId, roleId)
+    await get().fetchMembers()
   },
 
   removeRole: async (userId, roleId) => {
     await window.united.roles.remove(userId, roleId)
+    await get().fetchMembers()
   },
 
   handleRoleEvent: (event: RoleEvent) => {
