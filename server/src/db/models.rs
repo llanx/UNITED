@@ -69,3 +69,61 @@ pub struct ChallengeRow {
     pub challenge_bytes: Vec<u8>,
     pub expires_at: String,
 }
+
+// --- Phase 2: Server Management models ---
+
+/// Channel category (flat grouping, no nesting)
+#[derive(Debug, Clone)]
+pub struct Category {
+    pub id: String,
+    pub name: String,
+    pub position: i64,
+    pub created_at: String,
+}
+
+/// Text or voice channel within a category
+#[derive(Debug, Clone)]
+pub struct Channel {
+    pub id: String,
+    pub name: String,
+    pub channel_type: String,
+    pub category_id: String,
+    pub position: i64,
+    pub topic: Option<String>,
+    pub created_at: String,
+}
+
+/// Role with bitwise permission flags
+#[derive(Debug, Clone)]
+pub struct Role {
+    pub id: String,
+    pub name: String,
+    pub permissions: u32,
+    pub color: Option<String>,
+    pub position: i64,
+    pub is_default: bool,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+/// Ban record (by fingerprint, not user ID, so bans survive key rotation)
+#[derive(Debug, Clone)]
+pub struct Ban {
+    pub id: String,
+    pub fingerprint: String,
+    pub banned_by: String,
+    pub reason: Option<String>,
+    pub expires_at: Option<String>,
+    pub created_at: String,
+}
+
+/// Invite code with optional expiration and use limits
+#[derive(Debug, Clone)]
+pub struct Invite {
+    pub code: String,
+    pub created_by: String,
+    pub max_uses: Option<i64>,
+    pub use_count: i64,
+    pub expires_at: Option<String>,
+    pub created_at: String,
+}
