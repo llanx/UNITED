@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 2 of 8 (Server Management)
-Plan: 3 of 7 in current phase
+Plan: 4 of 8 in current phase
 Status: Executing Phase 2
-Last activity: 2026-02-25 — Completed 02-06 (Channel/Role UI)
+Last activity: 2026-02-25 — Completed 02-08 (SRVR-04 Gap Closure)
 
-Progress: [███░░░░░░░] 18%
+Progress: [████░░░░░░] 21%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration (GSD-tracked): 17 min
-- Total execution time (GSD-tracked): 1.6 hours
+- Total plans completed: 10
+- Average duration (GSD-tracked): 16 min
+- Total execution time (GSD-tracked): 1.7 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan | Notes |
 |-------|-------|-------|----------|-------|
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
-| 02-server-management | 3/7 | 18 min | 6 min | 02-01: schema, permissions, proto, broadcast; 02-05: device provisioning; 02-06: channel/role UI |
+| 02-server-management | 4/8 | 23 min | 6 min | 02-01: schema, permissions, proto, broadcast; 02-05: device provisioning; 02-06: channel/role UI; 02-08: SRVR-04 gap closure |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-08 (5 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -78,6 +78,9 @@ Recent decisions affecting current work:
 - [02-06]: Admin gating uses isOwner flag — owner has all permissions implicitly per CONTEXT.md
 - [02-06]: Permission bitfield: send_messages(1), manage_channels(2), kick_members(4), ban_members(8), admin(16)
 - [02-06]: Right-click context menus for inline channel/category rename/delete (Discord pattern)
+- [02-08]: MemberResponse returns role_ids array (not full role objects) — client joins with local role cache
+- [02-08]: Owner members shown in UI but roles not editable — owner has all permissions implicitly
+- [02-08]: Default @everyone role excluded from toggle badges — auto-assigned to all
 
 ### Pending Todos
 
@@ -94,5 +97,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 02-06-PLAN.md (Channel/Role UI)
-Resume file: .planning/phases/02-server-management/02-06-SUMMARY.md
+Stopped at: Completed 02-08-PLAN.md (SRVR-04 Gap Closure)
+Resume file: .planning/phases/02-server-management/02-08-SUMMARY.md
