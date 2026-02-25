@@ -8,6 +8,7 @@ use crate::auth::challenge;
 use crate::auth::middleware::JwtSecret;
 use crate::auth::totp;
 use crate::identity::{blob, registration, rotation};
+use crate::roles::{assignment as role_assignment, crud as role_crud};
 use crate::state::AppState;
 use crate::ws::handler as ws_handler;
 
@@ -152,7 +153,29 @@ pub fn build_router(state: AppState) -> Router {
     // Phase 2: Placeholder route groups for channels, roles, moderation, invites.
     // These are empty scaffolds that plans 02-02, 02-03, 02-04 will populate.
     let channel_routes = Router::new();
-    let role_routes = Router::new();
+    let role_routes = Router::new()
+        .route("/api/roles", axum::routing::get(role_crud::list_roles))
+        .route("/api/roles", axum::routing::post(role_crud::create_role))
+        .route(
+            "/api/roles/{id}",
+            axum::routing::put(role_crud::update_role),
+        )
+        .route(
+            "/api/roles/{id}",
+            axum::routing::delete(role_crud::delete_role),
+        )
+        .route(
+            "/api/roles/assign",
+            axum::routing::post(role_assignment::assign_role),
+        )
+        .route(
+            "/api/roles/remove",
+            axum::routing::post(role_assignment::remove_role),
+        )
+        .route(
+            "/api/roles/user/{user_id}",
+            axum::routing::get(role_assignment::get_user_roles),
+        );
     let moderation_routes = Router::new();
     let invite_routes = Router::new();
 
