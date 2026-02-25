@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useStore } from '../stores'
 import { useRoles } from '../hooks/useRoles'
 import { PERMISSIONS, hasPermission, type PermissionName } from '../stores/roles'
+import type { MemberResponse } from '@shared/ipc-bridge'
 
 const PERMISSION_LABELS: { key: PermissionName; label: string; description: string }[] = [
   { key: 'SEND_MESSAGES', label: 'Send Messages', description: 'Allows sending messages in text channels' },
@@ -16,12 +17,133 @@ const PRESET_COLORS = [
   '#57f287', '#fee75c', '#5865f2', '#9b59b6', '#1abc9c',
 ]
 
+function MemberRoleBadge({
+  role,
+  assigned,
+  disabled,
+  onToggle,
+}: {
+  role: { id: string; name: string; color: string | null }
+  assigned: boolean
+  disabled: boolean
+  onToggle: () => void
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      disabled={disabled}
+      title={
+        disabled
+          ? 'Owner has all permissions implicitly'
+          : assigned
+            ? `Remove ${role.name}`
+            : `Assign ${role.name}`
+      }
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
+        disabled
+          ? 'cursor-not-allowed opacity-40'
+          : 'cursor-pointer hover:opacity-80'
+      } ${
+        assigned
+          ? 'text-white'
+          : 'border border-white/20 text-[var(--color-text-muted)]'
+      }`}
+      style={
+        assigned
+          ? { backgroundColor: role.color ?? '#8b8b8b' }
+          : { borderColor: role.color ?? '#8b8b8b', color: role.color ?? '#8b8b8b' }
+      }
+    >
+      <span
+        className="h-2 w-2 shrink-0 rounded-full"
+        style={{ backgroundColor: role.color ?? '#8b8b8b' }}
+      />
+      {role.name}
+    </button>
+  )
+}
+
+function MemberRoleRow({
+  member,
+  nonDefaultRoles,
+  assignRole,
+  removeRole,
+  togglingId,
+  setTogglingId,
+}: {
+  member: MemberResponse
+  nonDefaultRoles: Array<{ id: string; name: string; color: string | null; is_default: boolean }>
+  assignRole: (userId: string, roleId: string) => Promise<void>
+  removeRole: (userId: string, roleId: string) => Promise<void>
+  togglingId: string | null
+  setTogglingId: (id: string | null) => void
+}) {
+  const handleToggle = async (roleId: string, currentlyAssigned: boolean) => {
+    const key = `${member.id}:${roleId}`
+    setTogglingId(key)
+    try {
+      if (currentlyAssigned) {
+        await removeRole(member.id, roleId)
+      } else {
+        await assignRole(member.id, roleId)
+      }
+    } catch (err) {
+      console.error('Failed to toggle role:', err)
+    } finally {
+      setTogglingId(null)
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+      <div className="mb-2 flex items-center gap-2">
+        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-[var(--color-text-primary)]">
+          {member.display_name.charAt(0).toUpperCase()}
+        </div>
+        <span className={`text-sm ${member.is_owner ? 'font-bold' : 'font-medium'} text-[var(--color-text-primary)]`}>
+          {member.display_name}
+        </span>
+        {member.is_owner && (
+          <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">
+            OWNER
+          </span>
+        )}
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {nonDefaultRoles.map((role) => {
+          const assigned = member.role_ids.includes(role.id)
+          const isToggling = togglingId === `${member.id}:${role.id}`
+          return (
+            <MemberRoleBadge
+              key={role.id}
+              role={role}
+              assigned={assigned}
+              disabled={member.is_owner || isToggling}
+              onToggle={() => handleToggle(role.id, assigned)}
+            />
+          )
+        })}
+        {nonDefaultRoles.length === 0 && (
+          <span className="text-[11px] text-[var(--color-text-muted)]">
+            No custom roles created yet
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function RoleManagement() {
   const { roles } = useRoles()
 
   const createRole = useStore((s) => s.createRole)
   const updateRole = useStore((s) => s.updateRole)
   const deleteRole = useStore((s) => s.deleteRole)
+  const assignRole = useStore((s) => s.assignRole)
+  const removeRole = useStore((s) => s.removeRole)
+  const members = useStore((s) => s.members)
+  const membersLoading = useStore((s) => s.membersLoading)
+  const fetchMembers = useStore((s) => s.fetchMembers)
 
   // Create form state
   const [newRoleName, setNewRoleName] = useState('')
@@ -37,6 +159,17 @@ export default function RoleManagement() {
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [togglingRoleId, setTogglingRoleId] = useState<string | null>(null)
+  const [memberError, setMemberError] = useState<string | null>(null)
+
+  // Fetch members on mount
+  useEffect(() => {
+    fetchMembers().catch((err) => {
+      setMemberError(err instanceof Error ? err.message : 'Failed to fetch members')
+    })
+  }, [fetchMembers])
+
+  const nonDefaultRoles = roles.filter((r) => !r.is_default)
 
   const togglePermission = (current: number, flag: number): number => {
     return current ^ flag
@@ -98,12 +231,12 @@ export default function RoleManagement() {
     }
   }
 
-  const startEditing = (role: typeof roles[0]) => {
+  const startEditing = useCallback((role: typeof roles[0]) => {
     setEditingRoleId(role.id)
     setEditName(role.name)
     setEditPermissions(role.permissions)
     setEditColor(role.color ?? '')
-  }
+  }, [])
 
   return (
     <div className="flex flex-1 flex-col bg-[var(--color-bg-primary)]">
@@ -341,6 +474,40 @@ export default function RoleManagement() {
                 <p className="py-4 text-center text-xs text-[var(--color-text-muted)]">No roles configured</p>
               )}
             </div>
+          </section>
+
+          {/* Member Roles section */}
+          <section>
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              Member Roles ({members.length} member{members.length !== 1 ? 's' : ''})
+            </h3>
+
+            {memberError && (
+              <p className="mb-3 text-sm text-red-400">{memberError}</p>
+            )}
+
+            {membersLoading ? (
+              <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+                <p className="text-center text-xs text-[var(--color-text-muted)]">Loading members...</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {members.map((member) => (
+                  <MemberRoleRow
+                    key={member.id}
+                    member={member}
+                    nonDefaultRoles={nonDefaultRoles}
+                    assignRole={assignRole}
+                    removeRole={removeRole}
+                    togglingId={togglingRoleId}
+                    setTogglingId={setTogglingRoleId}
+                  />
+                ))}
+                {members.length === 0 && !membersLoading && (
+                  <p className="py-4 text-center text-xs text-[var(--color-text-muted)]">No members found</p>
+                )}
+              </div>
+            )}
           </section>
         </div>
       </div>
