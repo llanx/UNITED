@@ -8,6 +8,8 @@ pub mod channels;
 pub mod config;
 pub mod db;
 pub mod identity;
+pub mod invite;
+pub mod moderation;
 pub mod proto;
 pub mod roles;
 pub mod routes;
