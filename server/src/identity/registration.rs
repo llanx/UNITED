@@ -146,6 +146,35 @@ pub async fn register(
             rusqlite::params![fingerprint, encrypted_blob, now, now],
         ).map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Insert blob: {}", e)))?;
 
+        // Ensure @everyone role exists and auto-assign to new user
+        let everyone_id: Option<String> = conn
+            .query_row(
+                "SELECT id FROM roles WHERE is_default = 1",
+                [],
+                |row| row.get(0),
+            )
+            .ok();
+
+        let everyone_role_id = if let Some(id) = everyone_id {
+            id
+        } else {
+            // Create @everyone role with SEND_MESSAGES permission (0x01)
+            let eid = Uuid::now_v7().to_string();
+            conn.execute(
+                "INSERT INTO roles (id, name, permissions, color, position, is_default, created_at, updated_at) VALUES (?1, 'everyone', 1, '', 0, 1, ?2, ?3)",
+                rusqlite::params![eid, now, now],
+            )
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Insert @everyone: {}", e)))?;
+            eid
+        };
+
+        // Assign @everyone role to the new user
+        conn.execute(
+            "INSERT OR IGNORE INTO user_roles (user_id, role_id, assigned_at) VALUES (?1, ?2, ?3)",
+            rusqlite::params![user_id, everyone_role_id, now],
+        )
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Assign @everyone: {}", e)))?;
+
         // Issue JWT tokens
         let is_admin = is_owner; // Owner is also admin
         let access_token = jwt::issue_access_token(&jwt_secret, &user_id, &fingerprint, is_owner, is_admin)
