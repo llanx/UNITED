@@ -57,14 +57,16 @@ Plans:
   3. Server admin can kick and ban users, with bans propagated so banned users cannot rejoin or have their content relayed
   4. Server admin can generate invite links with optional expiration, and new users can join via those links
   5. A newly joined user sees the channel list, category structure, and their assigned permissions immediately
-**Plans**: 5 plans
+**Plans**: 7 plans
 
 Plans:
-- [ ] 02-01: Schema migration, permission bitflags, protobuf definitions, and route scaffold (Wave 1)
-- [ ] 02-02: Channel/category CRUD, starter template, reordering, and WS events (Wave 2, TDD)
-- [ ] 02-03: Roles CRUD, assignment, permission guard, and auto-assign @everyone (Wave 2, TDD)
-- [ ] 02-04: Moderation (kick/ban) and invites (generate, join, landing page) (Wave 3, TDD)
-- [ ] 02-05: SEC-12 device provisioning via QR code (Wave 1, independent)
+- [ ] 02-01: Schema migration, permission bitflags, protobuf definitions, and route scaffold (Wave 1, server)
+- [ ] 02-02: Channel/category CRUD, starter template, reordering, and WS events (Wave 2, server, TDD)
+- [ ] 02-03: Roles CRUD, assignment, permission guard, and auto-assign @everyone (Wave 2, server, TDD)
+- [ ] 02-04: Moderation (kick/ban) and invites (generate, join, landing page) (Wave 3, server, TDD)
+- [ ] 02-05: SEC-12 device provisioning via QR code (Wave 1, client, independent)
+- [ ] 02-06: Client UI — channel sidebar with categories, admin management panels (Wave 3, client)
+- [ ] 02-07: Client onboarding — invite join flow, routing to #general, welcome overlay (Wave 3, client)
 
 ### Phase 3: P2P Networking
 **Goal**: Peers discover each other and exchange messages over encrypted connections through a libp2p mesh, with NAT traversal ensuring connectivity across network configurations
@@ -172,7 +174,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/6 | In Progress | - |
-| 2. Server Management | 0/5 | Not started | - |
+| 2. Server Management | 0/7 | Not started | - |
 | 3. P2P Networking | 0/3 | Not started | - |
 | 4. Real-Time Chat | 0/3 | Not started | - |
 | 5. Direct Messages | 0/2 | Not started | - |
