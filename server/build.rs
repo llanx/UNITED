@@ -5,6 +5,10 @@ fn main() -> Result<()> {
         "../shared/proto/auth.proto",
         "../shared/proto/identity.proto",
         "../shared/proto/server.proto",
+        "../shared/proto/channels.proto",
+        "../shared/proto/roles.proto",
+        "../shared/proto/moderation.proto",
+        "../shared/proto/invite.proto",
         "../shared/proto/ws.proto",
     ];
 

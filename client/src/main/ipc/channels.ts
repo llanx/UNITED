@@ -29,6 +29,11 @@ export const IPC = {
   STORAGE_GET_CACHED_STATE: 'storage:get-cached-state',
   STORAGE_SET_CACHED_STATE: 'storage:set-cached-state',
 
+  // Provisioning
+  PROVISIONING_START: 'provisioning:start',
+  PROVISIONING_CANCEL: 'provisioning:cancel',
+  PROVISIONING_RECEIVE: 'provisioning:receive',
+
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',
   PUSH_AUTH_ERROR: 'auth:error',

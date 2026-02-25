@@ -2,6 +2,10 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useStore } from './stores'
 import Welcome from './pages/Welcome'
 import Main from './pages/Main'
+import CreateIdentity from './pages/CreateIdentity'
+import RecoverIdentity from './pages/RecoverIdentity'
+import JoinServer from './pages/JoinServer'
+import DeviceProvisioning from './pages/DeviceProvisioning'
 
 export default function App() {
   const hasIdentity = useStore((s) => s.hasIdentity)
@@ -16,6 +20,10 @@ export default function App() {
     <HashRouter>
       <Routes>
         <Route path="/welcome" element={<Welcome />} />
+        <Route path="/create-identity" element={<CreateIdentity />} />
+        <Route path="/recover-identity" element={<RecoverIdentity />} />
+        <Route path="/join-server" element={<JoinServer />} />
+        <Route path="/device-provisioning" element={<DeviceProvisioning />} />
         <Route path="/app" element={<Main />} />
         <Route path="*" element={<Navigate to={showMain ? '/app' : '/welcome'} replace />} />
       </Routes>

@@ -4,22 +4,24 @@
  * These types define the request/response shapes for all HTTP endpoints.
  * The actual wire format uses protobuf for WebSocket and JSON for REST.
  * Both server (Rust) and client (TypeScript) implement these contracts.
+ *
+ * IMPORTANT: The Rust server uses hex encoding for all binary fields
+ * (hex::encode / hex::decode). All binary fields below are hex-encoded strings.
  */
 
 // ============================================================
 // Auth endpoints
 // ============================================================
 
-/** POST /api/auth/challenge */
+/** POST /api/auth/challenge — takes empty body */
 export interface ChallengeRequestBody {
-  /** Ed25519 public key fingerprint (base32-encoded) */
-  fingerprint: string;
+  // Server's /api/auth/challenge takes empty body
 }
 
 export interface ChallengeResponseBody {
   /** Server-generated unique ID for this challenge */
   challenge_id: string;
-  /** Base64-encoded random 32 bytes to be signed */
+  /** Hex-encoded random 32 bytes to be signed */
   challenge_bytes: string;
 }
 
@@ -27,11 +29,11 @@ export interface ChallengeResponseBody {
 export interface VerifyRequestBody {
   /** Challenge ID from ChallengeResponse */
   challenge_id: string;
-  /** Base64-encoded Ed25519 public key (32 bytes) */
+  /** Hex-encoded Ed25519 public key (32 bytes) */
   public_key: string;
-  /** Base64-encoded Ed25519 signature of challenge_bytes (64 bytes) */
+  /** Hex-encoded Ed25519 signature of challenge_bytes (64 bytes) */
   signature: string;
-  /** Fingerprint for user lookup */
+  /** Hex-encoded fingerprint for user lookup */
   fingerprint: string;
 }
 
@@ -57,14 +59,16 @@ export interface RefreshResponseBody {
 
 /** POST /api/auth/register */
 export interface RegisterRequestBody {
-  /** Base64-encoded Ed25519 public key (32 bytes) */
+  /** Hex-encoded Ed25519 public key (32 bytes) */
   public_key: string;
-  /** Public key fingerprint */
+  /** Hex-encoded public key fingerprint */
   fingerprint: string;
   /** Server-local display name (unique per server) */
   display_name: string;
-  /** Base64-encoded client-encrypted identity blob */
+  /** Hex-encoded client-encrypted identity blob */
   encrypted_blob: string;
+  /** Hex-encoded genesis signature (public_key signed with secret key) */
+  genesis_signature: string;
   /** Optional: setup token for admin bootstrap (first user) */
   setup_token?: string;
 }
@@ -72,6 +76,12 @@ export interface RegisterRequestBody {
 export interface RegisterResponseBody {
   /** Server-assigned user ID (UUIDv7) */
   user_id: string;
+  /** JWT access token */
+  access_token: string;
+  /** JWT refresh token */
+  refresh_token: string;
+  /** Whether this user is the server owner (first registered) */
+  is_owner: boolean;
 }
 
 // ============================================================
@@ -82,20 +92,18 @@ export interface RegisterResponseBody {
 export interface TotpEnrollResponseBody {
   /** TOTP secret (base32-encoded) */
   secret: string;
-  /** otpauth:// URI for authenticator apps */
+  /** otpauth:// URI for authenticator apps — QR generated client-side */
   otpauth_uri: string;
-  /** Base64-encoded QR code PNG */
-  qr_png: string;
 }
 
-/** POST /api/auth/totp/verify (requires auth) */
-export interface TotpVerifyRequestBody {
+/** POST /api/auth/totp/confirm (requires auth) — confirms enrollment */
+export interface TotpConfirmRequestBody {
   /** 6-digit TOTP code from authenticator app */
   code: string;
 }
 
-export interface TotpVerifyResponseBody {
-  /** Whether the code was valid */
+export interface TotpConfirmResponseBody {
+  /** Whether the code was valid and enrollment confirmed */
   valid: boolean;
 }
 
@@ -105,11 +113,11 @@ export interface TotpVerifyResponseBody {
 
 /** GET /api/identity/blob/{fingerprint} (rate-limited, no auth required) */
 export interface GetBlobResponseBody {
-  /** Base64-encoded encrypted identity blob */
+  /** Hex-encoded encrypted identity blob */
   encrypted_blob: string;
-  /** Base64-encoded Argon2id salt */
+  /** Hex-encoded Argon2id salt */
   salt: string;
-  /** Base64-encoded AES-256-GCM nonce */
+  /** Hex-encoded AES-256-GCM nonce */
   nonce: string;
   /** Argon2id parameters used for key derivation */
   argon2_params: Argon2ParamsBody;
@@ -126,11 +134,11 @@ export interface Argon2ParamsBody {
 
 /** PUT /api/identity/blob (requires auth) */
 export interface PutBlobRequestBody {
-  /** Base64-encoded encrypted identity blob */
+  /** Hex-encoded encrypted identity blob */
   encrypted_blob: string;
-  /** Base64-encoded Argon2id salt */
+  /** Hex-encoded Argon2id salt */
   salt: string;
-  /** Base64-encoded AES-256-GCM nonce */
+  /** Hex-encoded AES-256-GCM nonce */
   nonce: string;
   /** Argon2id parameters */
   argon2_params: Argon2ParamsBody;
@@ -138,15 +146,15 @@ export interface PutBlobRequestBody {
 
 /** POST /api/identity/rotate (requires auth) */
 export interface RotateKeyRequestBody {
-  /** Base64-encoded previous public key */
+  /** Hex-encoded previous public key */
   prev_key: string;
-  /** Base64-encoded new public key */
+  /** Hex-encoded new public key */
   new_key: string;
   /** Reason for rotation */
   reason: 'compromise' | 'scheduled' | 'device_loss';
-  /** Base64-encoded signature by old key */
+  /** Hex-encoded signature by old key */
   signature_old: string;
-  /** Base64-encoded signature by new key */
+  /** Hex-encoded signature by new key */
   signature_new: string;
 }
 
@@ -161,7 +169,7 @@ export interface RotateKeyResponseBody {
 export interface CancelRotationRequestBody {
   /** Fingerprint of the identity */
   fingerprint: string;
-  /** Base64-encoded signature by the OLD key */
+  /** Hex-encoded signature by the OLD key */
   signature_old_key: string;
 }
 
@@ -180,7 +188,7 @@ export interface ServerInfoResponseBody {
   name: string;
   /** Server description */
   description: string;
-  /** Base64-encoded server icon PNG (optional) */
+  /** Hex-encoded server icon PNG (optional) */
   icon_data?: string;
   /** Registration mode */
   registration_mode: 'open' | 'invite_only';
@@ -194,7 +202,7 @@ export interface UpdateSettingsRequestBody {
   name?: string;
   /** Server description */
   description?: string;
-  /** Base64-encoded server icon PNG */
+  /** Hex-encoded server icon PNG */
   icon_data?: string;
   /** Registration mode */
   registration_mode?: 'open' | 'invite_only';

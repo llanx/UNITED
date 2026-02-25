@@ -8,6 +8,10 @@ use crate::auth::challenge;
 use crate::auth::middleware::JwtSecret;
 use crate::auth::totp;
 use crate::identity::{blob, registration, rotation};
+use crate::channels::crud as channel_crud;
+use crate::invite::{generate as invite_gen, landing as invite_landing};
+use crate::moderation::{ban, kick};
+use crate::roles::{assignment as role_assignment, crud as role_crud};
 use crate::state::AppState;
 use crate::ws::handler as ws_handler;
 
@@ -149,12 +153,63 @@ pub fn build_router(state: AppState) -> Router {
     // Health check
     let health = Router::new().route("/health", axum::routing::get(health_check));
 
+    // Phase 2: Channel, role, moderation, and invite route groups.
+    // Note: /api/channels/reorder MUST come before /api/channels/{id} to avoid path param conflict.
+    let channel_routes = Router::new()
+        .route("/api/channels", axum::routing::get(channel_crud::list_channels))
+        .route("/api/channels", axum::routing::post(channel_crud::create_channel))
+        .route("/api/channels/reorder", axum::routing::put(channel_crud::reorder_channels))
+        .route("/api/channels/{id}", axum::routing::put(channel_crud::update_channel))
+        .route("/api/channels/{id}", axum::routing::delete(channel_crud::delete_channel))
+        .route("/api/categories", axum::routing::post(channel_crud::create_category))
+        .route("/api/categories/{id}", axum::routing::delete(channel_crud::delete_category));
+    let role_routes = Router::new()
+        .route("/api/roles", axum::routing::get(role_crud::list_roles))
+        .route("/api/roles", axum::routing::post(role_crud::create_role))
+        .route(
+            "/api/roles/{id}",
+            axum::routing::put(role_crud::update_role),
+        )
+        .route(
+            "/api/roles/{id}",
+            axum::routing::delete(role_crud::delete_role),
+        )
+        .route(
+            "/api/roles/assign",
+            axum::routing::post(role_assignment::assign_role),
+        )
+        .route(
+            "/api/roles/remove",
+            axum::routing::post(role_assignment::remove_role),
+        )
+        .route(
+            "/api/roles/user/{user_id}",
+            axum::routing::get(role_assignment::get_user_roles),
+        );
+    let moderation_routes = Router::new()
+        .route("/api/moderation/kick", axum::routing::post(kick::kick_user))
+        .route("/api/moderation/ban", axum::routing::post(ban::ban_user))
+        .route("/api/moderation/unban", axum::routing::post(ban::unban_user))
+        .route("/api/moderation/bans", axum::routing::get(ban::list_bans));
+    let invite_routes = Router::new()
+        .route("/api/invites", axum::routing::post(invite_gen::create_invite))
+        .route("/api/invites", axum::routing::get(invite_gen::list_invites))
+        .route("/api/invites/{code}", axum::routing::delete(invite_gen::delete_invite));
+    // Public invite landing page (no auth required)
+    let invite_landing_routes = Router::new()
+        .route("/invite/{code}", axum::routing::get(invite_landing::invite_landing_page));
+
     Router::new()
         .merge(auth_routes)
         .merge(public_identity_routes)
         .merge(public_routes)
         .merge(authenticated_routes)
         .merge(admin_routes)
+        .merge(channel_routes)
+        .merge(role_routes)
+        .merge(moderation_routes)
+        .merge(invite_routes)
+        .merge(invite_landing_routes)
         .merge(ws_routes)
         .merge(health)
         .layer(middleware::from_fn_with_state(

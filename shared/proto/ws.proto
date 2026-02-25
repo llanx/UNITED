@@ -4,10 +4,25 @@ package united.ws;
 import "auth.proto";
 import "identity.proto";
 import "server.proto";
+import "channels.proto";
+import "roles.proto";
+import "moderation.proto";
+import "invite.proto";
 
 // WebSocket envelope: all WS messages are wrapped in this type
 // Both client->server and server->client use the same envelope format
 // Binary protobuf encoding (no JSON) per CONTEXT.md decision
+//
+// Field number allocation:
+//   10-19: Auth flow (Phase 1)
+//   20-29: Server info (Phase 1)
+//   30-39: Identity blobs (Phase 1)
+//   40-49: Key rotation (Phase 1)
+//   50-59: Channels and categories (Phase 2)
+//   60-69: Roles and permissions (Phase 2)
+//   70-79: Moderation - kick/ban (Phase 2)
+//   80-89: Invites and join (Phase 2)
+//   99:    Errors
 
 message Envelope {
   // Client-generated request ID, echoed in response for correlation
@@ -35,6 +50,51 @@ message Envelope {
     united.identity.RotateKeyResponse rotate_key_response = 41;
     united.identity.CancelRotationRequest cancel_rotation_request = 42;
     united.identity.CancelRotationResponse cancel_rotation_response = 43;
+
+    // --- Phase 2: Channels and categories (50-59) ---
+    united.channels.CreateChannelRequest create_channel_request = 50;
+    united.channels.RenameChannelRequest rename_channel_request = 51;
+    united.channels.DeleteChannelRequest delete_channel_request = 52;
+    united.channels.ReorderChannelsRequest reorder_channels_request = 53;
+    united.channels.CreateCategoryRequest create_category_request = 54;
+    united.channels.RenameCategoryRequest rename_category_request = 55;
+    united.channels.DeleteCategoryRequest delete_category_request = 56;
+    united.channels.ReorderCategoriesRequest reorder_categories_request = 57;
+    united.channels.ChannelListResponse channel_list_response = 58;
+    united.channels.ChannelCreatedEvent channel_created_event = 59;
+    united.channels.ChannelUpdatedEvent channel_updated_event = 100;
+    united.channels.ChannelDeletedEvent channel_deleted_event = 101;
+    united.channels.CategoryCreatedEvent category_created_event = 102;
+    united.channels.CategoryUpdatedEvent category_updated_event = 103;
+    united.channels.CategoryDeletedEvent category_deleted_event = 104;
+
+    // --- Phase 2: Roles and permissions (60-69) ---
+    united.roles.CreateRoleRequest create_role_request = 60;
+    united.roles.UpdateRoleRequest update_role_request = 61;
+    united.roles.DeleteRoleRequest delete_role_request = 62;
+    united.roles.AssignRoleRequest assign_role_request = 63;
+    united.roles.RemoveRoleRequest remove_role_request = 64;
+    united.roles.RoleListResponse role_list_response = 65;
+    united.roles.RoleCreatedEvent role_created_event = 66;
+    united.roles.RoleUpdatedEvent role_updated_event = 67;
+    united.roles.RoleDeletedEvent role_deleted_event = 68;
+    united.roles.RoleAssignedEvent role_assigned_event = 69;
+    united.roles.RoleRemovedEvent role_removed_event = 105;
+
+    // --- Phase 2: Moderation - kick/ban (70-79) ---
+    united.moderation.KickRequest kick_request = 70;
+    united.moderation.BanRequest ban_request = 71;
+    united.moderation.UnbanRequest unban_request = 72;
+    united.moderation.UserKickedEvent user_kicked_event = 73;
+    united.moderation.UserBannedEvent user_banned_event = 74;
+    united.moderation.UserUnbannedEvent user_unbanned_event = 75;
+
+    // --- Phase 2: Invites and join (80-89) ---
+    united.invite.CreateInviteRequest create_invite_request = 80;
+    united.invite.DeleteInviteRequest delete_invite_request = 81;
+    united.invite.InviteListResponse invite_list_response = 82;
+    united.invite.JoinServerRequest join_server_request = 83;
+    united.invite.JoinServerResponse join_server_response = 84;
 
     // Errors
     ErrorResponse error = 99;

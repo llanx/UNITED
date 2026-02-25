@@ -8,6 +8,7 @@ use axum::{
 use serde::Deserialize;
 
 use crate::auth::jwt;
+use crate::moderation::ban::check_ban;
 use crate::state::AppState;
 use crate::ws::actor;
 
@@ -24,7 +25,6 @@ pub struct WsAuthQuery {
 /// 4003 = banned
 const CLOSE_TOKEN_EXPIRED: u16 = 4001;
 const CLOSE_TOKEN_INVALID: u16 = 4002;
-#[allow(dead_code)]
 const CLOSE_BANNED: u16 = 4003;
 
 /// GET /ws?token=JWT
@@ -41,6 +41,36 @@ pub async fn ws_upgrade(
 
     match claims {
         Ok(claims) => {
+            // Check if user is banned before accepting connection
+            let fingerprint_for_check = claims.fingerprint.clone();
+            let db = state.db.clone();
+            let ban_reason = tokio::task::spawn_blocking(move || {
+                let conn = db.lock().ok()?;
+                check_ban(&conn, &fingerprint_for_check)
+            })
+            .await
+            .ok()
+            .flatten();
+
+            if let Some(reason) = ban_reason {
+                let close_reason = if reason.is_empty() {
+                    "You have been banned from this server".to_string()
+                } else {
+                    format!("Banned: {}", reason)
+                };
+                tracing::warn!(
+                    user_id = %claims.sub,
+                    "WebSocket connection rejected: user is banned"
+                );
+                return ws.on_upgrade(move |mut socket| async move {
+                    let close_frame = CloseFrame {
+                        code: CLOSE_BANNED,
+                        reason: close_reason.into(),
+                    };
+                    let _ = socket.send(Message::Close(Some(close_frame))).await;
+                });
+            }
+
             tracing::info!(
                 user_id = %claims.sub,
                 fingerprint = %claims.fingerprint,

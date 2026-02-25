@@ -1,0 +1,44 @@
+syntax = "proto3";
+package united.invite;
+
+import "channels.proto";
+import "roles.proto";
+
+// Invite protobuf messages for invite link management and server joining.
+// Invite codes are 8-char alphanumeric, optionally expiring with use limits.
+
+message Invite {
+  string code = 1;
+  string created_by = 2;
+  int64 max_uses = 3;      // 0 = unlimited
+  int64 use_count = 4;
+  string expires_at = 5;   // Empty = never expires
+  string created_at = 6;
+}
+
+// --- Requests ---
+
+message CreateInviteRequest {
+  int64 max_uses = 1;      // 0 = unlimited
+  string expires_at = 2;   // Empty = never expires
+}
+
+message DeleteInviteRequest {
+  string code = 1;
+}
+
+message JoinServerRequest {
+  string invite_code = 1;
+}
+
+// --- Responses ---
+
+message InviteListResponse {
+  repeated Invite invites = 1;
+}
+
+message JoinServerResponse {
+  bool success = 1;
+  united.channels.ChannelListResponse channel_list = 2;
+  united.roles.RoleListResponse role_list = 3;
+}

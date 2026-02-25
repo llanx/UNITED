@@ -55,6 +55,18 @@ const api: UnitedAPI = {
   updateServerSettings: (settings: ServerSettings) =>
     ipcRenderer.invoke(IPC.SERVER_UPDATE_SETTINGS, settings),
 
+  // Device Provisioning (SEC-12)
+  provisioning: {
+    startProvisioning: () =>
+      ipcRenderer.invoke(IPC.PROVISIONING_START),
+
+    cancelProvisioning: () =>
+      ipcRenderer.invoke(IPC.PROVISIONING_CANCEL),
+
+    receiveProvisioning: (qrPayload: string) =>
+      ipcRenderer.invoke(IPC.PROVISIONING_RECEIVE, qrPayload),
+  },
+
   // Storage
   storage: storageApi,
 

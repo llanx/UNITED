@@ -5,6 +5,7 @@ import { registerAuthHandlers } from './ipc/auth'
 import { registerCryptoHandlers } from './ipc/crypto'
 import { registerStorageHandlers } from './ipc/storage'
 import { registerConnectionHandlers } from './ipc/connection'
+import { registerProvisioningHandlers } from './ipc/provisioning'
 
 // CSP must match the meta tag in renderer/index.html
 const CSP = [
@@ -63,6 +64,7 @@ app.whenReady().then(() => {
   registerCryptoHandlers(ipcMain)
   registerStorageHandlers(ipcMain)
   registerConnectionHandlers(ipcMain)
+  registerProvisioningHandlers(ipcMain)
 
   createWindow()
 

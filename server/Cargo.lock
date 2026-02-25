@@ -3115,6 +3115,7 @@ dependencies = [
  "argon2",
  "axum",
  "base32",
+ "bitflags",
  "chrono",
  "clap",
  "dashmap",

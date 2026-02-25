@@ -12,7 +12,7 @@ UNITED delivers a self-hosted Discord alternative where all content is distribut
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Electron app shell, Rust coordination server, authentication, IPC bridge, and build pipeline
+- [x] **Phase 1: Foundation** - Electron app shell, Rust coordination server, authentication, IPC bridge, and build pipeline
 - [ ] **Phase 2: Server Management** - Channel/category CRUD, roles and permissions, moderation, and invite-based onboarding
 - [ ] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
 - [ ] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
@@ -37,15 +37,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   6. Server admin can set the server name, icon, and description and these appear in the client
   7. Electron renderer runs with contextIsolation enabled, nodeIntegration disabled, and strict CSP enforced
   8. IPC bridge between main process and renderer is operational with typed request-response and push event patterns
-**Plans**: 3/6 completed
+**Plans**: 6/6 completed
 
 Plans:
 - [x] 01-01: Shared contracts and monorepo scaffold (Wave 1, both devs)
 - [x] 01-02: Server core — config, SQLite, challenge-response auth, JWT, settings (Wave 2, matts)
 - [x] 01-03: Server advanced auth — TOTP, identity blobs, key rotation, WebSocket, Docker (Wave 3, matts)
-- [ ] 01-04: Client infrastructure — Electron security, IPC bridge, SQLite, WebSocket client (Wave 2, benzybones)
-- [ ] 01-05: Client UI — React app shell, Zustand stores, Discord-style layout, components (Wave 2, benzybones)
-- [ ] 01-06: Client identity creation, auth flows, TOTP, server settings (Wave 3, benzybones)
+- [x] 01-04: Client infrastructure — Electron security, IPC bridge, SQLite, WebSocket client (Wave 2, benzybones)
+- [x] 01-05: Client UI — React app shell, Zustand stores, Discord-style layout, components (Wave 2, benzybones)
+- [x] 01-06: Client identity creation, auth flows, TOTP, server settings (Wave 3, benzybones)
 
 ### Phase 2: Server Management
 **Goal**: Server admins can fully structure their community with channels, categories, roles, and permissions, and new users can join via invite links
@@ -57,11 +57,16 @@ Plans:
   3. Server admin can kick and ban users, with bans propagated so banned users cannot rejoin or have their content relayed
   4. Server admin can generate invite links with optional expiration, and new users can join via those links
   5. A newly joined user sees the channel list, category structure, and their assigned permissions immediately
-**Plans**: TBD
+**Plans**: 7 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01: Schema migration, permission bitflags, protobuf definitions, and route scaffold (Wave 1, server)
+- [ ] 02-02: Channel/category CRUD, starter template, reordering, and WS events (Wave 2, server, TDD)
+- [ ] 02-03: Roles CRUD, assignment, permission guard, and auto-assign @everyone (Wave 2, server, TDD)
+- [ ] 02-04: Moderation (kick/ban) and invites (generate, join, landing page) (Wave 3, server, TDD)
+- [ ] 02-05: SEC-12 device provisioning via QR code (Wave 1, client, independent)
+- [ ] 02-06: Client UI — channel sidebar with categories, admin management panels (Wave 3, client)
+- [ ] 02-07: Client onboarding — invite join flow, routing to #general, welcome overlay (Wave 3, client)
 
 ### Phase 3: P2P Networking
 **Goal**: Peers discover each other and exchange messages over encrypted connections through a libp2p mesh, with NAT traversal ensuring connectivity across network configurations
@@ -168,8 +173,8 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/6 | In Progress | - |
-| 2. Server Management | 0/2 | Not started | - |
+| 1. Foundation | 6/6 | Complete | 2026-02-24 |
+| 2. Server Management | 0/7 | Planning complete | - |
 | 3. P2P Networking | 0/3 | Not started | - |
 | 4. Real-Time Chat | 0/3 | Not started | - |
 | 5. Direct Messages | 0/2 | Not started | - |
