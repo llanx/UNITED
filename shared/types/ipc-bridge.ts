@@ -211,6 +211,32 @@ export interface UnitedAPI {
    */
   updateServerSettings(settings: ServerSettings): Promise<ServerInfo>;
 
+  // ---- Device Provisioning (SEC-12) ----
+
+  /** Device provisioning for local keypair transfer via QR + TCP */
+  provisioning: {
+    /**
+     * Start provisioning session on existing device.
+     * Generates ephemeral X25519 keypair, starts TCP server.
+     * @returns QR payload JSON string with local IP, port, and ephemeral public key
+     */
+    startProvisioning: () => Promise<{ qrPayload: string }>
+
+    /**
+     * Cancel an active provisioning session.
+     * Closes TCP server and destroys ephemeral keys.
+     */
+    cancelProvisioning: () => Promise<void>
+
+    /**
+     * Receive identity from existing device (new device side).
+     * Connects to sender via TCP, performs X25519 key exchange, receives encrypted keypair.
+     * @param qrPayload - QR payload string from existing device
+     * @returns Fingerprint of the received identity
+     */
+    receiveProvisioning: (qrPayload: string) => Promise<{ fingerprint: string }>
+  }
+
   // ---- Storage ----
 
   /** Local SQLite storage access for cache hydration */
