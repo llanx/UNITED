@@ -5,6 +5,7 @@ import { createServerSlice, type ServerSlice } from './server'
 import { createChannelsSlice, type ChannelsSlice } from './channels'
 import { createSettingsSlice, type SettingsSlice } from './settings'
 import { createUiSlice, type UiSlice } from './ui'
+import { createRolesSlice, type RolesSlice } from './roles'
 
 export type RootStore =
   AuthSlice &
@@ -12,7 +13,8 @@ export type RootStore =
   ServerSlice &
   ChannelsSlice &
   SettingsSlice &
-  UiSlice
+  UiSlice &
+  RolesSlice
 
 export const useStore = create<RootStore>()((...a) => ({
   ...createAuthSlice(...a),
@@ -21,6 +23,7 @@ export const useStore = create<RootStore>()((...a) => ({
   ...createChannelsSlice(...a),
   ...createSettingsSlice(...a),
   ...createUiSlice(...a),
+  ...createRolesSlice(...a),
 }))
 
 /**
@@ -48,8 +51,9 @@ export async function hydrate(): Promise<void> {
       displayName: activeServer.displayName,
     })
 
-    const channels = await storage.getChannels(activeServer.id)
     const activeChannelId = await storage.getCachedState<string>('active_channel_id')
-    useStore.setState({ channels, activeChannelId })
+    if (activeChannelId) {
+      useStore.setState({ activeChannelId })
+    }
   }
 }

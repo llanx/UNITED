@@ -34,8 +34,30 @@ export const IPC = {
   PROVISIONING_CANCEL: 'provisioning:cancel',
   PROVISIONING_RECEIVE: 'provisioning:receive',
 
+  // Channels
+  CHANNELS_FETCH: 'channels:fetch',
+  CHANNELS_CREATE: 'channels:create',
+  CHANNELS_UPDATE: 'channels:update',
+  CHANNELS_DELETE: 'channels:delete',
+  CHANNELS_REORDER: 'channels:reorder',
+
+  // Categories
+  CATEGORIES_CREATE: 'categories:create',
+  CATEGORIES_DELETE: 'categories:delete',
+
+  // Roles
+  ROLES_FETCH: 'roles:fetch',
+  ROLES_CREATE: 'roles:create',
+  ROLES_UPDATE: 'roles:update',
+  ROLES_DELETE: 'roles:delete',
+  ROLES_ASSIGN: 'roles:assign',
+  ROLES_REMOVE: 'roles:remove',
+  ROLES_GET_USER: 'roles:get-user',
+
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',
   PUSH_AUTH_ERROR: 'auth:error',
   PUSH_SERVER_INFO_UPDATE: 'server:info-update',
+  PUSH_CHANNEL_EVENT: 'channels:event',
+  PUSH_ROLE_EVENT: 'roles:event',
 } as const

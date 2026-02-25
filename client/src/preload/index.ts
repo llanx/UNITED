@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { UnitedAPI, ServerInfo, ServerSettings, StorageAPI } from '@shared/ipc-bridge'
+import type { UnitedAPI, ServerInfo, ServerSettings, StorageAPI, ChannelEvent, RoleEvent } from '@shared/ipc-bridge'
 import type { ConnectionStatus } from '@shared/ws-protocol'
 import { IPC } from '../main/ipc/channels'
 
@@ -55,6 +55,41 @@ const api: UnitedAPI = {
   updateServerSettings: (settings: ServerSettings) =>
     ipcRenderer.invoke(IPC.SERVER_UPDATE_SETTINGS, settings),
 
+  // Channels
+  channels: {
+    fetch: () => ipcRenderer.invoke(IPC.CHANNELS_FETCH),
+    create: (name: string, channelType: string, categoryId: string) =>
+      ipcRenderer.invoke(IPC.CHANNELS_CREATE, name, channelType, categoryId),
+    update: (id: string, name: string) =>
+      ipcRenderer.invoke(IPC.CHANNELS_UPDATE, id, name),
+    delete: (id: string) =>
+      ipcRenderer.invoke(IPC.CHANNELS_DELETE, id),
+    reorder: (channels: Array<{ id: string; position: number }>) =>
+      ipcRenderer.invoke(IPC.CHANNELS_REORDER, channels),
+  },
+
+  // Categories
+  categories: {
+    create: (name: string) => ipcRenderer.invoke(IPC.CATEGORIES_CREATE, name),
+    delete: (id: string) => ipcRenderer.invoke(IPC.CATEGORIES_DELETE, id),
+  },
+
+  // Roles
+  roles: {
+    fetch: () => ipcRenderer.invoke(IPC.ROLES_FETCH),
+    create: (name: string, permissions: number, color?: string) =>
+      ipcRenderer.invoke(IPC.ROLES_CREATE, name, permissions, color),
+    update: (id: string, name?: string, permissions?: number, color?: string) =>
+      ipcRenderer.invoke(IPC.ROLES_UPDATE, id, name, permissions, color),
+    delete: (id: string) => ipcRenderer.invoke(IPC.ROLES_DELETE, id),
+    assign: (userId: string, roleId: string) =>
+      ipcRenderer.invoke(IPC.ROLES_ASSIGN, userId, roleId),
+    remove: (userId: string, roleId: string) =>
+      ipcRenderer.invoke(IPC.ROLES_REMOVE, userId, roleId),
+    getUserRoles: (userId: string) =>
+      ipcRenderer.invoke(IPC.ROLES_GET_USER, userId),
+  },
+
   // Device Provisioning (SEC-12)
   provisioning: {
     startProvisioning: () =>
@@ -90,6 +125,20 @@ const api: UnitedAPI = {
       callback(info)
     ipcRenderer.on(IPC.PUSH_SERVER_INFO_UPDATE, listener)
     return () => { ipcRenderer.removeListener(IPC.PUSH_SERVER_INFO_UPDATE, listener) }
+  },
+
+  onChannelEvent: (callback: (event: ChannelEvent) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, data: ChannelEvent) =>
+      callback(data)
+    ipcRenderer.on(IPC.PUSH_CHANNEL_EVENT, listener)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_CHANNEL_EVENT, listener) }
+  },
+
+  onRoleEvent: (callback: (event: RoleEvent) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, data: RoleEvent) =>
+      callback(data)
+    ipcRenderer.on(IPC.PUSH_ROLE_EVENT, listener)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_ROLE_EVENT, listener) }
   }
 }
 
