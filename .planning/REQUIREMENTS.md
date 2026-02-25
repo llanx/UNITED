@@ -41,15 +41,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Server Management
 
-- [ ] **SRVR-01**: Server admin can create, rename, and delete text and voice channels
-- [ ] **SRVR-02**: Server admin can organize channels into categories
-- [ ] **SRVR-03**: Server admin can create and configure roles with specific permissions (send messages, manage channels, kick/ban, admin)
-- [ ] **SRVR-04**: Server admin can assign roles to users
-- [ ] **SRVR-05**: Server admin can kick users from the server
-- [ ] **SRVR-06**: Server admin can ban users from the server (propagated to peers to stop relaying banned user's content)
+- [x] **SRVR-01**: Server admin can create, rename, and delete text and voice channels
+- [x] **SRVR-02**: Server admin can organize channels into categories
+- [x] **SRVR-03**: Server admin can create and configure roles with specific permissions (send messages, manage channels, kick/ban, admin)
+- [x] **SRVR-04**: Server admin can assign roles to users
+- [x] **SRVR-05**: Server admin can kick users from the server
+- [x] **SRVR-06**: Server admin can ban users from the server (propagated to peers to stop relaying banned user's content)
 - [x] **SRVR-07**: Server admin can configure server settings (name, icon, description)
-- [ ] **SRVR-08**: Server admin can generate invite links with optional expiration
-- [ ] **SRVR-09**: New user can join a server via invite link, which bootstraps P2P peer discovery and begins content replication
+- [x] **SRVR-08**: Server admin can generate invite links with optional expiration
+- [x] **SRVR-09**: New user can join a server via invite link, which bootstraps P2P peer discovery and begins content replication
 
 ### P2P Distribution
 
@@ -170,14 +170,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEC-12 | Phase 1: Foundation | Pending |
 | APP-01 | Phase 1: Foundation | Pending |
 | SRVR-07 | Phase 1: Foundation | Complete |
-| SRVR-01 | Phase 2: Server Management | Pending |
-| SRVR-02 | Phase 2: Server Management | Pending |
-| SRVR-03 | Phase 2: Server Management | Pending |
-| SRVR-04 | Phase 2: Server Management | Pending |
-| SRVR-05 | Phase 2: Server Management | Pending |
-| SRVR-06 | Phase 2: Server Management | Pending |
-| SRVR-08 | Phase 2: Server Management | Pending |
-| SRVR-09 | Phase 2: Server Management | Pending |
+| SRVR-01 | Phase 2: Server Management | Complete |
+| SRVR-02 | Phase 2: Server Management | Complete |
+| SRVR-03 | Phase 2: Server Management | Complete |
+| SRVR-04 | Phase 2: Server Management | Complete |
+| SRVR-05 | Phase 2: Server Management | Complete |
+| SRVR-06 | Phase 2: Server Management | Complete |
+| SRVR-08 | Phase 2: Server Management | Complete |
+| SRVR-09 | Phase 2: Server Management | Complete |
 | P2P-02 | Phase 3: P2P Networking | Pending |
 | SEC-06 | Phase 3: P2P Networking | Pending |
 | APP-02 | Phase 3: P2P Networking | Pending |
