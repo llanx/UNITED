@@ -1,5 +1,6 @@
 mod admin;
 mod auth;
+mod channels;
 mod config;
 mod db;
 mod identity;

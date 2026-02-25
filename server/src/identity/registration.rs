@@ -175,6 +175,12 @@ pub async fn register(
         )
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Assign @everyone: {}", e)))?;
 
+        // Seed starter template on first boot (owner registration)
+        if is_owner {
+            crate::channels::seed::seed_starter_template(&conn)
+                .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Seed template: {}", e)))?;
+        }
+
         // Issue JWT tokens
         let is_admin = is_owner; // Owner is also admin
         let access_token = jwt::issue_access_token(&jwt_secret, &user_id, &fingerprint, is_owner, is_admin)

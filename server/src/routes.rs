@@ -8,6 +8,7 @@ use crate::auth::challenge;
 use crate::auth::middleware::JwtSecret;
 use crate::auth::totp;
 use crate::identity::{blob, registration, rotation};
+use crate::channels::crud as channel_crud;
 use crate::roles::{assignment as role_assignment, crud as role_crud};
 use crate::state::AppState;
 use crate::ws::handler as ws_handler;
@@ -150,9 +151,16 @@ pub fn build_router(state: AppState) -> Router {
     // Health check
     let health = Router::new().route("/health", axum::routing::get(health_check));
 
-    // Phase 2: Placeholder route groups for channels, roles, moderation, invites.
-    // These are empty scaffolds that plans 02-02, 02-03, 02-04 will populate.
-    let channel_routes = Router::new();
+    // Phase 2: Channel, role, moderation, and invite route groups.
+    // Note: /api/channels/reorder MUST come before /api/channels/{id} to avoid path param conflict.
+    let channel_routes = Router::new()
+        .route("/api/channels", axum::routing::get(channel_crud::list_channels))
+        .route("/api/channels", axum::routing::post(channel_crud::create_channel))
+        .route("/api/channels/reorder", axum::routing::put(channel_crud::reorder_channels))
+        .route("/api/channels/{id}", axum::routing::put(channel_crud::update_channel))
+        .route("/api/channels/{id}", axum::routing::delete(channel_crud::delete_channel))
+        .route("/api/categories", axum::routing::post(channel_crud::create_category))
+        .route("/api/categories/{id}", axum::routing::delete(channel_crud::delete_category));
     let role_routes = Router::new()
         .route("/api/roles", axum::routing::get(role_crud::list_roles))
         .route("/api/roles", axum::routing::post(role_crud::create_role))
