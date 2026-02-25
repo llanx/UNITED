@@ -1,0 +1,74 @@
+syntax = "proto3";
+package united.roles;
+
+// Role and permission protobuf messages.
+// Permissions are stored as a u32 bitfield (bitflags crate on server).
+// Union resolution: user's effective permissions = OR of all role permissions.
+
+message Role {
+  string id = 1;
+  string name = 2;
+  uint32 permissions = 3;
+  string color = 4;
+  int64 position = 5;
+  bool is_default = 6;
+}
+
+// --- Requests ---
+
+message CreateRoleRequest {
+  string name = 1;
+  uint32 permissions = 2;
+  string color = 3;
+}
+
+message UpdateRoleRequest {
+  string role_id = 1;
+  string name = 2;
+  uint32 permissions = 3;
+  string color = 4;
+}
+
+message DeleteRoleRequest {
+  string role_id = 1;
+}
+
+message AssignRoleRequest {
+  string user_id = 1;
+  string role_id = 2;
+}
+
+message RemoveRoleRequest {
+  string user_id = 1;
+  string role_id = 2;
+}
+
+// --- Responses ---
+
+message RoleListResponse {
+  repeated Role roles = 1;
+}
+
+// --- Events (server -> client push) ---
+
+message RoleCreatedEvent {
+  Role role = 1;
+}
+
+message RoleUpdatedEvent {
+  Role role = 1;
+}
+
+message RoleDeletedEvent {
+  string role_id = 1;
+}
+
+message RoleAssignedEvent {
+  string user_id = 1;
+  string role_id = 2;
+}
+
+message RoleRemovedEvent {
+  string user_id = 1;
+  string role_id = 2;
+}
