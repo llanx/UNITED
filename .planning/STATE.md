@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 1: Foundation
+**Current focus:** Phase 2: Server Management
 
 ## Current Position
 
-Phase: 1 of 8 (Foundation)
-Plan: 3 of 6 in current phase
-Status: Executing plans
-Last activity: 2026-02-24 — Plan 01-03 (Server Advanced Auth) complete
+Phase: 2 of 8 (Server Management)
+Plan: 0 of TBD in current phase
+Status: Phase 1 complete, ready to execute Phase 2
+Last activity: 2026-02-24 — Phase 1 fully complete (all 6 plans)
 
-Progress: [██░░░░░░░░] 5%
+Progress: [██░░░░░░░░] 12%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 27 min
-- Total execution time: 1.3 hours
+- Total plans completed: 6
+- Average duration (GSD-tracked): 27 min
+- Total execution time (GSD-tracked): 1.3 hours
 
 **By Phase:**
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01-foundation | 3/6 | 80 min | 27 min |
+| Phase | Plans | Total | Avg/Plan | Notes |
+|-------|-------|-------|----------|-------|
+| 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min)
-- Trend: Increasing (01-03 larger scope — TOTP + blobs + rotation + WS + Docker + tests)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min)
+- Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
 
@@ -60,6 +60,12 @@ Recent decisions affecting current work:
 - [01-03]: 72-hour cancellation deadline stored as ISO 8601 timestamp (not duration)
 - [01-03]: random_signing_key() helper avoids rand_core 0.6/0.9 version conflict in tests
 - [Phase 2+]: Selective TDD — use TDD for REST API endpoints, auth/crypto flows, and DB queries (write integration tests against proto contracts first). Use test-after for WebSocket stateful code and UI components. Protobuf schemas are the contract, no tests needed.
+- [01-06]: XChaCha20-Poly1305 for client-side encryption (not AES-256-GCM — more portable, no AES-NI dependency, 24-byte nonces)
+- [01-06]: entropyToMnemonic from @scure/bip39 (NOT mnemonicToSeed which produces 512-bit PBKDF2 for HD wallets)
+- [01-06]: 3-position mnemonic verification quiz before identity creation proceeds
+- [01-06]: Severity-based error UX: 4001 silent refresh, 4002 redirect with explanation, 4003 full-screen ban
+- [01-06]: QR code generated client-side via qrcode.react (removed qr_png from server response)
+- [01-06]: Hex encoding for public keys and signatures (not base64)
 
 ### Pending Todos
 
@@ -76,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 01-03-PLAN.md (Server Advanced Auth)
-Resume file: .planning/phases/01-foundation/01-03-SUMMARY.md
+Stopped at: Phase 1 fully reconciled. Ready to execute Phase 2.
+Resume file: .planning/phases/02-server-management/02-CONTEXT.md
