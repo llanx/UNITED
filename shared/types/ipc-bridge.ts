@@ -90,6 +90,64 @@ export interface ServerSettings {
 }
 
 // ============================================================
+// Channel & Category types
+// ============================================================
+
+export interface ChannelResponse {
+  id: string;
+  name: string;
+  channel_type: string;
+  category_id: string;
+  position: number;
+  topic: string | null;
+}
+
+export interface CategoryResponse {
+  id: string;
+  name: string;
+  position: number;
+}
+
+export interface CategoryWithChannelsResponse {
+  category: CategoryResponse;
+  channels: ChannelResponse[];
+}
+
+export interface ChannelListResponse {
+  categories: CategoryWithChannelsResponse[];
+}
+
+// ============================================================
+// Role types
+// ============================================================
+
+export interface RoleResponse {
+  id: string;
+  name: string;
+  permissions: number;
+  color: string | null;
+  is_default: boolean;
+}
+
+// ============================================================
+// Push event types
+// ============================================================
+
+export interface ChannelEvent {
+  type: 'created' | 'updated' | 'deleted' | 'reordered';
+  channel?: ChannelResponse;
+  category?: CategoryResponse;
+  id?: string;
+}
+
+export interface RoleEvent {
+  type: 'created' | 'updated' | 'deleted' | 'assigned' | 'removed';
+  role?: RoleResponse;
+  userId?: string;
+  roleId?: string;
+}
+
+// ============================================================
 // Storage types (renderer-side mirrors of SQLite row shapes)
 // ============================================================
 
@@ -211,6 +269,38 @@ export interface UnitedAPI {
    */
   updateServerSettings(settings: ServerSettings): Promise<ServerInfo>;
 
+  // ---- Channels ----
+
+  /** Channel CRUD operations (all go through main process IPC) */
+  channels: {
+    fetch(): Promise<ChannelListResponse>;
+    create(name: string, channelType: string, categoryId: string): Promise<ChannelResponse>;
+    update(id: string, name: string): Promise<ChannelResponse>;
+    delete(id: string): Promise<void>;
+    reorder(channels: Array<{ id: string; position: number }>): Promise<void>;
+  };
+
+  // ---- Categories ----
+
+  /** Category CRUD operations */
+  categories: {
+    create(name: string): Promise<CategoryResponse>;
+    delete(id: string): Promise<void>;
+  };
+
+  // ---- Roles ----
+
+  /** Role CRUD and assignment operations */
+  roles: {
+    fetch(): Promise<RoleResponse[]>;
+    create(name: string, permissions: number, color?: string): Promise<RoleResponse>;
+    update(id: string, name?: string, permissions?: number, color?: string): Promise<RoleResponse>;
+    delete(id: string): Promise<void>;
+    assign(userId: string, roleId: string): Promise<void>;
+    remove(userId: string, roleId: string): Promise<void>;
+    getUserRoles(userId: string): Promise<RoleResponse[]>;
+  };
+
   // ---- Device Provisioning (SEC-12) ----
 
   /** Device provisioning for local keypair transfer via QR + TCP */
@@ -262,6 +352,18 @@ export interface UnitedAPI {
    * @returns Cleanup function to unsubscribe
    */
   onServerInfoUpdate(callback: (info: ServerInfo) => void): () => void;
+
+  /**
+   * Subscribe to channel events (created, updated, deleted, reordered).
+   * @returns Cleanup function to unsubscribe
+   */
+  onChannelEvent(callback: (event: ChannelEvent) => void): () => void;
+
+  /**
+   * Subscribe to role events (created, updated, deleted, assigned, removed).
+   * @returns Cleanup function to unsubscribe
+   */
+  onRoleEvent(callback: (event: RoleEvent) => void): () => void;
 }
 
 // ============================================================
