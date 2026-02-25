@@ -51,6 +51,12 @@ export interface ConnectResult {
 export interface RegisterResult {
   /** Server-assigned user ID */
   userId: string;
+  /** JWT access token */
+  accessToken: string;
+  /** JWT refresh token */
+  refreshToken: string;
+  /** Whether this user is the server owner (first registered) */
+  isOwner: boolean;
 }
 
 // ============================================================
@@ -60,10 +66,8 @@ export interface RegisterResult {
 export interface TotpEnrollResult {
   /** TOTP secret (base32-encoded) */
   secret: string;
-  /** otpauth:// URI for authenticator apps */
+  /** otpauth:// URI for authenticator apps — QR generated client-side via qrcode.react */
   otpauthUri: string;
-  /** QR code PNG data */
-  qrPng: Uint8Array;
 }
 
 // ============================================================
