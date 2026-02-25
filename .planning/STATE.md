@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 2 of 8 (Server Management)
-Plan: 1 of 7 in current phase
+Plan: 2 of 7 in current phase
 Status: Executing Phase 2
-Last activity: 2026-02-25 — Completed 02-01 (Server Management Foundation)
+Last activity: 2026-02-25 — Completed 02-05 (Device Provisioning)
 
-Progress: [██░░░░░░░░] 14%
+Progress: [██░░░░░░░░] 15%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration (GSD-tracked): 21 min
-- Total execution time (GSD-tracked): 1.4 hours
+- Total plans completed: 8
+- Average duration (GSD-tracked): 19 min
+- Total execution time (GSD-tracked): 1.5 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan | Notes |
 |-------|-------|-------|----------|-------|
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
-| 02-server-management | 1/7 | 5 min | 5 min | 02-01: schema, permissions, proto, broadcast |
+| 02-server-management | 2/7 | 11 min | 5.5 min | 02-01: schema, permissions, proto, broadcast; 02-05: device provisioning |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -70,6 +70,10 @@ Recent decisions affecting current work:
 - [02-01]: WS envelope field allocation: channels 50-59, roles 60-69, moderation 70-79, invites 80-89, overflow 100-105
 - [02-01]: Protobuf packages follow existing convention: united.channels, united.roles, united.moderation, united.invite
 - [02-01]: invite.proto imports channels.proto and roles.proto for JoinServerResponse (channel list + role list on join)
+- [02-05]: Length-prefixed TCP wire protocol (4-byte uint32 BE) for device provisioning to avoid read/write deadlocks
+- [02-05]: X25519 SPKI DER header (302a300506032b656e032100) for Node.js crypto key import/export
+- [02-05]: Transfer full encrypted identity blob alongside raw session keys so receiving device stores same format
+- [02-05]: Text input fallback for QR payload since Electron desktop lacks camera scanning
 
 ### Pending Todos
 
@@ -86,5 +90,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 02-01-PLAN.md (Server Management Foundation)
-Resume file: .planning/phases/02-server-management/02-01-SUMMARY.md
+Stopped at: Completed 02-05-PLAN.md (Device Provisioning)
+Resume file: .planning/phases/02-server-management/02-05-SUMMARY.md
