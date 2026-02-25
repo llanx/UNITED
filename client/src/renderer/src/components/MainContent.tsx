@@ -2,6 +2,9 @@ import { useStore } from '../stores'
 import ServerIcon from './ServerIcon'
 import ServerSettings from './ServerSettings'
 import TotpEnrollment from './TotpEnrollment'
+import ChannelManagement from './ChannelManagement'
+import RoleManagement from './RoleManagement'
+import MemberList from './MemberList'
 import { useState, useEffect } from 'react'
 
 export default function MainContent() {
@@ -43,19 +46,35 @@ export default function MainContent() {
     return <ServerSettings />
   }
 
-  // Members panel placeholder
+  // Channel Management panel (admin only)
+  if (activePanel === 'channel-management' && isOwner) {
+    return <ChannelManagement />
+  }
+
+  // Role Management panel (admin only)
+  if (activePanel === 'role-management' && isOwner) {
+    return <RoleManagement />
+  }
+
+  // Members panel
   if (activePanel === 'members') {
     return (
       <div className="flex flex-1 flex-col bg-[var(--color-bg-primary)]">
-        <div className="flex h-12 items-center border-b border-white/5 px-4">
+        <div className="flex h-12 items-center justify-between border-b border-white/5 px-4">
           <span className="text-sm font-semibold text-[var(--color-text-primary)]">
             Members
           </span>
+          <button
+            onClick={() => useStore.setState({ activePanel: 'chat' })}
+            className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+          >
+            Close
+          </button>
         </div>
-        <div className="flex flex-1 items-center justify-center">
-          <p className="text-sm text-[var(--color-text-muted)]">
-            Member list coming in Phase 4
-          </p>
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="mx-auto max-w-lg">
+            <MemberList />
+          </div>
         </div>
       </div>
     )
