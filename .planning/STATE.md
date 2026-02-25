@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 2: Server Management
+**Current focus:** Phase 3: P2P Networking
 
 ## Current Position
 
-Phase: 2 of 8 (Server Management)
-Plan: 8 of 8 in current phase
-Status: Executing Phase 2
-Last activity: 2026-02-25 — Completed 02-07 (Invite Join Flow) and 02-08 (SRVR-04 Gap Closure)
+Phase: 3 of 8 (P2P Networking)
+Plan: 0 of 3 in current phase
+Status: Phase 2 complete, Phase 3 not yet planned
+Last activity: 2026-02-25 — Phase 2 complete (8/8 plans, human tests deferred)
 
-Progress: [████░░░░░░] 21%
+Progress: [███░░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 14
 - Average duration (GSD-tracked): 16 min
 - Total execution time (GSD-tracked): 1.7 hours
 
@@ -84,7 +84,12 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- [ ] [Phase 2 UAT] Real-time WS channel event propagation — two clients, admin creates channel, second client sees it
+- [ ] [Phase 2 UAT] Non-admin panel access prevention — non-owner user should not see admin management panels
+- [ ] [Phase 2 UAT] Invite join flow navigates to #general — full invite code → join → channel sidebar
+- [ ] [Phase 2 UAT] Welcome overlay per-server dismissal — first join shows overlay, reconnect does not
+- [ ] [Phase 2 UAT] Ban notice full-screen block — WS close 4003 triggers red overlay, no auto-reconnect
+- [ ] [Phase 2 UAT] SEC-12 two-device round-trip — two Electron instances, QR payload transfer
 
 ### Blockers/Concerns
 
@@ -97,5 +102,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed all Phase 2 plans (02-07 + 02-08 in parallel)
+Stopped at: Phase 2 complete, ready for Phase 3 planning
 Resume file: .planning/phases/02-server-management/02-07-SUMMARY.md

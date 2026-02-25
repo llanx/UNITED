@@ -13,7 +13,7 @@ UNITED delivers a self-hosted Discord alternative where all content is distribut
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Electron app shell, Rust coordination server, authentication, IPC bridge, and build pipeline
-- [ ] **Phase 2: Server Management** - Channel/category CRUD, roles and permissions, moderation, and invite-based onboarding
+- [x] **Phase 2: Server Management** - Channel/category CRUD, roles and permissions, moderation, and invite-based onboarding
 - [ ] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
 - [ ] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
 - [ ] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators
@@ -60,14 +60,14 @@ Plans:
 **Plans**: 8 plans
 
 Plans:
-- [ ] 02-01: Schema migration, permission bitflags, protobuf definitions, and route scaffold (Wave 1, server)
-- [ ] 02-02: Channel/category CRUD, starter template, reordering, and WS events (Wave 2, server, TDD)
-- [ ] 02-03: Roles CRUD, assignment, permission guard, and auto-assign @everyone (Wave 2, server, TDD)
-- [ ] 02-04: Moderation (kick/ban) and invites (generate, join, landing page) (Wave 3, server, TDD)
-- [ ] 02-05: SEC-12 device provisioning via QR code (Wave 1, client, independent)
-- [ ] 02-06: Client UI — channel sidebar with categories, admin management panels (Wave 3, client)
-- [ ] 02-07: Client onboarding — invite join flow, routing to #general, welcome overlay (Wave 3, client)
-- [ ] 02-08: Gap closure — member list endpoint and role assignment UI (Wave 1, full-stack)
+- [x] 02-01: Schema migration, permission bitflags, protobuf definitions, and route scaffold (Wave 1, server)
+- [x] 02-02: Channel/category CRUD, starter template, reordering, and WS events (Wave 2, server, TDD)
+- [x] 02-03: Roles CRUD, assignment, permission guard, and auto-assign @everyone (Wave 2, server, TDD)
+- [x] 02-04: Moderation (kick/ban) and invites (generate, join, landing page) (Wave 3, server, TDD)
+- [x] 02-05: SEC-12 device provisioning via QR code (Wave 1, client, independent)
+- [x] 02-06: Client UI — channel sidebar with categories, admin management panels (Wave 3, client)
+- [x] 02-07: Client onboarding — invite join flow, routing to #general, welcome overlay (Wave 3, client)
+- [x] 02-08: Gap closure — member list endpoint and role assignment UI (Wave 1, full-stack)
 
 ### Phase 3: P2P Networking
 **Goal**: Peers discover each other and exchange messages over encrypted connections through a libp2p mesh, with NAT traversal ensuring connectivity across network configurations
@@ -175,7 +175,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 6/6 | Complete | 2026-02-24 |
-| 2. Server Management | 0/8 | Planning complete | - |
+| 2. Server Management | 8/8 | Complete | 2026-02-25 |
 | 3. P2P Networking | 0/3 | Not started | - |
 | 4. Real-Time Chat | 0/3 | Not started | - |
 | 5. Direct Messages | 0/2 | Not started | - |
