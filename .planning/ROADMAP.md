@@ -57,7 +57,7 @@ Plans:
   3. Server admin can kick and ban users, with bans propagated so banned users cannot rejoin or have their content relayed
   4. Server admin can generate invite links with optional expiration, and new users can join via those links
   5. A newly joined user sees the channel list, category structure, and their assigned permissions immediately
-**Plans**: 7 plans
+**Plans**: 8 plans
 
 Plans:
 - [ ] 02-01: Schema migration, permission bitflags, protobuf definitions, and route scaffold (Wave 1, server)
@@ -67,6 +67,7 @@ Plans:
 - [ ] 02-05: SEC-12 device provisioning via QR code (Wave 1, client, independent)
 - [ ] 02-06: Client UI — channel sidebar with categories, admin management panels (Wave 3, client)
 - [ ] 02-07: Client onboarding — invite join flow, routing to #general, welcome overlay (Wave 3, client)
+- [ ] 02-08: Gap closure — member list endpoint and role assignment UI (Wave 1, full-stack)
 
 ### Phase 3: P2P Networking
 **Goal**: Peers discover each other and exchange messages over encrypted connections through a libp2p mesh, with NAT traversal ensuring connectivity across network configurations
@@ -174,7 +175,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 6/6 | Complete | 2026-02-24 |
-| 2. Server Management | 0/7 | Planning complete | - |
+| 2. Server Management | 0/8 | Planning complete | - |
 | 3. P2P Networking | 0/3 | Not started | - |
 | 4. Real-Time Chat | 0/3 | Not started | - |
 | 5. Direct Messages | 0/2 | Not started | - |
