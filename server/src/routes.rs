@@ -9,6 +9,8 @@ use crate::auth::middleware::JwtSecret;
 use crate::auth::totp;
 use crate::identity::{blob, registration, rotation};
 use crate::channels::crud as channel_crud;
+use crate::invite::{generate as invite_gen, landing as invite_landing};
+use crate::moderation::{ban, kick};
 use crate::roles::{assignment as role_assignment, crud as role_crud};
 use crate::state::AppState;
 use crate::ws::handler as ws_handler;
@@ -184,8 +186,18 @@ pub fn build_router(state: AppState) -> Router {
             "/api/roles/user/{user_id}",
             axum::routing::get(role_assignment::get_user_roles),
         );
-    let moderation_routes = Router::new();
-    let invite_routes = Router::new();
+    let moderation_routes = Router::new()
+        .route("/api/moderation/kick", axum::routing::post(kick::kick_user))
+        .route("/api/moderation/ban", axum::routing::post(ban::ban_user))
+        .route("/api/moderation/unban", axum::routing::post(ban::unban_user))
+        .route("/api/moderation/bans", axum::routing::get(ban::list_bans));
+    let invite_routes = Router::new()
+        .route("/api/invites", axum::routing::post(invite_gen::create_invite))
+        .route("/api/invites", axum::routing::get(invite_gen::list_invites))
+        .route("/api/invites/{code}", axum::routing::delete(invite_gen::delete_invite));
+    // Public invite landing page (no auth required)
+    let invite_landing_routes = Router::new()
+        .route("/invite/{code}", axum::routing::get(invite_landing::invite_landing_page));
 
     Router::new()
         .merge(auth_routes)
@@ -197,6 +209,7 @@ pub fn build_router(state: AppState) -> Router {
         .merge(role_routes)
         .merge(moderation_routes)
         .merge(invite_routes)
+        .merge(invite_landing_routes)
         .merge(ws_routes)
         .merge(health)
         .layer(middleware::from_fn_with_state(

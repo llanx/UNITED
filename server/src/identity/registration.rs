@@ -23,6 +23,9 @@ pub struct RegisterApiRequest {
     pub setup_token: Option<String>,
     /// Hex-encoded Ed25519 signature of the genesis record
     pub genesis_signature: String,
+    /// Optional: invite code for joining via invite link
+    #[serde(default)]
+    pub invite_code: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -79,14 +82,15 @@ pub async fn register(
         false
     };
 
-    // If invite-only and no valid setup token, reject
-    if reg_mode == "invite-only" && !is_owner {
+    // If invite-only and no valid setup token, require invite code
+    if reg_mode == "invite-only" && !is_owner && req.invite_code.is_none() {
         return Err((
             StatusCode::FORBIDDEN,
             "Server is in invite-only mode".to_string(),
         ));
     }
 
+    let invite_code = req.invite_code.clone();
     let fingerprint = req.fingerprint.clone();
     let display_name = req.display_name.clone();
     let encrypted_blob =
@@ -98,6 +102,11 @@ pub async fn register(
     // Insert user, genesis rotation record, and identity blob in a transaction
     let result = tokio::task::spawn_blocking(move || {
         let conn = db.lock().map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB lock: {}", e)))?;
+
+        // Consume invite code if provided (must happen before user creation for atomicity)
+        if let Some(ref code) = invite_code {
+            crate::invite::validate::consume_invite(&conn, code)?;
+        }
 
         // Check fingerprint uniqueness
         let existing: Option<String> = conn

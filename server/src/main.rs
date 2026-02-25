@@ -4,6 +4,8 @@ mod channels;
 mod config;
 mod db;
 mod identity;
+mod invite;
+mod moderation;
 mod proto;
 mod roles;
 mod routes;
