@@ -11,6 +11,7 @@ import { createMessagesSlice, type MessagesSlice } from './messages'
 import { createPresenceSlice, type PresenceSlice } from './presence'
 import { createNotificationsSlice, type NotificationsSlice } from './notifications'
 import { createDmSlice, type DmSlice } from './dm'
+import { createBlocksSlice, type BlocksSlice } from './blocks'
 
 export type RootStore =
   AuthSlice &
@@ -24,7 +25,8 @@ export type RootStore =
   MessagesSlice &
   PresenceSlice &
   NotificationsSlice &
-  DmSlice
+  DmSlice &
+  BlocksSlice
 
 export const useStore = create<RootStore>()((...a) => ({
   ...createAuthSlice(...a),
@@ -39,6 +41,7 @@ export const useStore = create<RootStore>()((...a) => ({
   ...createPresenceSlice(...a),
   ...createNotificationsSlice(...a),
   ...createDmSlice(...a),
+  ...createBlocksSlice(...a),
 }))
 
 /**
@@ -83,5 +86,17 @@ export async function hydrate(): Promise<void> {
     if (dmBannerDismissed) {
       useStore.setState({ dmEncryptionBannerDismissed: true })
     }
+  }
+
+  // Hydrate block store settings
+  try {
+    const config = await window.united.blocks.getConfig()
+    const budgetGb = Math.round(config.budgetBytes / (1024 * 1024 * 1024))
+    useStore.setState({
+      storageBudgetGb: budgetGb || 5,
+      warmTtlDays: config.warmTtlDays || 7,
+    })
+  } catch {
+    // Block store may not be initialized yet -- use defaults
   }
 }
