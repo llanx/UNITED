@@ -8,8 +8,6 @@ use axum::{
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
-use uuid::Uuid;
-
 use crate::auth::middleware::Claims;
 use crate::chat::broadcast;
 use crate::proto::chat as proto_chat;
@@ -128,9 +126,6 @@ pub async fn create_message(
 
         let sender_pubkey = pubkey_hex.to_lowercase();
 
-        // Generate message ID (UUIDv7 for time-ordered IDs)
-        let message_id = Uuid::now_v7().to_string();
-
         // Assign next server_sequence for this channel
         let next_seq: i64 = conn
             .query_row(
@@ -168,9 +163,12 @@ pub async fn create_message(
         )
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
+        // Use the actual DB row ID as message ID (consistent with history endpoint)
+        let row_id = conn.last_insert_rowid();
+
         // Build the ChatMessage proto for broadcast
         let chat_message = proto_chat::ChatMessage {
-            id: message_id.clone(),
+            id: row_id.to_string(),
             channel_id: cid.clone(),
             sender_pubkey: sender_pubkey.clone(),
             sender_display_name: display_name.clone(),
@@ -185,7 +183,7 @@ pub async fn create_message(
         };
 
         let response = MessageResponse {
-            id: message_id,
+            id: row_id.to_string(),
             channel_id: cid,
             sender_pubkey,
             sender_display_name: display_name,
