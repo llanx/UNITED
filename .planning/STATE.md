@@ -8,7 +8,7 @@ progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 32
-  completed_plans: 31
+  completed_plans: 32
 ---
 
 # Project State
@@ -32,7 +32,7 @@ Progress: [████████░░] 78%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 27
+- Total plans completed: 28
 - Average duration (GSD-tracked): 10 min
 - Total execution time (GSD-tracked): 3.58 hours
 
@@ -47,13 +47,14 @@ Progress: [████████░░] 78%
 | 05-direct-messages | 4/4 | 27 min | 7 min | 05-01: DM protobuf schemas, migration 5, 8 REST endpoints (keys, conversations, messages, offline), WS targeted push, background cleanup; 05-02: DM crypto module, IPC handlers, Zustand store, hooks, preload bridge; 05-03: DM UI (conversation list, chat view, composer, encryption indicators, server rail DM icon, profile popup Message button); 05-04: gap closure (DM WS protobuf decoding fix) |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min), 06-04 (5 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min), 06-03 (6 min), 06-04 (5 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
 | Phase 05 P04 | 3min | 2 tasks | 1 files |
 | Phase 06 P01 | 12min | 2 tasks | 23 files |
 | Phase 06 P02 | 8min | 2 tasks | 16 files |
+| Phase 06 P03 | 6min | 2 tasks | 6 files |
 | Phase 06 P04 | 5min | 2 tasks | 10 files |
 
 ## Accumulated Context
@@ -178,6 +179,10 @@ Recent decisions affecting current work:
 - [06-02]: Block store key derived with same Argon2id params as identity but separate dedicated salt
 - [06-02]: DM block persistence is fire-and-forget (wrapped in try/catch, non-blocking)
 - [06-02]: Block data transferred as base64 strings across IPC boundary (renderer cannot access Buffer natively)
+- [06-03]: Server GET /api/blocks/:hash returns plaintext (server decrypts before sending) -- no client-side HKDF decryption needed for L4 cascade
+- [06-03]: L3 peer directory reuses WS-based discoverAndConnectPeers from Phase 3 rather than separate DHT (v1 design)
+- [06-03]: AbortController cancels remaining peer requests after first Promise.any success in fetchFromHotPeers
+- [06-03]: Block protocol uses length-prefixed stream (LP) wire format: LP(hash_utf8) request, LP(data) response
 - [06-04]: 50KB inline threshold enforced on raw content before protobuf encoding (per research Pitfall 3)
 - [06-04]: 60KB envelope size guard as safety margin below 64KB gossipsub max_transmit_size
 - [06-04]: Progressive timeout: 3s shimmer, 3-15s fetching text, 15s+ unavailable with retry
