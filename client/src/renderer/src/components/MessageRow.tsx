@@ -14,6 +14,8 @@ import type { ChatMessage } from '@shared/ipc-bridge'
 import { useStore } from '../stores'
 import MarkdownContent from './MarkdownContent'
 import HoverToolbar from './HoverToolbar'
+import ReactionPills from './ReactionPills'
+import EmojiPicker from './EmojiPicker'
 
 interface MessageRowProps {
   message: ChatMessage
@@ -69,10 +71,12 @@ export default function MessageRow({
 }: MessageRowProps) {
   const [hovered, setHovered] = useState(false)
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
+  const [emojiPickerPos, setEmojiPickerPos] = useState<{ x: number; y: number } | null>(null)
   const contextMenuRef = useRef<HTMLDivElement>(null)
 
   const publicKey = useStore((s) => s.publicKey)
   const isOwner = useStore((s) => s.isOwner)
+  const userPresence = useStore((s) => s.userPresence)
 
   // Determine if this is the current user's message
   const currentPubkeyHex = publicKey
@@ -85,6 +89,15 @@ export default function MessageRow({
   // Mention highlight: check if current user is mentioned
   // ChatMessage doesn't have mention_user_ids currently -- will be wired when added
   const isMentioned = false
+
+  // Build display name map from presence store for reaction tooltips
+  const displayNameMap = React.useMemo(() => {
+    const map: Record<string, string> = {}
+    for (const [pk, info] of Object.entries(userPresence)) {
+      if (info.displayName) map[pk] = info.displayName
+    }
+    return map
+  }, [userPresence])
 
   const avatarHue = pubkeyToHue(message.sender_pubkey)
 
@@ -137,6 +150,22 @@ export default function MessageRow({
     setContextMenuPos(null)
   }, [message.id])
 
+  const handleOpenEmojiPicker = useCallback((e: React.MouseEvent) => {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    setEmojiPickerPos({ x: rect.left, y: rect.bottom + 4 })
+  }, [])
+
+  const handleEmojiSelect = useCallback(
+    async (emoji: string) => {
+      try {
+        await window.united.reactions.add(message.id, emoji)
+      } catch (err) {
+        console.error('Failed to add reaction:', err)
+      }
+    },
+    [message.id]
+  )
+
   // Grouped message (continuation)
   if (isGrouped) {
     return (
@@ -149,18 +178,37 @@ export default function MessageRow({
         onContextMenu={handleContextMenu}
         title={formatExactTime(message.timestamp)}
       >
-        <div className="min-w-0 flex-1 text-sm text-[var(--color-text-primary)]">
-          <MarkdownContent content={message.content} />
-          {message.edited_at && (
-            <span className="ml-1 text-[10px] text-[var(--color-text-muted)]">(edited)</span>
+        <div className="min-w-0 flex-1">
+          <div className="text-sm text-[var(--color-text-primary)]">
+            <MarkdownContent content={message.content} />
+            {message.edited_at && (
+              <span className="ml-1 text-[10px] text-[var(--color-text-muted)]">(edited)</span>
+            )}
+          </div>
+          {(message.reactions.length > 0 || hovered) && (
+            <ReactionPills
+              reactions={message.reactions}
+              messageId={message.id}
+              currentUserPubkey={currentPubkeyHex}
+              displayNameMap={displayNameMap}
+            />
           )}
         </div>
 
         {hovered && (
           <HoverToolbar
-            onReact={() => {}}
+            onReact={handleOpenEmojiPicker}
             onReply={handleReply}
             onMore={(e) => handleContextMenu(e)}
+          />
+        )}
+
+        {emojiPickerPos && (
+          <EmojiPicker
+            onSelect={handleEmojiSelect}
+            onClose={() => setEmojiPickerPos(null)}
+            anchorX={emojiPickerPos.x}
+            anchorY={emojiPickerPos.y}
           />
         )}
 
@@ -249,42 +297,30 @@ export default function MessageRow({
         </div>
 
         {/* Reactions */}
-        {message.reactions.length > 0 && (
-          <div className="mt-1 flex flex-wrap gap-1">
-            {message.reactions.map((r) => (
-              <button
-                key={r.emoji}
-                className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs transition-colors ${
-                  r.user_pubkeys.includes(currentPubkeyHex ?? '')
-                    ? 'border-[var(--color-accent)]/50 bg-[var(--color-accent)]/10 text-[var(--color-text-primary)]'
-                    : 'border-white/10 bg-white/5 text-[var(--color-text-muted)] hover:bg-white/10'
-                }`}
-                onClick={async () => {
-                  try {
-                    if (r.user_pubkeys.includes(currentPubkeyHex ?? '')) {
-                      await window.united.reactions.remove(message.id, r.emoji)
-                    } else {
-                      await window.united.reactions.add(message.id, r.emoji)
-                    }
-                  } catch (err) {
-                    console.error('Reaction toggle failed:', err)
-                  }
-                }}
-                title={r.user_pubkeys.length > 0 ? `${r.count} reaction(s)` : ''}
-              >
-                <span>{r.emoji}</span>
-                <span>{r.count}</span>
-              </button>
-            ))}
-          </div>
+        {(message.reactions.length > 0 || hovered) && (
+          <ReactionPills
+            reactions={message.reactions}
+            messageId={message.id}
+            currentUserPubkey={currentPubkeyHex}
+            displayNameMap={displayNameMap}
+          />
         )}
       </div>
 
       {hovered && (
         <HoverToolbar
-          onReact={() => {}}
+          onReact={handleOpenEmojiPicker}
           onReply={handleReply}
           onMore={(e) => handleContextMenu(e)}
+        />
+      )}
+
+      {emojiPickerPos && (
+        <EmojiPicker
+          onSelect={handleEmojiSelect}
+          onClose={() => setEmojiPickerPos(null)}
+          anchorX={emojiPickerPos.x}
+          anchorY={emojiPickerPos.y}
         />
       )}
 
