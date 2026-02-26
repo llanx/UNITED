@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 3: P2P Networking
+**Current focus:** Phase 3 complete. Next: Phase 4: Real-Time Chat
 
 ## Current Position
 

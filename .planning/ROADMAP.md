@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Electron app shell, Rust coordination server, authentication, IPC bridge, and build pipeline
 - [x] **Phase 2: Server Management** - Channel/category CRUD, roles and permissions, moderation, and invite-based onboarding
-- [ ] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
+- [x] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
 - [ ] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
 - [ ] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators
 - [ ] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback
@@ -78,12 +78,12 @@ Plans:
   2. Messages published to a gossipsub topic arrive at all subscribed peers within 100ms on a local network
   3. All peer-to-peer communication is encrypted in transit (TLS for WebSocket to server, DTLS for WebRTC DataChannels between peers)
   4. P2P connections persist when the user switches between channels — no reconnection or re-handshake occurs on navigation
-**Plans**: 3 plans (2 complete)
+**Plans**: 3 plans (3 complete)
 
 Plans:
 - [x] 03-01: Server libp2p node — gossipsub, relay, peer directory, message persistence (Wave 1, server)
 - [x] 03-02: Client libp2p node — WebSocket + WebRTC transports, gossipsub, discovery (Wave 2, client)
-- [ ] 03-03: Dev panel — P2P stats IPC pipeline, floating overlay with peer/topic debug info (Wave 3, client)
+- [x] 03-03: Dev panel — P2P stats IPC pipeline, floating overlay with peer/topic debug info (Wave 3, client)
 
 ### Phase 4: Real-Time Chat
 **Goal**: Users can have real-time text conversations in channels with the full range of messaging features expected from a modern chat application
@@ -178,7 +178,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 |-------|----------------|--------|-----------|
 | 1. Foundation | 6/6 | Complete | 2026-02-24 |
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
-| 3. P2P Networking | 2/3 | In progress | - |
+| 3. P2P Networking | 3/3 | Complete | 2026-02-26 |
 | 4. Real-Time Chat | 0/5 | Not started | - |
 | 5. Direct Messages | 0/2 | Not started | - |
 | 6. Content Distribution | 0/3 | Not started | - |
