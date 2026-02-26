@@ -276,6 +276,39 @@ export interface DmKeyStatus {
 }
 
 // ============================================================
+// Voice types
+// ============================================================
+
+export interface VoiceParticipant {
+  userId: string;
+  displayName: string;
+  pubkey: string;
+  muted: boolean;
+  deafened: boolean;
+}
+
+export interface VoiceEvent {
+  type: 'join_response' | 'participant_joined' | 'participant_left' |
+        'sdp_offer' | 'sdp_answer' | 'ice_candidate' | 'state_update' | 'speaking';
+  data: unknown;
+}
+
+export interface VoiceJoinResponseData {
+  participants: VoiceParticipant[];
+  iceServers: Array<{ urls: string[]; username: string; credential: string }>;
+}
+
+export type VoiceMode = 'vad' | 'ptt';
+export type ConnectionQuality = 'good' | 'degraded' | 'poor';
+
+export interface VoiceQualityMetrics {
+  rttMs: number;
+  packetLoss: number;
+  jitter: number;
+  quality: ConnectionQuality;
+}
+
+// ============================================================
 // Media upload types
 // ============================================================
 
@@ -648,6 +681,46 @@ export interface UnitedAPI {
     /** Subscribe to DM key rotation events (returns cleanup function) */
     onKeyRotated(callback: (userPubkey: string) => void): () => void;
   };
+
+  // ---- Voice ----
+
+  /** Voice channel WebRTC signaling and controls */
+  voice: {
+    /** Join a voice channel (sends VoiceJoinRequest via WS) */
+    join(channelId: string): Promise<void>;
+    /** Leave current voice channel */
+    leave(): Promise<void>;
+    /** Forward SDP offer to a target peer via WS */
+    sendSdpOffer(targetUserId: string, sdp: string, channelId: string): Promise<void>;
+    /** Forward SDP answer to a target peer via WS */
+    sendSdpAnswer(targetUserId: string, sdp: string, channelId: string): Promise<void>;
+    /** Forward ICE candidate to a target peer via WS */
+    sendIceCandidate(targetUserId: string, candidateJson: string, channelId: string): Promise<void>;
+    /** Send mute/deafen state update via WS */
+    sendStateUpdate(channelId: string, muted: boolean, deafened: boolean): Promise<void>;
+    /** Send speaking state change via WS */
+    sendSpeaking(channelId: string, speaking: boolean): Promise<void>;
+    /** Set the push-to-talk key code */
+    setPttKey(key: number): Promise<void>;
+    /** Get the current push-to-talk key code */
+    getPttKey(): Promise<number>;
+    /** Set voice mode (voice activity detection or push-to-talk) */
+    setMode(mode: VoiceMode): Promise<void>;
+    /** Check microphone permission (macOS-specific, returns 'granted'|'denied') */
+    checkMicPermission(): Promise<string>;
+  };
+
+  /**
+   * Subscribe to voice events (join response, participant changes, SDP/ICE, state, speaking).
+   * @returns Cleanup function to unsubscribe
+   */
+  onVoiceEvent(callback: (event: VoiceEvent) => void): () => void;
+
+  /**
+   * Subscribe to push-to-talk key state changes.
+   * @returns Cleanup function to unsubscribe
+   */
+  onPttState(callback: (active: boolean) => void): () => void;
 
   // ---- Media ----
 

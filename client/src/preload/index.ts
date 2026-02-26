@@ -7,7 +7,8 @@ import type {
   DmEvent,
   BlockStorageUsage, BlockStoreConfig,
   NetworkStats,
-  FileAttachment, UploadProgress
+  FileAttachment, UploadProgress,
+  VoiceEvent
 } from '@shared/ipc-bridge'
 import type { ConnectionStatus } from '@shared/ws-protocol'
 import { IPC } from '../main/ipc/channels'
@@ -207,6 +208,38 @@ const api: UnitedAPI = {
       ipcRenderer.on(IPC.PUSH_DM_KEY_ROTATED, listener)
       return () => { ipcRenderer.removeListener(IPC.PUSH_DM_KEY_ROTATED, listener) }
     },
+  },
+
+  // Voice
+  voice: {
+    join: (channelId: string) => ipcRenderer.invoke(IPC.VOICE_JOIN, channelId),
+    leave: () => ipcRenderer.invoke(IPC.VOICE_LEAVE),
+    sendSdpOffer: (targetUserId: string, sdp: string, channelId: string) =>
+      ipcRenderer.invoke(IPC.VOICE_SEND_SDP_OFFER, targetUserId, sdp, channelId),
+    sendSdpAnswer: (targetUserId: string, sdp: string, channelId: string) =>
+      ipcRenderer.invoke(IPC.VOICE_SEND_SDP_ANSWER, targetUserId, sdp, channelId),
+    sendIceCandidate: (targetUserId: string, candidateJson: string, channelId: string) =>
+      ipcRenderer.invoke(IPC.VOICE_SEND_ICE_CANDIDATE, targetUserId, candidateJson, channelId),
+    sendStateUpdate: (channelId: string, muted: boolean, deafened: boolean) =>
+      ipcRenderer.invoke(IPC.VOICE_SEND_STATE_UPDATE, channelId, muted, deafened),
+    sendSpeaking: (channelId: string, speaking: boolean) =>
+      ipcRenderer.invoke(IPC.VOICE_SEND_SPEAKING, channelId, speaking),
+    setPttKey: (key: number) => ipcRenderer.invoke(IPC.VOICE_SET_PTT_KEY, key),
+    getPttKey: () => ipcRenderer.invoke(IPC.VOICE_GET_PTT_KEY),
+    setMode: (mode: 'vad' | 'ptt') => ipcRenderer.invoke(IPC.VOICE_SET_MODE, mode),
+    checkMicPermission: () => ipcRenderer.invoke(IPC.VOICE_CHECK_MIC_PERMISSION),
+  },
+
+  onVoiceEvent: (cb: (event: VoiceEvent) => void) => {
+    const handler = (_: Electron.IpcRendererEvent, event: VoiceEvent) => cb(event)
+    ipcRenderer.on(IPC.PUSH_VOICE_EVENT, handler)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_VOICE_EVENT, handler) }
+  },
+
+  onPttState: (cb: (active: boolean) => void) => {
+    const handler = (_: Electron.IpcRendererEvent, active: boolean) => cb(active)
+    ipcRenderer.on(IPC.PUSH_PTT_STATE, handler)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_PTT_STATE, handler) }
   },
 
   // Media

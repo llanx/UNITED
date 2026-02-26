@@ -20,6 +20,8 @@ import { registerMediaHandlers } from './ipc/media'
 import { registerStatsHandlers } from './ipc/stats'
 import { setupChatEventListener } from './ws/chat-events'
 import { setupDmEventListener } from './ws/dm-events'
+import { setupVoiceEventListener } from './ws/voice-events'
+import { registerVoiceHandlers } from './ipc/voice'
 import { IPC } from './ipc/channels'
 
 // ============================================================
@@ -143,9 +145,11 @@ app.whenReady().then(() => {
   registerNotificationHandlers(ipcMain)
   registerDmHandlers(ipcMain)
   registerBlockHandlers(ipcMain)
+  registerVoiceHandlers(ipcMain)
   initP2PListener()
   setupChatEventListener()
   setupDmEventListener()
+  setupVoiceEventListener()
 
   const mainWindow = createWindow()
   registerMediaHandlers(mainWindow)
