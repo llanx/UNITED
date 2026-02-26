@@ -143,4 +143,31 @@ pub struct Message {
     pub server_sequence: i64,
     pub signature: Vec<u8>,
     pub created_at: String,
+    // Phase 4 additions
+    pub content_text: Option<String>,
+    pub edited: bool,
+    pub edit_timestamp: Option<String>,
+    pub deleted: bool,
+    pub reply_to_id: Option<String>,
+}
+
+// --- Phase 4: Chat Features ---
+
+/// Emoji reaction on a message
+#[derive(Debug, Clone)]
+pub struct Reaction {
+    pub id: i64,
+    pub message_id: i64,
+    pub user_pubkey: String,
+    pub emoji: String,
+    pub created_at: String,
+}
+
+/// Per-user per-channel read position tracking
+#[derive(Debug, Clone)]
+pub struct LastRead {
+    pub user_id: String,
+    pub channel_id: String,
+    pub last_sequence: i64,
+    pub updated_at: String,
 }

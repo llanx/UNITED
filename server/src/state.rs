@@ -2,6 +2,7 @@ use dashmap::DashMap;
 use std::sync::Arc;
 use tokio::sync::mpsc;
 
+use crate::chat::presence::PresenceInfo;
 use crate::db::DbPool;
 use crate::p2p::{PeerDirectory, SwarmCommand};
 use crate::ws::ConnectionRegistry;
@@ -36,4 +37,6 @@ pub struct AppState {
     pub server_peer_id: String,
     /// Configured libp2p port (for P2P info endpoint)
     pub libp2p_port: u16,
+    /// In-memory presence tracking: user_pubkey -> PresenceInfo
+    pub presence: Arc<DashMap<String, PresenceInfo>>,
 }

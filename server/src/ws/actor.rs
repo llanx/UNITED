@@ -1,9 +1,12 @@
 use axum::extract::ws::{CloseFrame, Message, WebSocket};
 use futures_util::{SinkExt, StreamExt};
+use prost::Message as ProstMessage;
 use std::time::Duration;
 use tokio::sync::mpsc;
 use tokio::time::{interval, timeout};
 
+use crate::chat::presence::{self, PresenceStatus};
+use crate::proto::ws::Envelope;
 use crate::state::AppState;
 use crate::ws::protocol;
 use crate::ws::ConnectionSender;
@@ -34,6 +37,51 @@ pub async fn run_connection(
 
     // Register this connection in the connection registry
     register_connection(&state, &user_id, tx.clone());
+
+    // Look up user's pubkey and display_name for presence broadcast
+    let (user_pubkey, display_name) = {
+        let db = state.db.clone();
+        let uid = user_id.clone();
+        tokio::task::spawn_blocking(move || {
+            let conn = db.lock().ok()?;
+            conn.query_row(
+                "SELECT lower(hex(public_key)), display_name FROM users WHERE id = ?1",
+                rusqlite::params![uid],
+                |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)),
+            )
+            .ok()
+        })
+        .await
+        .ok()
+        .flatten()
+        .unwrap_or_else(|| (fingerprint.clone(), "Unknown".to_string()))
+    };
+
+    // Broadcast ONLINE presence to all clients
+    presence::set_user_presence(&state, &user_pubkey, &display_name, PresenceStatus::Online);
+
+    // Send the current presence snapshot to the newly connected client
+    {
+        let all_presence = presence::get_all_presence(&state);
+        for info in &all_presence {
+            let update = crate::proto::presence::PresenceUpdateEvent {
+                update: Some(crate::proto::presence::PresenceUpdate {
+                    user_pubkey: info.user_pubkey.clone(),
+                    display_name: info.display_name.clone(),
+                    status: info.status.as_proto_i32(),
+                    timestamp: 0,
+                }),
+            };
+            let envelope = Envelope {
+                request_id: String::new(),
+                payload: Some(crate::proto::ws::envelope::Payload::PresenceUpdateEvent(update)),
+            };
+            let mut buf = Vec::with_capacity(envelope.encoded_len());
+            if envelope.encode(&mut buf).is_ok() {
+                let _ = tx.send(Message::Binary(buf.into()));
+            }
+        }
+    }
 
     tracing::info!(
         user_id = %user_id,
@@ -136,6 +184,17 @@ pub async fn run_connection(
 
     // Remove this connection from the registry
     unregister_connection(&state, &user_id, &tx);
+
+    // Only broadcast OFFLINE if this was the user's last connection
+    let has_remaining = state
+        .connections
+        .get(&user_id)
+        .map(|v| !v.is_empty())
+        .unwrap_or(false);
+
+    if !has_remaining {
+        presence::set_user_presence(&state, &user_pubkey, &display_name, PresenceStatus::Offline);
+    }
 
     tracing::info!(
         user_id = %user_id,

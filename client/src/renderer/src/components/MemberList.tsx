@@ -1,18 +1,25 @@
-import type { MemberResponse, RoleResponse } from '@shared/ipc-bridge'
-
-interface MemberListProps {
-  members: MemberResponse[]
-  roles: RoleResponse[]
-}
+import { useEffect } from 'react'
+import { useStore } from '../stores'
+import type { RoleResponse } from '@shared/ipc-bridge'
 
 /**
  * Read-only member list displayed in the server sidebar/dropdown "Members" panel.
  * Shows each member with their display name and colored role badges.
+ * Reads from Zustand store directly (no props needed).
  * Editing is done in RoleManagement, not here.
  */
-export default function MemberList({ members, roles }: MemberListProps) {
+export default function MemberList() {
+  const members = useStore((s) => s.members)
+  const roles = useStore((s) => s.roles)
+  const fetchMembers = useStore((s) => s.fetchMembers)
+  const fetchRoles = useStore((s) => s.fetchRoles)
+
+  useEffect(() => {
+    fetchMembers().catch(() => {})
+    fetchRoles().catch(() => {})
+  }, [fetchMembers, fetchRoles])
+
   const roleMap = new Map(roles.map((r) => [r.id, r]))
-  const nonDefaultRoles = roles.filter((r) => !r.is_default)
 
   return (
     <div className="flex flex-col gap-3">

@@ -20,6 +20,7 @@ pub struct MemberResponse {
     pub id: String,
     pub display_name: String,
     pub is_owner: bool,
+    pub pubkey: String,
     pub role_ids: Vec<String>,
 }
 
@@ -175,15 +176,16 @@ pub async fn list_members(
 
         // Get all users ordered by owner first, then display name
         let mut user_stmt = conn
-            .prepare("SELECT id, display_name, is_owner FROM users ORDER BY is_owner DESC, display_name ASC")
+            .prepare("SELECT id, display_name, is_owner, lower(hex(public_key)) FROM users ORDER BY is_owner DESC, display_name ASC")
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Prepare users: {}", e)))?;
 
-        let users: Vec<(String, String, bool)> = user_stmt
+        let users: Vec<(String, String, bool, String)> = user_stmt
             .query_map([], |row| {
                 Ok((
                     row.get::<_, String>(0)?,
                     row.get::<_, String>(1)?,
                     row.get::<_, bool>(2)?,
+                    row.get::<_, String>(3)?,
                 ))
             })
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Query users: {}", e)))?
@@ -196,7 +198,7 @@ pub async fn list_members(
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Prepare roles: {}", e)))?;
 
         let mut members = Vec::with_capacity(users.len());
-        for (id, display_name, is_owner) in users {
+        for (id, display_name, is_owner, pubkey) in users {
             let role_ids: Vec<String> = role_stmt
                 .query_map([&id], |row| row.get::<_, String>(0))
                 .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Query roles: {}", e)))?
@@ -207,6 +209,7 @@ pub async fn list_members(
                 id,
                 display_name,
                 is_owner,
+                pubkey,
                 role_ids,
             });
         }

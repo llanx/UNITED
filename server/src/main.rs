@@ -1,6 +1,7 @@
 mod admin;
 mod auth;
 mod channels;
+mod chat;
 mod config;
 mod db;
 mod identity;
@@ -156,9 +157,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Spawn event consumer task to handle gossipsub messages.
     // Uses spawn_blocking for DB writes to avoid starving the swarm loop.
+    // After persistence, broadcasts NewMessageEvent to all WS clients.
     let evt_db = db.clone();
+    let evt_connections = ws::new_connection_registry(); // placeholder, replaced below after app_state
+    // We need the connection registry from the app state. Since we build app_state after this,
+    // we create the registry early and share it.
+    drop(evt_connections); // unused — we share via connections_for_gossip below
+
+    let connections_for_gossip = ws::new_connection_registry();
+    let connections_for_state = connections_for_gossip.clone();
+
     tokio::spawn(async move {
         let mut evt_rx = swarm_evt_rx;
+        let gossip_connections = connections_for_gossip;
         while let Some(event) = evt_rx.recv().await {
             match event {
                 p2p::SwarmEvent::GossipMessage {
@@ -174,17 +185,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     );
                     // Decode, verify, and persist the message
                     let db_clone = evt_db.clone();
+                    let conns = gossip_connections.clone();
                     tokio::task::spawn_blocking(move || {
                         match p2p::messages::decode_and_verify_gossip_envelope(&data) {
                             Ok(envelope) => {
                                 match p2p::messages::handle_gossip_message(&db_clone, &envelope) {
-                                    Ok(seq) => {
+                                    Ok(result) => {
                                         tracing::debug!(
                                             "Persisted gossipsub message from {} on {}, seq={}",
                                             source,
                                             topic,
-                                            seq
+                                            result.server_sequence
                                         );
+                                        // Broadcast to WS clients if it was a chat message
+                                        if let Some(chat_msg) = result.chat_message {
+                                            chat::broadcast::broadcast_new_message(&conns, chat_msg);
+                                        }
                                     }
                                     Err(e) => {
                                         tracing::warn!(
@@ -215,17 +231,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     // Build application state
+    // Use the shared connection registry so gossip event consumer can broadcast to WS clients.
     let app_state = state::AppState {
         db,
         challenges: Arc::new(DashMap::new()),
         jwt_secret,
         encryption_key,
-        connections: ws::new_connection_registry(),
+        connections: connections_for_state,
         registration_mode: config.registration_mode.clone(),
         swarm_cmd_tx,
         peer_directory,
         server_peer_id,
         libp2p_port: p2p_config.libp2p_port,
+        presence: Arc::new(DashMap::new()),
     };
 
     // Build router

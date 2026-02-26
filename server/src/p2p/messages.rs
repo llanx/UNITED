@@ -5,7 +5,8 @@ use prost::Message as ProstMessage;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::db::DbPool;
-use crate::proto::p2p_proto::{self, GossipEnvelope, MessageType};
+use crate::proto::chat as proto_chat;
+use crate::proto::p2p_proto::{GossipEnvelope, MessageType};
 
 /// Errors that can occur during envelope operations.
 #[derive(Debug)]
@@ -141,11 +142,19 @@ pub fn extract_channel_id(topic: &str) -> Result<String, EnvelopeError> {
     }
 }
 
+/// Result from handle_gossip_message: contains the server_sequence and
+/// optionally the decoded ChatMessage proto (if message_type is CHAT).
+pub struct GossipPersistResult {
+    pub server_sequence: u64,
+    pub channel_id: String,
+    pub chat_message: Option<proto_chat::ChatMessage>,
+}
+
 /// Handle a received gossipsub message: verify, extract, and persist to SQLite.
 ///
-/// Returns the server-assigned sequence number on success.
+/// Returns the server-assigned sequence number and decoded ChatMessage (if CHAT type).
 /// Uses `SELECT COALESCE(MAX(server_sequence), 0) + 1` for single-writer sequencing.
-pub fn handle_gossip_message(db: &DbPool, envelope: &GossipEnvelope) -> Result<u64, EnvelopeError> {
+pub fn handle_gossip_message(db: &DbPool, envelope: &GossipEnvelope) -> Result<GossipPersistResult, EnvelopeError> {
     let channel_id = extract_channel_id(&envelope.topic)?;
     let sender_hex = hex::encode(&envelope.sender_pubkey);
 
@@ -162,8 +171,23 @@ pub fn handle_gossip_message(db: &DbPool, envelope: &GossipEnvelope) -> Result<u
 
     let now = chrono::Utc::now().to_rfc3339();
 
+    // If message_type is CHAT, decode the ChatMessage payload and extract content_text
+    let mut content_text: Option<String> = None;
+    let mut chat_message: Option<proto_chat::ChatMessage> = None;
+
+    if envelope.message_type == MessageType::Chat as i32 {
+        if let Ok(mut msg) = proto_chat::ChatMessage::decode(envelope.payload.as_slice()) {
+            content_text = Some(msg.content.clone());
+            // Fill in server-assigned fields
+            msg.server_sequence = next_seq as u64;
+            msg.sender_pubkey = sender_hex.clone();
+            chat_message = Some(msg);
+        }
+    }
+
     conn.execute(
-        "INSERT INTO messages (channel_id, sender_pubkey, message_type, payload, timestamp, sequence_hint, server_sequence, signature, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+        "INSERT INTO messages (channel_id, sender_pubkey, message_type, payload, timestamp, sequence_hint, server_sequence, signature, created_at, content_text, edited, deleted)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, 0, 0)",
         rusqlite::params![
             channel_id,
             sender_hex,
@@ -174,9 +198,14 @@ pub fn handle_gossip_message(db: &DbPool, envelope: &GossipEnvelope) -> Result<u
             next_seq,
             envelope.signature,
             now,
+            content_text,
         ],
     )
     .map_err(|e| EnvelopeError::DbError(format!("Insert message: {}", e)))?;
 
-    Ok(next_seq as u64)
+    Ok(GossipPersistResult {
+        server_sequence: next_seq as u64,
+        channel_id,
+        chat_message,
+    })
 }

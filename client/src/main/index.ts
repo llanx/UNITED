@@ -11,6 +11,10 @@ import { registerRoleHandlers } from './ipc/roles-api'
 import { registerInviteHandlers } from './ipc/invite'
 import { parseInviteInput } from './ipc/invite'
 import { registerP2PHandlers, initP2PListener } from './ipc/p2p'
+import { registerChatHandlers } from './ipc/chat'
+import { registerPresenceHandlers } from './ipc/presence'
+import { registerNotificationHandlers } from './ipc/notifications'
+import { setupChatEventListener } from './ws/chat-events'
 import { IPC } from './ipc/channels'
 
 // ============================================================
@@ -129,7 +133,11 @@ app.whenReady().then(() => {
   registerRoleHandlers(ipcMain)
   registerInviteHandlers(ipcMain)
   registerP2PHandlers(ipcMain)
+  registerChatHandlers(ipcMain)
+  registerPresenceHandlers(ipcMain)
+  registerNotificationHandlers(ipcMain)
   initP2PListener()
+  setupChatEventListener()
 
   createWindow()
 

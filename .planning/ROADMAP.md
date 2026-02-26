@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Electron app shell, Rust coordination server, authentication, IPC bridge, and build pipeline
 - [x] **Phase 2: Server Management** - Channel/category CRUD, roles and permissions, moderation, and invite-based onboarding
 - [x] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
-- [ ] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
+- [x] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
 - [ ] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators
 - [ ] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback
 - [ ] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching
@@ -84,7 +84,7 @@ Plans:
 - [x] 03-01: Server libp2p node — gossipsub, relay, peer directory, message persistence (Wave 1, server)
 - [x] 03-02: Client libp2p node — WebSocket + WebRTC transports, gossipsub, discovery (Wave 2, client)
 - [x] 03-03: Dev panel — P2P stats IPC pipeline, floating overlay with peer/topic debug info (Wave 3, client)
-- [ ] 03-04: Gap closure — fix scheduleReconnect to dial disconnected remote peer (Wave 1, client)
+- [x] 03-04: Gap closure — fix scheduleReconnect to dial disconnected remote peer (Wave 1, client)
 
 ### Phase 4: Real-Time Chat
 **Goal**: Users can have real-time text conversations in channels with the full range of messaging features expected from a modern chat application
@@ -96,14 +96,15 @@ Plans:
   3. User can format messages with markdown, react with emoji, and @mention users or roles — and recipients see these rendered correctly
   4. User can see who is online/offline/away, see typing indicators in the current channel, and see unread indicators on channels with new messages
   5. User receives desktop notifications for @mentions and can see other users' profiles (name, avatar, status) in the message list
-**Plans**: 5 plans
+**Plans**: 6 plans (5 complete, 1 gap closure)
 
 Plans:
-- [ ] 04-01: Server chat infrastructure — proto schemas, DB migration, REST endpoints, WS broadcast (Wave 1, server)
-- [ ] 04-02: Client data layer — npm deps, IPC handlers, Zustand stores, WS event forwarding (Wave 1, client)
-- [ ] 04-03: Core chat UI — virtualized message list, markdown rendering, composer, hover toolbar (Wave 2, full-stack)
-- [ ] 04-04: Presence and member list — server presence tracking, member sidebar, profile popups (Wave 2, full-stack)
-- [ ] 04-05: Rich features — emoji reactions, @mention autocomplete, unread badges, desktop notifications (Wave 3, client)
+- [x] 04-01: Server chat infrastructure — proto schemas, DB migration, REST endpoints, WS broadcast (Wave 1, server)
+- [x] 04-02: Client data layer — npm deps, IPC handlers, Zustand stores, WS event forwarding (Wave 1, client)
+- [x] 04-03: Core chat UI — virtualized message list, markdown rendering, composer, hover toolbar (Wave 2, full-stack)
+- [x] 04-04: Presence and member list — server presence tracking, member sidebar, profile popups (Wave 2, full-stack)
+- [x] 04-05: Rich features — emoji reactions, @mention autocomplete, unread badges, desktop notifications (Wave 3, client)
+- [x] 04-06: Gap closure — fix presence key mismatch and message ID consistency (Wave 1, full-stack)
 
 ### Phase 5: Direct Messages
 **Goal**: Users can have private one-on-one conversations where only the participants can read the messages, even if the coordination server is compromised
@@ -179,8 +180,8 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 |-------|----------------|--------|-----------|
 | 1. Foundation | 6/6 | Complete | 2026-02-24 |
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
-| 3. P2P Networking | 3/4 | Gap closure | 2026-02-26 |
-| 4. Real-Time Chat | 0/5 | Not started | - |
+| 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
+| 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
 | 5. Direct Messages | 0/2 | Not started | - |
 | 6. Content Distribution | 0/3 | Not started | - |
 | 7. Media and Prefetching | 0/3 | Not started | - |
