@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import type { CategoryWithChannelsResponse, ChannelResponse } from '@shared/ipc-bridge'
 import CategoryHeader from './CategoryHeader'
 import UnreadBadge from './UnreadBadge'
+import { usePrefetch } from '../hooks/usePrefetch'
 
 interface ChannelListProps {
   categoriesWithChannels: CategoryWithChannelsResponse[]
@@ -41,7 +42,9 @@ function ChannelItem({
   onSelect,
   onRename,
   onDelete,
-  onMarkAsRead
+  onMarkAsRead,
+  onMouseEnter,
+  onMouseLeave
 }: {
   channel: ChannelResponse
   active: boolean
@@ -52,6 +55,8 @@ function ChannelItem({
   onRename?: (name: string) => void
   onDelete?: () => void
   onMarkAsRead?: () => void
+  onMouseEnter?: () => void
+  onMouseLeave?: () => void
 }) {
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
   const [renaming, setRenaming] = useState(false)
@@ -124,6 +129,8 @@ function ChannelItem({
         }`}
         onClick={onSelect}
         onContextMenu={handleContextMenu}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
         <ChannelIcon type={channel.channel_type} />
         <span className="truncate">{channel.name}</span>
@@ -203,6 +210,7 @@ export default function ChannelList({
   onDeleteCategory,
   onMarkAsRead
 }: ChannelListProps) {
+  const { prefetchOnHover, cancelPrefetch } = usePrefetch()
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
 
   const toggleCategory = (categoryId: string) => {
@@ -254,6 +262,8 @@ export default function ChannelList({
                         onRename={onRenameChannel ? (name) => onRenameChannel(ch.id, name) : undefined}
                         onDelete={onDeleteChannel ? () => onDeleteChannel(ch.id) : undefined}
                         onMarkAsRead={onMarkAsRead ? () => onMarkAsRead(ch.id) : undefined}
+                        onMouseEnter={() => prefetchOnHover(ch.id)}
+                        onMouseLeave={cancelPrefetch}
                       />
                     </li>
                   )

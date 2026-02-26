@@ -20,6 +20,7 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { useStore } from '../stores'
 import { useMessages } from '../hooks/useMessages'
 import { useTypingIndicator } from '../hooks/usePresence'
+import { useAppLaunchPrefetch } from '../hooks/usePrefetch'
 import { groupMessages, type MessageGroupData } from './MessageGroup'
 import MessageGroupComponent from './MessageGroup'
 import MessageComposer from './MessageComposer'
@@ -41,6 +42,20 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
   const publicKey = useStore((s) => s.publicKey)
   const members = useStore((s) => s.members)
   const serverName = useStore((s) => s.name)
+
+  // App launch prefetch: last-viewed + most active channel (runs once)
+  useAppLaunchPrefetch()
+
+  // Persist last-viewed channel to localStorage for app launch prefetch
+  useEffect(() => {
+    if (activeChannelId) {
+      try {
+        localStorage.setItem('united-last-viewed-channel', activeChannelId)
+      } catch {
+        // localStorage may be unavailable
+      }
+    }
+  }, [activeChannelId])
 
   // Find the active channel info for header display
   const activeChannel = useMemo(() => {
@@ -163,6 +178,10 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
   const prevMessageCountRef = useRef(messages.length)
   const isLoadingOlderRef = useRef(false)
 
+  // Scroll-based prefetch: 2s debounce for 70% threshold
+  const scrollPrefetchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastScrollPrefetchRef = useRef(0)
+
   // Virtualizer
   const virtualizer = useVirtualizer({
     count: groups.length,
@@ -199,6 +218,20 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
     if (el.scrollTop < 200 && hasMore && !loading && !isLoadingOlderRef.current) {
       isLoadingOlderRef.current = true
       loadOlder()
+    }
+
+    // 70% scroll prefetch: when user has scrolled up past 70% of content,
+    // trigger loading older messages with 2s debounce
+    if (el.scrollHeight > 0 && hasMore && !loading) {
+      const scrollUpPercentage = 1 - (el.scrollTop / (el.scrollHeight - el.clientHeight))
+      if (scrollUpPercentage >= 0.7) {
+        const now = Date.now()
+        if (now - lastScrollPrefetchRef.current > 2000 && !isLoadingOlderRef.current) {
+          lastScrollPrefetchRef.current = now
+          isLoadingOlderRef.current = true
+          loadOlder()
+        }
+      }
     }
   }, [hasMore, loading, loadOlder, hasNewMessages, activeChannelId, markChannelRead, clearMentionCount])
 

@@ -26,6 +26,8 @@ export interface ChannelMessages {
 
 export interface MessagesSlice {
   channelMessages: Record<string, ChannelMessages>
+  /** Channels already prefetched this session (avoids redundant fetches) */
+  prefetchedChannels: Set<string>
   loadMessages: (channelId: string) => Promise<void>
   loadOlderMessages: (channelId: string) => Promise<void>
   appendMessage: (channelId: string, msg: ChatMessage) => void
@@ -36,6 +38,8 @@ export interface MessagesSlice {
   markChannelRead: (channelId: string) => void
   getUnreadCount: (channelId: string) => number
   clearChannelMessages: (channelId: string) => void
+  /** Silently populate a channel with prefetched messages (no loading state) */
+  prefetchMessages: (channelId: string, messages: ChatMessage[]) => void
 }
 
 function emptyChannelMessages(): ChannelMessages {
@@ -51,6 +55,7 @@ function emptyChannelMessages(): ChannelMessages {
 
 export const createMessagesSlice: StateCreator<RootStore, [], [], MessagesSlice> = (set, get) => ({
   channelMessages: {},
+  prefetchedChannels: new Set<string>(),
 
   loadMessages: async (channelId: string) => {
     const existing = get().channelMessages[channelId]
@@ -355,6 +360,38 @@ export const createMessagesSlice: StateCreator<RootStore, [], [], MessagesSlice>
     set((state) => {
       const { [channelId]: _, ...rest } = state.channelMessages
       return { channelMessages: rest }
+    })
+  },
+
+  prefetchMessages: (channelId: string, messages: ChatMessage[]) => {
+    set((state) => {
+      // Don't overwrite live data -- only populate if channel has no messages
+      const existing = state.channelMessages[channelId]
+      if (existing && existing.messages.length > 0) {
+        return state
+      }
+
+      const sorted = [...messages].sort(
+        (a, b) => a.server_sequence - b.server_sequence
+      )
+
+      const newPrefetched = new Set(state.prefetchedChannels)
+      newPrefetched.add(channelId)
+
+      return {
+        prefetchedChannels: newPrefetched,
+        channelMessages: {
+          ...state.channelMessages,
+          [channelId]: {
+            messages: sorted,
+            oldestLoaded: sorted.length > 0 ? sorted[0].server_sequence : null,
+            newestLoaded: sorted.length > 0 ? sorted[sorted.length - 1].server_sequence : null,
+            hasMoreHistory: true,
+            lastReadSequence: 0,
+            loading: false,
+          }
+        }
+      }
     })
   }
 })
