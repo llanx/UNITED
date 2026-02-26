@@ -185,6 +185,19 @@ pub async fn run_connection(
     // Remove this connection from the registry
     unregister_connection(&state, &user_id, &tx);
 
+    // Voice disconnect cleanup: remove user from all voice channels and broadcast leave events
+    let voice_left_channels = state.voice_state.leave_all_channels(&user_id);
+    for channel_id in &voice_left_channels {
+        crate::voice::signaling::broadcast_leave_event(&state, channel_id, &user_id, &display_name);
+    }
+    if !voice_left_channels.is_empty() {
+        tracing::info!(
+            user_id = %user_id,
+            channels = ?voice_left_channels,
+            "Cleaned up voice state on disconnect"
+        );
+    }
+
     // Only broadcast OFFLINE if this was the user's last connection
     let has_remaining = state
         .connections

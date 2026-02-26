@@ -14,6 +14,7 @@ mod proto;
 mod roles;
 mod routes;
 mod state;
+mod voice;
 mod ws;
 
 use dashmap::DashMap;
@@ -250,6 +251,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         block_retention_days: config.blocks.as_ref().map(|b| b.retention_days),
         block_cleanup_interval_secs: config.blocks.as_ref().map(|b| b.cleanup_interval_secs),
         max_upload_size_mb: config.blocks.as_ref().map(|b| b.max_upload_size_mb),
+        voice_state: Arc::new(voice::state::VoiceState::new()),
+        turn_config: config.turn.clone(),
     };
 
     // Spawn DM offline queue cleanup task (runs hourly, purges entries older than 30 days)

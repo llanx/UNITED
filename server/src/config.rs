@@ -48,6 +48,11 @@ pub struct Config {
     #[arg(skip)]
     #[serde(default)]
     pub blocks: Option<BlocksConfig>,
+
+    /// TURN relay configuration (loaded from [turn] section in TOML)
+    #[arg(skip)]
+    #[serde(default)]
+    pub turn: Option<TurnConfig>,
 }
 
 /// Configuration for the content-addressed block store.
@@ -88,6 +93,55 @@ fn default_max_upload_size() -> u32 {
     100
 }
 
+/// Configuration for the TURN relay server (voice channel NAT traversal).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TurnConfig {
+    /// Whether TURN relay is enabled (default: false)
+    #[serde(default)]
+    pub enabled: bool,
+
+    /// TURN server hostname or IP (default: "127.0.0.1")
+    #[serde(default = "default_turn_host")]
+    pub host: String,
+
+    /// TURN server port (default: 3478)
+    #[serde(default = "default_turn_port")]
+    pub port: u16,
+
+    /// Shared secret for generating time-limited TURN credentials
+    /// Auto-generated on first boot if empty.
+    #[serde(default)]
+    pub shared_secret: String,
+
+    /// Credential TTL in seconds (default: 86400 = 24 hours)
+    #[serde(default = "default_credential_ttl")]
+    pub credential_ttl_secs: u64,
+}
+
+impl Default for TurnConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            host: "127.0.0.1".to_string(),
+            port: 3478,
+            shared_secret: String::new(),
+            credential_ttl_secs: 86400,
+        }
+    }
+}
+
+fn default_turn_host() -> String {
+    "127.0.0.1".to_string()
+}
+
+fn default_turn_port() -> u16 {
+    3478
+}
+
+fn default_credential_ttl() -> u64 {
+    86400
+}
+
 fn default_p2p_config() -> Option<P2pConfig> {
     Some(P2pConfig::default())
 }
@@ -104,6 +158,7 @@ impl Default for Config {
             registration_mode: "open".to_string(),
             p2p: Some(P2pConfig::default()),
             blocks: None,
+            turn: None,
         }
     }
 }
@@ -177,6 +232,14 @@ pub fn generate_config_template() -> String {
 
 # Maximum upload size in megabytes per block (default: 100)
 # max_upload_size_mb = 100
+
+# ---- TURN Relay (Voice Channels) ----
+# [turn]
+# enabled = false
+# host = "127.0.0.1"
+# port = 3478
+# shared_secret = ""  # Auto-generated on first boot if empty
+# credential_ttl_secs = 86400  # 24 hours
 "#
     .to_string()
 }

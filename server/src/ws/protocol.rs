@@ -63,6 +63,33 @@ async fn dispatch_payload(
         Payload::RegisterPeerIdRequest(req) => {
             handle_register_peer_id(req, request_id, tx, state, user_id).await;
         }
+        // --- Phase 8: Voice Channels ---
+        Payload::VoiceJoinRequest(req) => {
+            crate::voice::signaling::handle_voice_join(req, request_id, tx, state, user_id).await;
+        }
+        Payload::VoiceLeaveRequest(req) => {
+            crate::voice::signaling::handle_voice_leave(req, request_id, tx, state, user_id).await;
+        }
+        Payload::VoiceSdpOffer(req) => {
+            crate::voice::signaling::handle_voice_sdp_offer(req, request_id, tx, state, user_id)
+                .await;
+        }
+        Payload::VoiceSdpAnswer(req) => {
+            crate::voice::signaling::handle_voice_sdp_answer(req, request_id, tx, state, user_id)
+                .await;
+        }
+        Payload::VoiceIceCandidate(req) => {
+            crate::voice::signaling::handle_voice_ice_candidate(req, request_id, tx, state, user_id)
+                .await;
+        }
+        Payload::VoiceStateUpdate(req) => {
+            crate::voice::signaling::handle_voice_state_update(req, request_id, tx, state, user_id)
+                .await;
+        }
+        Payload::VoiceSpeakingEvent(req) => {
+            crate::voice::signaling::handle_voice_speaking(req, request_id, tx, state, user_id)
+                .await;
+        }
         // Unhandled payload types
         _ => {
             tracing::debug!(

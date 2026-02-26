@@ -3,8 +3,10 @@ use std::sync::Arc;
 use tokio::sync::mpsc;
 
 use crate::chat::presence::PresenceInfo;
+use crate::config::TurnConfig;
 use crate::db::DbPool;
 use crate::p2p::{PeerDirectory, SwarmCommand};
+use crate::voice::state::VoiceState;
 use crate::ws::ConnectionRegistry;
 
 /// Challenge stored in memory with expiry
@@ -47,4 +49,8 @@ pub struct AppState {
     pub block_cleanup_interval_secs: Option<u64>,
     /// Maximum upload size in megabytes per block (from config, default 100)
     pub max_upload_size_mb: Option<u32>,
+    /// In-memory voice channel state (who is in which voice channel)
+    pub voice_state: Arc<VoiceState>,
+    /// TURN relay configuration for voice channel NAT traversal
+    pub turn_config: Option<TurnConfig>,
 }

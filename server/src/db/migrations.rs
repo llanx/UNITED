@@ -266,5 +266,11 @@ CREATE INDEX idx_blocks_channel ON blocks(channel_id);
 ALTER TABLE messages ADD COLUMN block_refs_json TEXT;
 ",
         ),
+        M::up(
+            "-- Migration 8: Voice Channels (Phase 8)
+
+ALTER TABLE channels ADD COLUMN max_participants INTEGER;
+",
+        ),
     ])
 }
