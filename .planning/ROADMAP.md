@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
 - [x] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators (completed 2026-02-26)
 - [x] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback (completed 2026-02-26)
-- [ ] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching
+- [x] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching (completed 2026-02-26)
 - [ ] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
 
 ## Phase Details
@@ -188,5 +188,5 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
 | 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
 | 6. Content Distribution | 4/4 | Complete   | 2026-02-26 |
-| 7. Media and Prefetching | 2/3 | In Progress|  |
+| 7. Media and Prefetching | 2/3 | Complete    | 2026-02-26 |
 | 8. Voice Channels | 0/2 | Not started | - |
