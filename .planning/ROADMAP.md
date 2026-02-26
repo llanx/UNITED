@@ -104,7 +104,7 @@ Plans:
 - [x] 04-03: Core chat UI — virtualized message list, markdown rendering, composer, hover toolbar (Wave 2, full-stack)
 - [x] 04-04: Presence and member list — server presence tracking, member sidebar, profile popups (Wave 2, full-stack)
 - [x] 04-05: Rich features — emoji reactions, @mention autocomplete, unread badges, desktop notifications (Wave 3, client)
-- [ ] 04-06: Gap closure — fix presence key mismatch and message ID consistency (Wave 1, full-stack)
+- [x] 04-06: Gap closure — fix presence key mismatch and message ID consistency (Wave 1, full-stack)
 
 ### Phase 5: Direct Messages
 **Goal**: Users can have private one-on-one conversations where only the participants can read the messages, even if the coordination server is compromised
@@ -181,7 +181,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 1. Foundation | 6/6 | Complete | 2026-02-24 |
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
 | 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
-| 4. Real-Time Chat | 5/6 | In Progress | - |
+| 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
 | 5. Direct Messages | 0/2 | Not started | - |
 | 6. Content Distribution | 0/3 | Not started | - |
 | 7. Media and Prefetching | 0/3 | Not started | - |
