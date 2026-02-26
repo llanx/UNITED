@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 3 of 8 (P2P Networking)
-Plan: 0 of 3 in current phase
-Status: Phase 2 complete, Phase 3 not yet planned
-Last activity: 2026-02-25 — Phase 2 complete (8/8 plans, human tests deferred)
+Plan: 1 of 3 in current phase
+Status: Plan 03-01 complete (Server libp2p node)
+Last activity: 2026-02-26 — Plan 03-01 complete (server P2P node with gossipsub)
 
-Progress: [███░░░░░░░] 25%
+Progress: [████░░░░░░] 30%
 
 ## Performance Metrics
 
@@ -29,9 +29,10 @@ Progress: [███░░░░░░░] 25%
 |-------|-------|-------|----------|-------|
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
 | 02-server-management | 8/8 | 37 min | 5 min | 02-01: schema, permissions, proto, broadcast; 02-02 to 02-04: server endpoints; 02-05: device provisioning; 02-06: channel/role UI; 02-07: invite join flow; 02-08: SRVR-04 gap closure |
+| 03-p2p-networking | 1/3 | 23 min | 23 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -81,6 +82,14 @@ Recent decisions affecting current work:
 - [02-08]: MemberResponse returns role_ids array (not full role objects) — client joins with local role cache
 - [02-08]: Owner members shown in UI but roles not editable — owner has all permissions implicitly
 - [02-08]: Default @everyone role excluded from toggle badges — auto-assigned to all
+- [03-01]: Shared tokio runtime for axum and libp2p Swarm (mpsc command/event channels for communication)
+- [03-01]: Topic namespace: first 16 chars of server PeerId / channel UUID (multi-server future-proof)
+- [03-01]: Gossipsub D=4, D_lo=3, D_hi=8 (chat-tuned, not blockchain defaults of D=6)
+- [03-01]: Circuit Relay v2 limits: 30min duration, 10MB data (up from 2min/128KB defaults)
+- [03-01]: Server libp2p identity stored as 32-byte Ed25519 seed at {data_dir}/p2p_identity.key
+- [03-01]: Separate port for libp2p WS (default 1985) from axum HTTP (1984)
+- [03-01]: GossipEnvelope has dual signing: gossipsub mesh-level + UNITED inner Ed25519 signature
+- [03-01]: Conservative peer scoring thresholds (-100/-200/-300) to avoid premature eviction
 
 ### Pending Todos
 
@@ -101,6 +110,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-25
-Stopped at: Phase 2 complete, ready for Phase 3 planning
-Resume file: .planning/phases/02-server-management/02-07-SUMMARY.md
+Last session: 2026-02-26
+Stopped at: Completed 03-01-PLAN.md (Server libp2p node)
+Resume file: .planning/phases/03-p2p-networking/03-01-SUMMARY.md
