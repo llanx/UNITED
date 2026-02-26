@@ -21,6 +21,7 @@ import {
 import { wsClient } from '../ws/client'
 import type { PeerInfo } from './types'
 import type { Libp2p, PubSub, PeerId } from '@libp2p/interface'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 // ============================================================
 // Reconnection state
@@ -254,16 +255,30 @@ function scheduleReconnect(
 
   state.timer = setTimeout(async () => {
     try {
-      // Try to find the peer's multiaddrs in the peer store
+      // Parse the string PeerId back to a PeerId object for peerStore lookup
+      const remotePeerId = peerIdFromString(state.peerId)
       const peerStore = node.peerStore
       let peerData
       try {
-        peerData = await peerStore.get(node.peerId) // This is wrong, should be remote
+        peerData = await peerStore.get(remotePeerId)
       } catch {
-        // Peer not in store
+        // Peer not in store — skip to next attempt
       }
 
-      // If we can't find multiaddrs, increment attempt and try again
+      if (peerData && peerData.addresses.length > 0) {
+        // Try each known multiaddr
+        for (const addr of peerData.addresses) {
+          try {
+            await node.dial(addr.multiaddr)
+            console.log(`[P2P] Reconnected to ${state.peerId} via ${addr.multiaddr.toString()}`)
+            return // Success — peer:connect handler cleans up state
+          } catch {
+            // This addr failed, try next
+          }
+        }
+      }
+
+      // All addrs failed or none found — backoff and retry
       state.attempt++
       scheduleReconnect(node, state, channelIds)
     } catch (err) {
