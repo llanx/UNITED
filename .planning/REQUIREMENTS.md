@@ -28,8 +28,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Media
 
 - [x] **MEDIA-01**: User can upload and share files (images, video, documents, archives) in channels and DMs
-- [ ] **MEDIA-02**: User can see images and videos rendered inline within messages (not as download links)
-- [ ] **MEDIA-03**: User sees blurhash placeholders at exact aspect ratio while media loads from peers (zero layout reflow)
+- [x] **MEDIA-02**: User can see images and videos rendered inline within messages (not as download links)
+- [x] **MEDIA-03**: User sees blurhash placeholders at exact aspect ratio while media loads from peers (zero layout reflow)
 - [x] **MEDIA-04**: Media is chunked into content-addressed blocks and distributed across the peer swarm
 
 ### Voice
@@ -56,7 +56,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **P2P-01**: All content is stored as content-addressed blocks (SHA-256 hashed, fixed-size chunks for media)
 - [x] **P2P-02**: New messages are propagated to channel peers via libp2p gossipsub protocol
 - [x] **P2P-03**: Content is fetched through a 5-layer cache cascade: L0 in-memory → L1 local SQLite/block store → L2 hot peers (active connections) → L3 DHT/swarm discovery → L4 coordination server fallback
-- [ ] **P2P-04**: User can configure their local storage buffer size (N GB) for seeding server content to other peers
+- [x] **P2P-04**: User can configure their local storage buffer size (N GB) for seeding server content to other peers
 - [x] **P2P-05**: Content is managed in priority tiers: P1 own messages (never evict) → P2 hot 24h → P3 warm 2-7 day → P4 altruistic seeding, with 7-day default TTL and LRU eviction
 - [x] **P2P-06**: Coordination server acts as a fallback super-seeder, maintaining an encrypted copy of content for availability when the peer swarm is thin
 - [ ] **P2P-07**: User can see seeding/contribution indicators showing how much they contribute to the swarm (upload/download stats, blocks seeded)
@@ -207,10 +207,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEC-04 | Phase 6: Content Distribution | Complete |
 | APP-04 | Phase 6: Content Distribution | Complete |
 | MEDIA-01 | Phase 7: Media and Prefetching | Complete |
-| MEDIA-02 | Phase 7: Media and Prefetching | Pending |
-| MEDIA-03 | Phase 7: Media and Prefetching | Pending |
+| MEDIA-02 | Phase 7: Media and Prefetching | Complete |
+| MEDIA-03 | Phase 7: Media and Prefetching | Complete |
 | MEDIA-04 | Phase 7: Media and Prefetching | Complete |
-| P2P-04 | Phase 7: Media and Prefetching | Pending |
+| P2P-04 | Phase 7: Media and Prefetching | Complete |
 | P2P-07 | Phase 7: Media and Prefetching | Pending |
 | P2P-08 | Phase 7: Media and Prefetching | Pending |
 | VOICE-01 | Phase 8: Voice Channels | Pending |
