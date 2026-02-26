@@ -217,3 +217,16 @@ pub struct DmOfflineQueueEntry {
     pub queued_at: String,
     pub delivered: bool,
 }
+
+// --- Phase 6: Content Distribution ---
+
+/// Content-addressed block metadata (file stored on disk, metadata in DB)
+#[derive(Debug, Clone)]
+pub struct BlockRow {
+    pub hash: String,
+    pub size: i64,
+    pub encrypted_size: i64,
+    pub channel_id: Option<String>,
+    pub created_at: String,
+    pub expires_at: String,
+}

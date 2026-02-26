@@ -244,5 +244,21 @@ CREATE TABLE dm_offline_queue (
 CREATE INDEX idx_dm_offline_recipient ON dm_offline_queue(recipient_pubkey, delivered);
 ",
         ),
+        M::up(
+            "-- Migration 6: Content-Addressed Block Store (Phase 6)
+
+CREATE TABLE blocks (
+    hash TEXT PRIMARY KEY,
+    size INTEGER NOT NULL,
+    encrypted_size INTEGER NOT NULL,
+    channel_id TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    expires_at TEXT NOT NULL,
+    FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE SET NULL
+);
+CREATE INDEX idx_blocks_expires ON blocks(expires_at);
+CREATE INDEX idx_blocks_channel ON blocks(channel_id);
+",
+        ),
     ])
 }

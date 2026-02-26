@@ -12,6 +12,7 @@ import "p2p.proto";
 import "chat.proto";
 import "presence.proto";
 import "dm.proto";
+import "blocks.proto";
 
 // WebSocket envelope: all WS messages are wrapped in this type
 // Both client->server and server->client use the same envelope format
@@ -30,7 +31,8 @@ import "dm.proto";
 //   100-109: Overflow from Phase 2
 //   110-119: P2P networking (Phase 3)
 //   120-149: Real-Time Chat (Phase 4)
-//   150-169: Direct Messages (Phase 5)
+//   150-159: Direct Messages (Phase 5)
+//   160-179: Content Distribution (Phase 6) — block events
 
 message Envelope {
   // Client-generated request ID, echoed in response for correlation
@@ -133,6 +135,11 @@ message Envelope {
     united.dm.DmConversationListRequest dm_conversation_list_request = 155;
     united.dm.DmConversationListResponse dm_conversation_list_response = 156;
     united.dm.DmOfflineMessagesResponse dm_offline_messages_response = 157;
+
+    // --- Phase 6: Content Distribution (160-179) ---
+    united.blocks.BlockStored block_stored = 160;
+    united.blocks.BlockRequest block_request = 161;
+    united.blocks.BlockAvailable block_available = 162;
   }
 }
 

@@ -58,6 +58,10 @@ pub mod united {
         include!(concat!(env!("OUT_DIR"), "/united.dm.rs"));
     }
 
+    pub mod blocks {
+        include!(concat!(env!("OUT_DIR"), "/united.blocks.rs"));
+    }
+
     pub mod ws {
         include!(concat!(env!("OUT_DIR"), "/united.ws.rs"));
     }
@@ -72,6 +76,7 @@ pub use united::invite;
 pub use united::moderation;
 pub use united::p2p as p2p_proto;
 pub use united::presence;
+pub use united::blocks;
 pub use united::dm;
 pub use united::roles;
 pub use united::server;
