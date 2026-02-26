@@ -2,7 +2,10 @@ import { useState, useRef, useEffect } from 'react'
 import type { CategoryWithChannelsResponse, ChannelResponse } from '@shared/ipc-bridge'
 import CategoryHeader from './CategoryHeader'
 import UnreadBadge from './UnreadBadge'
+import VoiceParticipant from './VoiceParticipant'
 import { usePrefetch } from '../hooks/usePrefetch'
+import { useStore } from '../stores'
+import type { VoiceParticipantState } from '../stores/voice'
 
 interface ChannelListProps {
   categoriesWithChannels: CategoryWithChannelsResponse[]
@@ -44,7 +47,10 @@ function ChannelItem({
   onDelete,
   onMarkAsRead,
   onMouseEnter,
-  onMouseLeave
+  onMouseLeave,
+  voiceParticipants,
+  isInVoiceChannel,
+  onJoinVoice,
 }: {
   channel: ChannelResponse
   active: boolean
@@ -57,6 +63,9 @@ function ChannelItem({
   onMarkAsRead?: () => void
   onMouseEnter?: () => void
   onMouseLeave?: () => void
+  voiceParticipants?: VoiceParticipantState[]
+  isInVoiceChannel?: boolean
+  onJoinVoice?: () => void
 }) {
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
   const [renaming, setRenaming] = useState(false)
@@ -117,30 +126,58 @@ function ChannelItem({
     )
   }
 
+  const isVoice = channel.channel_type === 'voice'
+  const participantCount = voiceParticipants?.length ?? 0
+
+  const handleClick = () => {
+    if (isVoice && onJoinVoice) {
+      // Voice channels: join voice (do NOT change active text channel)
+      if (!isInVoiceChannel) {
+        onJoinVoice()
+      }
+      // If already in this voice channel, clicking again does nothing
+    } else {
+      onSelect()
+    }
+  }
+
   return (
     <div className="relative">
       <button
         className={`flex w-full items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors ${
-          active
-            ? 'bg-white/10 text-[var(--color-text-primary)]'
-            : isUnread
-              ? 'text-[var(--color-text-primary)] font-semibold hover:bg-white/5'
+          isVoice
+            ? isInVoiceChannel
+              ? 'bg-white/10 text-[var(--color-text-primary)]'
               : 'text-[var(--color-text-muted)] hover:bg-white/5 hover:text-[var(--color-text-primary)]'
+            : active
+              ? 'bg-white/10 text-[var(--color-text-primary)]'
+              : isUnread
+                ? 'text-[var(--color-text-primary)] font-semibold hover:bg-white/5'
+                : 'text-[var(--color-text-muted)] hover:bg-white/5 hover:text-[var(--color-text-primary)]'
         }`}
-        onClick={onSelect}
+        onClick={handleClick}
         onContextMenu={handleContextMenu}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
         <ChannelIcon type={channel.channel_type} />
         <span className="truncate">{channel.name}</span>
-        {channel.channel_type === 'voice' && (
-          <span className="ml-auto text-[10px] text-[var(--color-text-muted)]">0</span>
+        {isVoice && participantCount > 0 && (
+          <span className="ml-auto text-[10px] text-[var(--color-text-muted)]">{participantCount}</span>
         )}
-        {channel.channel_type !== 'voice' && (
+        {!isVoice && (
           <UnreadBadge unreadCount={unreadCount} mentionCount={mentionCount} />
         )}
       </button>
+
+      {/* Voice participants inline under channel */}
+      {isVoice && voiceParticipants && voiceParticipants.length > 0 && (
+        <div className="ml-4 mt-0.5 flex flex-col gap-0.5">
+          {voiceParticipants.map((p) => (
+            <VoiceParticipant key={p.userId} participant={p} />
+          ))}
+        </div>
+      )}
 
       {/* Context menu */}
       {contextMenu && (
@@ -213,6 +250,24 @@ export default function ChannelList({
   const { prefetchOnHover, cancelPrefetch } = usePrefetch()
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
 
+  // Voice state
+  const voiceChannelId = useStore((s) => s.voiceChannelId)
+  const voiceParticipants = useStore((s) => s.voiceParticipants)
+  const joinVoiceChannel = useStore((s) => s.joinVoiceChannel)
+
+  // Track participant cap warning (show only once per session)
+  const [capWarningShown, setCapWarningShown] = useState(false)
+
+  // Check participant count for soft cap warning
+  useEffect(() => {
+    if (voiceParticipants.size > 8 && !capWarningShown) {
+      setCapWarningShown(true)
+      // Show a toast-like warning. Using a simple approach: a temporary element.
+      // In a real app this would use a toast system. For now, console + inline.
+      console.warn('Voice quality may be reduced with more than 8 participants.')
+    }
+  }, [voiceParticipants.size, capWarningShown])
+
   const toggleCategory = (categoryId: string) => {
     setCollapsedCategories((prev) => {
       const next = new Set(prev)
@@ -250,6 +305,11 @@ export default function ChannelList({
               <ul className="flex flex-col gap-0.5 pl-1">
                 {sortedChannels.map((ch) => {
                   const unreadInfo = channelUnreadState?.[ch.id] ?? { unreadCount: 0, mentionCount: 0 }
+                  const isVoice = ch.channel_type === 'voice'
+                  // Collect participants for this voice channel
+                  const channelVoiceParticipants = isVoice && voiceChannelId === ch.id
+                    ? Array.from(voiceParticipants.values())
+                    : []
                   return (
                     <li key={ch.id}>
                       <ChannelItem
@@ -264,6 +324,9 @@ export default function ChannelList({
                         onMarkAsRead={onMarkAsRead ? () => onMarkAsRead(ch.id) : undefined}
                         onMouseEnter={() => prefetchOnHover(ch.id)}
                         onMouseLeave={cancelPrefetch}
+                        voiceParticipants={isVoice ? channelVoiceParticipants : undefined}
+                        isInVoiceChannel={isVoice && voiceChannelId === ch.id}
+                        onJoinVoice={isVoice ? () => joinVoiceChannel(ch.id) : undefined}
                       />
                     </li>
                   )
