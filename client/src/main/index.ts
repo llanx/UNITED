@@ -15,6 +15,7 @@ import { registerChatHandlers } from './ipc/chat'
 import { registerPresenceHandlers } from './ipc/presence'
 import { registerNotificationHandlers } from './ipc/notifications'
 import { registerDmHandlers } from './ipc/dm'
+import { registerBlockHandlers } from './ipc/blocks'
 import { setupChatEventListener } from './ws/chat-events'
 import { setupDmEventListener } from './ws/dm-events'
 import { IPC } from './ipc/channels'
@@ -139,6 +140,7 @@ app.whenReady().then(() => {
   registerPresenceHandlers(ipcMain)
   registerNotificationHandlers(ipcMain)
   registerDmHandlers(ipcMain)
+  registerBlockHandlers(ipcMain)
   initP2PListener()
   setupChatEventListener()
   setupDmEventListener()

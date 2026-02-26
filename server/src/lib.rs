@@ -4,6 +4,7 @@
 
 pub mod admin;
 pub mod auth;
+pub mod blocks;
 pub mod channels;
 pub mod chat;
 pub mod config;

@@ -42,6 +42,25 @@ const MIGRATIONS: string[] = [
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL,
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );`,
+
+  // Migration 2: Block store tables (Phase 6 content distribution)
+  `CREATE TABLE IF NOT EXISTS block_meta (
+    hash TEXT PRIMARY KEY,
+    size INTEGER NOT NULL,
+    tier INTEGER NOT NULL DEFAULT 3,
+    mime_type TEXT,
+    width INTEGER,
+    height INTEGER,
+    filename TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_accessed_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_block_meta_tier_access ON block_meta(tier, last_accessed_at);
+
+  CREATE TABLE IF NOT EXISTS block_store_config (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
   );`
 ]
 

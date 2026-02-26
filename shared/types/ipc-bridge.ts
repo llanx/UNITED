@@ -264,6 +264,24 @@ export interface DmKeyStatus {
 }
 
 // ============================================================
+// Block store types
+// ============================================================
+
+export interface BlockStorageUsage {
+  /** Total storage used in bytes */
+  total: number;
+  /** Storage used per tier (keyed by ContentTier numeric value) */
+  byTier: Record<number, number>;
+}
+
+export interface BlockStoreConfig {
+  /** Total storage budget in bytes */
+  budgetBytes: number;
+  /** Warm tier TTL in days (best-effort, budget is hard limit) */
+  warmTtlDays: number;
+}
+
+// ============================================================
 // P2P types
 // ============================================================
 
@@ -584,6 +602,26 @@ export interface UnitedAPI {
     onDmEvent(callback: (event: DmEvent) => void): () => void;
     /** Subscribe to DM key rotation events (returns cleanup function) */
     onKeyRotated(callback: (userPubkey: string) => void): () => void;
+  };
+
+  // ---- Block Store ----
+
+  /** Content-addressed encrypted block store operations */
+  blocks: {
+    /** Store a block (data as base64). Returns content-address hash. */
+    putBlock(dataBase64: string, tier: number, meta?: Partial<{ mimeType: string; width: number; height: number; filename: string }>): Promise<string>;
+    /** Retrieve a block by hash. Returns base64-encoded data or null. */
+    getBlock(hash: string): Promise<string | null>;
+    /** Check if a block exists locally. */
+    hasBlock(hash: string): Promise<boolean>;
+    /** Delete a block from local store. */
+    deleteBlock(hash: string): Promise<void>;
+    /** Get storage usage breakdown by tier. */
+    getStorageUsage(): Promise<BlockStorageUsage>;
+    /** Get block store configuration. */
+    getConfig(): Promise<BlockStoreConfig>;
+    /** Update block store configuration. */
+    setConfig(config: Partial<BlockStoreConfig>): Promise<void>;
   };
 
   // ---- Storage ----

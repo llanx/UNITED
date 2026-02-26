@@ -1,5 +1,6 @@
 mod admin;
 mod auth;
+mod blocks;
 mod channels;
 mod chat;
 mod config;
@@ -245,10 +246,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         server_peer_id,
         libp2p_port: p2p_config.libp2p_port,
         presence: Arc::new(DashMap::new()),
+        data_dir: config.data_dir.clone(),
+        block_retention_days: config.blocks.as_ref().map(|b| b.retention_days),
+        block_cleanup_interval_secs: config.blocks.as_ref().map(|b| b.cleanup_interval_secs),
     };
 
     // Spawn DM offline queue cleanup task (runs hourly, purges entries older than 30 days)
     dm::offline::spawn_offline_cleanup(app_state.db.clone());
+
+    // Spawn block retention cleanup task (purges expired blocks periodically)
+    let block_cleanup_interval = config
+        .blocks
+        .as_ref()
+        .map(|b| b.cleanup_interval_secs)
+        .unwrap_or(3600);
+    blocks::retention::spawn_retention_cleanup(
+        app_state.db.clone(),
+        config.data_dir.clone(),
+        block_cleanup_interval,
+    );
 
     // Build router
     let app = routes::build_router(app_state);

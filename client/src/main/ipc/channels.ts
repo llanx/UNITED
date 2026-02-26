@@ -96,6 +96,15 @@ export const IPC = {
   NOTIFICATIONS_SET_PREFS: 'notifications:set-prefs',
   NOTIFICATIONS_SHOW: 'notifications:show',
 
+  // Block Store
+  BLOCK_PUT: 'block:put',
+  BLOCK_GET: 'block:get',
+  BLOCK_HAS: 'block:has',
+  BLOCK_DELETE: 'block:delete',
+  BLOCK_STORAGE_USAGE: 'block:storage-usage',
+  BLOCK_GET_CONFIG: 'block:get-config',
+  BLOCK_SET_CONFIG: 'block:set-config',
+
   // Direct Messages
   DM_PUBLISH_KEY: 'dm:publish-key',
   DM_LIST_CONVERSATIONS: 'dm:list-conversations',

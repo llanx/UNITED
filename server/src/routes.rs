@@ -5,6 +5,7 @@ use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
 
 use crate::admin::settings;
 use crate::auth::challenge;
+use crate::blocks::routes as block_routes;
 use crate::auth::middleware::JwtSecret;
 use crate::auth::totp;
 use crate::chat;
@@ -274,6 +275,11 @@ pub fn build_router(state: AppState) -> Router {
         .route("/api/dm/offline", axum::routing::get(dm::offline::get_offline_messages))
         .route("/api/dm/offline/ack", axum::routing::post(dm::offline::ack_offline_messages));
 
+    // Phase 6: Block storage routes (content distribution)
+    let block_storage_routes = Router::new()
+        .route("/api/blocks", axum::routing::put(block_routes::put_block_route))
+        .route("/api/blocks/{hash}", axum::routing::get(block_routes::get_block_route));
+
     Router::new()
         .merge(auth_routes)
         .merge(public_identity_routes)
@@ -288,6 +294,7 @@ pub fn build_router(state: AppState) -> Router {
         .merge(chat_routes)
         .merge(presence_routes)
         .merge(dm_routes)
+        .merge(block_storage_routes)
         .merge(ws_routes)
         .merge(health)
         .layer(middleware::from_fn_with_state(

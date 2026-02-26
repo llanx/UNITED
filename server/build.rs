@@ -13,6 +13,7 @@ fn main() -> Result<()> {
         "../shared/proto/chat.proto",
         "../shared/proto/presence.proto",
         "../shared/proto/dm.proto",
+        "../shared/proto/blocks.proto",
         "../shared/proto/ws.proto",
     ];
 

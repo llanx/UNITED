@@ -18,6 +18,8 @@ import {
   clearSharedSecretCache
 } from '../ipc/dm-crypto'
 import { getAccessToken, getServerUrl } from '../ipc/auth'
+import { putBlock } from '../blocks/index'
+import { ContentTier } from '../blocks/types'
 import type { DmEvent, DecryptedDmMessage, DmConversation } from '@shared/ipc-bridge'
 
 /**
@@ -139,6 +141,19 @@ async function handleDmMessage(msg: {
       timestamp: Number(msg.timestamp),
       serverSequence: Number(msg.serverSequence),
       decryptionFailed: true
+    }
+  }
+
+  // Persist received DM as P1_NEVER_EVICT block (fire-and-forget)
+  if (!decryptedMessage.decryptionFailed) {
+    try {
+      putBlock(
+        Buffer.from(decryptedMessage.content, 'utf-8'),
+        ContentTier.P1_NEVER_EVICT,
+        { mimeType: 'text/plain', filename: `dm-${msg.id}` }
+      )
+    } catch {
+      // Block store may not be initialized -- don't fail the DM flow
     }
   }
 

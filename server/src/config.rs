@@ -43,6 +43,40 @@ pub struct Config {
     #[arg(skip)]
     #[serde(default = "default_p2p_config")]
     pub p2p: Option<P2pConfig>,
+
+    /// Block storage configuration (loaded from [blocks] section in TOML)
+    #[arg(skip)]
+    #[serde(default)]
+    pub blocks: Option<BlocksConfig>,
+}
+
+/// Configuration for the content-addressed block store.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BlocksConfig {
+    /// Number of days to retain blocks before automatic purge (default: 30)
+    #[serde(default = "default_retention_days")]
+    pub retention_days: u32,
+
+    /// Interval in seconds between retention cleanup runs (default: 3600 = 1 hour)
+    #[serde(default = "default_cleanup_interval")]
+    pub cleanup_interval_secs: u64,
+}
+
+impl Default for BlocksConfig {
+    fn default() -> Self {
+        Self {
+            retention_days: 30,
+            cleanup_interval_secs: 3600,
+        }
+    }
+}
+
+fn default_retention_days() -> u32 {
+    30
+}
+
+fn default_cleanup_interval() -> u64 {
+    3600
 }
 
 fn default_p2p_config() -> Option<P2pConfig> {
@@ -60,6 +94,7 @@ impl Default for Config {
             data_dir: "./data".to_string(),
             registration_mode: "open".to_string(),
             p2p: Some(P2pConfig::default()),
+            blocks: None,
         }
     }
 }
@@ -121,6 +156,15 @@ pub fn generate_config_template() -> String {
 # relay_max_circuits_per_peer = 8        # Max circuits per peer
 # relay_max_circuit_duration_secs = 1800 # 30 minutes per circuit
 # relay_max_circuit_bytes = 10485760     # 10 MB per circuit
+
+# ---- Block Storage (Content Distribution) ----
+# [blocks]
+
+# Number of days to retain content blocks before automatic purge (default: 30)
+# retention_days = 30
+
+# Interval in seconds between retention cleanup runs (default: 3600 = 1 hour)
+# cleanup_interval_secs = 3600
 "#
     .to_string()
 }

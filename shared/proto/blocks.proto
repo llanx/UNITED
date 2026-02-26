@@ -1,0 +1,39 @@
+syntax = "proto3";
+package united.blocks;
+
+// Content-addressed block reference included in gossip messages.
+// Recipients use this to fetch the full block data from peers or server.
+message BlockRef {
+    string hash = 1;              // SHA-256 hex hash (content address)
+    uint64 size = 2;              // Original plaintext size in bytes
+    string mime_type = 3;         // MIME type (e.g. "image/png")
+    uint32 width = 4;             // Image/video width (0 if not applicable)
+    uint32 height = 5;            // Image/video height (0 if not applicable)
+    bytes micro_thumbnail = 6;    // ~100px JPEG micro-thumbnail (<5KB)
+    string filename = 7;          // Original filename
+}
+
+// Request a block by its content hash
+message BlockRequest {
+    string hash = 1;              // SHA-256 hex hash
+}
+
+// Response containing block data (used in P2P block exchange)
+message BlockResponse {
+    string hash = 1;              // SHA-256 hex hash
+    bytes data = 2;               // Raw block data (plaintext)
+    bool not_found = 3;           // True if the block was not found
+}
+
+// Server confirms a block has been stored successfully
+message BlockStored {
+    string hash = 1;              // SHA-256 hex hash
+    uint64 size = 2;              // Original plaintext size in bytes
+    string channel_id = 3;        // Channel the block is associated with
+}
+
+// Notify peers that a new block is available from a peer
+message BlockAvailable {
+    string hash = 1;              // SHA-256 hex hash
+    string peer_id = 2;           // libp2p PeerId of the peer that has the block
+}
