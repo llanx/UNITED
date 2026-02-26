@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Server Management** - Channel/category CRUD, roles and permissions, moderation, and invite-based onboarding
 - [x] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
 - [x] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
-- [ ] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators
+- [x] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators (completed 2026-02-26)
 - [ ] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback
 - [ ] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching
 - [ ] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
@@ -184,7 +184,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
 | 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
-| 5. Direct Messages | 3/4 | In Progress | - |
+| 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
 | 6. Content Distribution | 0/3 | Not started | - |
 | 7. Media and Prefetching | 0/3 | Not started | - |
 | 8. Voice Channels | 0/2 | Not started | - |
