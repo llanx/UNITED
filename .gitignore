@@ -59,6 +59,9 @@ tests/integration/challenge_response.bin
 # Personal writing
 PublishableWriting/
 
+# Evaluations
+evaluations/
+
 # OS
 .DS_Store
 Thumbs.db
