@@ -6,6 +6,7 @@ mod db;
 mod identity;
 mod invite;
 mod moderation;
+mod p2p;
 mod proto;
 mod roles;
 mod routes;
@@ -13,6 +14,7 @@ mod state;
 mod ws;
 
 use dashmap::DashMap;
+use libp2p::{gossipsub, PeerId};
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::TcpListener;
@@ -78,6 +80,110 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
+    // --- P2P Networking Setup ---
+    let p2p_config = config.p2p.clone().unwrap_or_default();
+
+    // Load or generate the server's libp2p Ed25519 identity keypair
+    let keypair = p2p::identity::server_identity_keypair(&config.data_dir);
+    let server_peer_id = PeerId::from(keypair.public()).to_string();
+
+    // Query existing channels to subscribe to at startup
+    let startup_topics = {
+        let conn = db.lock().expect("DB lock for channel query");
+        let mut stmt = conn
+            .prepare("SELECT id FROM channels")
+            .expect("Prepare channel query");
+        let topics: Vec<String> = stmt
+            .query_map([], |row| row.get::<_, String>(0))
+            .expect("Query channels")
+            .filter_map(|r| r.ok())
+            .map(|channel_id| {
+                // Topic namespace: first 16 hex chars of server PeerId / channel UUID
+                let prefix = &server_peer_id[..std::cmp::min(16, server_peer_id.len())];
+                format!("{}/{}", prefix, channel_id)
+            })
+            .collect();
+        topics
+    };
+
+    // Build topic hashes for gossipsub peer scoring
+    let topic_hashes: Vec<gossipsub::TopicHash> = startup_topics
+        .iter()
+        .map(|t| gossipsub::IdentTopic::new(t).hash())
+        .collect();
+
+    // Build the libp2p Swarm
+    let swarm = p2p::swarm::build_swarm(keypair, &p2p_config, &topic_hashes).await;
+
+    // Create communication channels between axum and the Swarm
+    let (swarm_cmd_tx, swarm_cmd_rx) = tokio::sync::mpsc::unbounded_channel::<p2p::SwarmCommand>();
+    let (swarm_evt_tx, swarm_evt_rx) = tokio::sync::mpsc::unbounded_channel::<p2p::SwarmEvent>();
+
+    // Create shared peer directory
+    let peer_directory = Arc::new(p2p::PeerDirectory::new());
+
+    // Construct the libp2p listen multiaddr
+    let libp2p_listen_addr: libp2p::Multiaddr = format!(
+        "/ip4/0.0.0.0/tcp/{}/ws",
+        p2p_config.libp2p_port
+    )
+    .parse()
+    .expect("Valid libp2p multiaddr");
+
+    // Spawn the Swarm event loop
+    let peer_dir_for_swarm = peer_directory.clone();
+    tokio::spawn(async move {
+        p2p::swarm::run_swarm_loop(
+            swarm,
+            swarm_cmd_rx,
+            swarm_evt_tx,
+            peer_dir_for_swarm,
+            libp2p_listen_addr,
+        )
+        .await;
+    });
+
+    // Subscribe to all existing channel topics at startup
+    for topic in &startup_topics {
+        let _ = swarm_cmd_tx.send(p2p::SwarmCommand::SubscribeTopic(topic.clone()));
+    }
+    if !startup_topics.is_empty() {
+        tracing::info!(
+            "Subscribed to {} existing channel gossipsub topics",
+            startup_topics.len()
+        );
+    }
+
+    // Spawn event consumer task to handle gossipsub messages
+    let _evt_db = db.clone();
+    tokio::spawn(async move {
+        let mut evt_rx = swarm_evt_rx;
+        while let Some(event) = evt_rx.recv().await {
+            match event {
+                p2p::SwarmEvent::GossipMessage {
+                    source,
+                    topic,
+                    data,
+                } => {
+                    tracing::debug!(
+                        "Received gossipsub message from {} on {}, {} bytes",
+                        source,
+                        topic,
+                        data.len()
+                    );
+                    // Message persistence will be implemented in Task 2
+                    // via p2p::messages::handle_gossip_message()
+                }
+                p2p::SwarmEvent::PeerConnected(peer_id) => {
+                    tracing::info!("P2P peer connected: {}", peer_id);
+                }
+                p2p::SwarmEvent::PeerDisconnected(peer_id) => {
+                    tracing::info!("P2P peer disconnected: {}", peer_id);
+                }
+            }
+        }
+    });
+
     // Build application state
     let app_state = state::AppState {
         db,
@@ -86,6 +192,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         encryption_key,
         connections: ws::new_connection_registry(),
         registration_mode: config.registration_mode.clone(),
+        swarm_cmd_tx,
+        peer_directory,
+        server_peer_id,
+        libp2p_port: p2p_config.libp2p_port,
     };
 
     // Build router

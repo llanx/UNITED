@@ -10,6 +10,7 @@ pub mod db;
 pub mod identity;
 pub mod invite;
 pub mod moderation;
+pub mod p2p;
 pub mod proto;
 pub mod roles;
 pub mod routes;
