@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useStore } from '../stores'
 import { useChannels } from '../hooks/useChannels'
 import { useRoles } from '../hooks/useRoles'
@@ -10,12 +10,37 @@ export default function ChannelSidebar() {
   const serverName = useStore((s) => s.name)
   const isOwner = useStore((s) => s.isOwner)
   const displayName = useStore((s) => s.displayName)
+  const channelMessages = useStore((s) => s.channelMessages)
+  const channelMentionCounts = useStore((s) => s.channelMentionCounts)
+  const markChannelRead = useStore((s) => s.markChannelRead)
+  const clearMentionCount = useStore((s) => s.clearMentionCount)
 
   const { categoriesWithChannels, activeChannelId, loading, setActiveChannel } = useChannels()
   useRoles() // Initialize roles fetching and WS subscription
 
   // Determine admin status: owner always has admin. Could also check role permissions.
   const isAdmin = isOwner
+
+  // Compute unread state per channel
+  const channelUnreadState = useMemo(() => {
+    const state: Record<string, { unreadCount: number; mentionCount: number }> = {}
+    for (const cwc of categoriesWithChannels) {
+      for (const ch of cwc.channels) {
+        const msgs = channelMessages[ch.id]
+        const unreadCount = msgs
+          ? msgs.messages.filter((m) => m.server_sequence > msgs.lastReadSequence).length
+          : 0
+        const mentionCount = channelMentionCounts[ch.id] ?? 0
+        state[ch.id] = { unreadCount, mentionCount }
+      }
+    }
+    return state
+  }, [categoriesWithChannels, channelMessages, channelMentionCounts])
+
+  const handleMarkAsRead = (channelId: string) => {
+    markChannelRead(channelId)
+    clearMentionCount(channelId)
+  }
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [showCreateMenu, setShowCreateMenu] = useState(false)
@@ -371,11 +396,13 @@ export default function ChannelSidebar() {
             categoriesWithChannels={categoriesWithChannels}
             activeChannelId={activeChannelId}
             isAdmin={isAdmin}
+            channelUnreadState={channelUnreadState}
             onSelectChannel={setActiveChannel}
             onRenameChannel={isAdmin ? handleRenameChannel : undefined}
             onDeleteChannel={isAdmin ? handleDeleteChannel : undefined}
             onRenameCategory={isAdmin ? handleRenameCategory : undefined}
             onDeleteCategory={isAdmin ? handleDeleteCategory : undefined}
+            onMarkAsRead={handleMarkAsRead}
           />
         )}
       </div>

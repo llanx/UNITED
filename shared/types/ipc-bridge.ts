@@ -199,7 +199,7 @@ export interface ChatHistoryResponse {
 }
 
 export interface ChatEvent {
-  type: 'new' | 'edited' | 'deleted' | 'reaction-added' | 'reaction-removed';
+  type: 'new' | 'edited' | 'deleted' | 'reaction-added' | 'reaction-removed' | 'navigate';
   message?: ChatMessage;
   messageId?: string;
   channelId?: string;
@@ -467,9 +467,10 @@ export interface UnitedAPI {
 
   // ---- Notifications ----
 
-  /** Notification preference operations */
+  /** Notification preference and display operations */
   notifications: {
     setPrefs(channelId: string, prefs: NotificationPrefs): Promise<void>;
+    show(opts: { title: string; body: string; channelId: string; serverName?: string }): Promise<void>;
   };
 
   // ---- Device Provisioning (SEC-12) ----

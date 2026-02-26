@@ -171,6 +171,8 @@ const api: UnitedAPI = {
   notifications: {
     setPrefs: (channelId: string, prefs: NotificationPrefs) =>
       ipcRenderer.invoke(IPC.NOTIFICATIONS_SET_PREFS, channelId, prefs),
+    show: (opts: { title: string; body: string; channelId: string; serverName?: string }) =>
+      ipcRenderer.invoke(IPC.NOTIFICATIONS_SHOW, opts),
   },
 
   // Device Provisioning (SEC-12)

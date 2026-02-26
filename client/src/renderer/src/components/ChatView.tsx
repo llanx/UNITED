@@ -23,7 +23,8 @@ import { useTypingIndicator } from '../hooks/usePresence'
 import { groupMessages, type MessageGroupData } from './MessageGroup'
 import MessageGroupComponent from './MessageGroup'
 import MessageComposer from './MessageComposer'
-import type { ChatMessage } from '@shared/ipc-bridge'
+import { extractMentionIds } from './MarkdownContent'
+import type { ChatMessage, ChatEvent } from '@shared/ipc-bridge'
 
 interface ChatViewProps {
   memberListVisible?: boolean
@@ -33,6 +34,13 @@ interface ChatViewProps {
 export default function ChatView({ memberListVisible, onToggleMemberList }: ChatViewProps) {
   const activeChannelId = useStore((s) => s.activeChannelId)
   const categoriesWithChannels = useStore((s) => s.categoriesWithChannels)
+  const markChannelRead = useStore((s) => s.markChannelRead)
+  const clearMentionCount = useStore((s) => s.clearMentionCount)
+  const incrementMentionCount = useStore((s) => s.incrementMentionCount)
+  const notificationPrefs = useStore((s) => s.notificationPrefs)
+  const publicKey = useStore((s) => s.publicKey)
+  const members = useStore((s) => s.members)
+  const serverName = useStore((s) => s.name)
 
   // Find the active channel info for header display
   const activeChannel = useMemo(() => {
@@ -62,6 +70,91 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
 
   // Typing indicator
   const typingText = useTypingIndicator(activeChannelId)
+
+  // Current user pubkey hex for mention detection
+  const currentPubkeyHex = useMemo(() => {
+    if (!publicKey) return null
+    return Array.from(publicKey)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+  }, [publicKey])
+
+  // Mark channel as read when mounting ChatView for a channel
+  useEffect(() => {
+    if (!activeChannelId) return
+    markChannelRead(activeChannelId)
+    clearMentionCount(activeChannelId)
+  }, [activeChannelId, markChannelRead, clearMentionCount])
+
+  // Listen for new messages to detect mentions and fire notifications
+  useEffect(() => {
+    if (!activeChannelId) return
+
+    const cleanup = window.united.onChatEvent((event: ChatEvent) => {
+      if (event.type !== 'new' || !event.message) return
+
+      const msg = event.message
+
+      // Check if message mentions current user
+      const { userIds, roleIds } = extractMentionIds(msg.content)
+      const currentMember = members.find((m) => m.id === currentPubkeyHex)
+      const isMentioned =
+        (currentPubkeyHex && userIds.includes(currentPubkeyHex)) ||
+        (currentMember && userIds.includes(currentMember.id)) ||
+        (currentMember && roleIds.length > 0 && currentMember.role_ids.some((rid) => roleIds.includes(rid)))
+
+      if (isMentioned) {
+        // Increment mention count for the message's channel
+        incrementMentionCount(msg.channel_id)
+
+        // Check notification preferences
+        const prefs = notificationPrefs[msg.channel_id]
+        if (prefs?.muted) return
+
+        // Don't notify for the active channel if window is focused
+        const isActiveAndFocused =
+          msg.channel_id === activeChannelId && document.hasFocus()
+
+        if (!isActiveAndFocused) {
+          // Find channel name for notification
+          let notifChannelName = 'unknown'
+          for (const cwc of categoriesWithChannels) {
+            const found = cwc.channels.find((ch) => ch.id === msg.channel_id)
+            if (found) { notifChannelName = found.name; break }
+          }
+
+          const preview = msg.content.length > 100
+            ? msg.content.substring(0, 97) + '...'
+            : msg.content
+
+          window.united.notifications.show({
+            title: `${msg.sender_display_name} in #${notifChannelName}`,
+            body: preview,
+            channelId: msg.channel_id,
+            serverName: serverName ?? undefined,
+          }).catch(() => {})
+        }
+      }
+
+      // If viewing the active channel and at bottom, mark as read
+      if (msg.channel_id === activeChannelId) {
+        // Will be marked as read by the scroll handler / isAtBottom check below
+      }
+    })
+
+    return cleanup
+  }, [activeChannelId, currentPubkeyHex, members, incrementMentionCount, notificationPrefs, categoriesWithChannels, serverName])
+
+  // Handle notification click navigation
+  useEffect(() => {
+    const setActiveChannel = useStore.getState().setActiveChannel
+    const cleanup = window.united.onChatEvent((event: ChatEvent) => {
+      if (event.type === 'navigate' && event.channelId) {
+        setActiveChannel(event.channelId)
+      }
+    })
+    return cleanup
+  }, [])
 
   // Scroll state
   const parentRef = useRef<HTMLDivElement>(null)
@@ -96,12 +189,18 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
       setHasNewMessages(false)
     }
 
+    // Mark as read when user scrolls to bottom
+    if (atBottom && activeChannelId) {
+      markChannelRead(activeChannelId)
+      clearMentionCount(activeChannelId)
+    }
+
     // Infinite scroll up: load older when near top
     if (el.scrollTop < 200 && hasMore && !loading && !isLoadingOlderRef.current) {
       isLoadingOlderRef.current = true
       loadOlder()
     }
-  }, [hasMore, loading, loadOlder, hasNewMessages])
+  }, [hasMore, loading, loadOlder, hasNewMessages, activeChannelId, markChannelRead, clearMentionCount])
 
   // Reset loading flag when loading state changes
   useEffect(() => {
@@ -118,12 +217,17 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
         requestAnimationFrame(() => {
           virtualizer.scrollToIndex(groups.length - 1, { align: 'end' })
         })
+        // Mark as read since user is at bottom viewing new messages
+        if (activeChannelId) {
+          markChannelRead(activeChannelId)
+          clearMentionCount(activeChannelId)
+        }
       } else {
         setHasNewMessages(true)
       }
     }
     prevMessageCountRef.current = messages.length
-  }, [messages.length, groups.length, isAtBottom, virtualizer])
+  }, [messages.length, groups.length, isAtBottom, virtualizer, activeChannelId, markChannelRead, clearMentionCount])
 
   // Initial scroll to bottom on channel load
   useEffect(() => {

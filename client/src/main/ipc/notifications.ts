@@ -133,4 +133,50 @@ export function registerNotificationHandlers(ipcMain: IpcMain): void {
   ): Promise<void> => {
     channelPrefs.set(channelId, prefs)
   })
+
+  // Show a desktop notification (triggered by renderer for @mentions)
+  ipcMain.handle(IPC.NOTIFICATIONS_SHOW, async (
+    _event,
+    opts: { title: string; body: string; channelId: string; serverName?: string }
+  ): Promise<void> => {
+    if (!Notification.isSupported()) return
+
+    // Don't notify if window is focused on this channel
+    const focusedWindow = BrowserWindow.getFocusedWindow()
+    if (focusedWindow && activeViewChannelId === opts.channelId) return
+
+    // Check coalescing
+    const existingTimer = coalescingTimers.get(opts.channelId)
+    if (existingTimer) return // Already coalescing, skip
+
+    const notification = new Notification({
+      title: opts.title,
+      body: opts.body,
+      subtitle: opts.serverName || '',
+      silent: false,
+    })
+
+    notification.on('click', () => {
+      const windows = BrowserWindow.getAllWindows()
+      if (windows.length > 0) {
+        const win = windows[0]
+        if (win.isMinimized()) win.restore()
+        win.focus()
+        win.webContents.send(IPC.PUSH_CHAT_EVENT, {
+          type: 'navigate',
+          channelId: opts.channelId,
+        })
+      }
+    })
+
+    notification.show()
+
+    // Start coalescing window
+    coalescingTimers.set(
+      opts.channelId,
+      setTimeout(() => {
+        coalescingTimers.delete(opts.channelId)
+      }, 2000)
+    )
+  })
 }

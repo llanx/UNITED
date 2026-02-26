@@ -94,6 +94,7 @@ export const IPC = {
 
   // Notifications
   NOTIFICATIONS_SET_PREFS: 'notifications:set-prefs',
+  NOTIFICATIONS_SHOW: 'notifications:show',
 
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',

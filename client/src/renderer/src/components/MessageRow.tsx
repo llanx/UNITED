@@ -12,7 +12,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import type { ChatMessage } from '@shared/ipc-bridge'
 import { useStore } from '../stores'
-import MarkdownContent from './MarkdownContent'
+import MarkdownContent, { extractMentionIds } from './MarkdownContent'
 import HoverToolbar from './HoverToolbar'
 import ReactionPills from './ReactionPills'
 import EmojiPicker from './EmojiPicker'
@@ -86,9 +86,22 @@ export default function MessageRow({
     : null
   const isOwnMessage = currentPubkeyHex === message.sender_pubkey
 
-  // Mention highlight: check if current user is mentioned
-  // ChatMessage doesn't have mention_user_ids currently -- will be wired when added
-  const isMentioned = false
+  // Mention highlight: check if current user's pubkey or roles are mentioned
+  const members = useStore((s) => s.members)
+  const isMentioned = React.useMemo(() => {
+    if (!currentPubkeyHex) return false
+    const { userIds, roleIds } = extractMentionIds(message.content)
+    // Check if user is directly mentioned (by member ID matching our pubkey)
+    const currentMember = members.find((m) => m.id === currentPubkeyHex)
+    if (currentMember && userIds.includes(currentMember.id)) return true
+    // Also check if pubkey is mentioned directly
+    if (userIds.includes(currentPubkeyHex)) return true
+    // Check role mentions: if user has any mentioned role
+    if (currentMember && roleIds.length > 0) {
+      return currentMember.role_ids.some((rid) => roleIds.includes(rid))
+    }
+    return false
+  }, [message.content, currentPubkeyHex, members])
 
   // Build display name map from presence store for reaction tooltips
   const displayNameMap = React.useMemo(() => {

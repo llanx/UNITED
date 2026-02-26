@@ -1,15 +1,17 @@
 /**
- * Auto-expanding message composer with Enter-to-send.
+ * Auto-expanding message composer with Enter-to-send and @mention autocomplete.
  *
  * Features:
  * - Auto-expanding textarea (1-5 lines, then scrolls)
  * - Enter sends, Shift+Enter inserts newline
  * - Reply mode with preview bar and cancel
+ * - @mention autocomplete on '@' keystroke
  * - Placeholder shows channel name
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { ChatMessage } from '@shared/ipc-bridge'
+import MentionAutocomplete, { type MentionItem } from './MentionAutocomplete'
 
 interface MessageComposerProps {
   channelId: string
@@ -34,6 +36,12 @@ export default function MessageComposer({
   const [sending, setSending] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+  // @mention autocomplete state
+  const [mentionActive, setMentionActive] = useState(false)
+  const [mentionQuery, setMentionQuery] = useState('')
+  const [mentionStartIndex, setMentionStartIndex] = useState(-1)
+  const [mentionAnchor, setMentionAnchor] = useState({ x: 0, y: 0 })
+
   // Auto-resize textarea based on content
   const adjustHeight = useCallback(() => {
     const ta = textareaRef.current
@@ -55,11 +63,17 @@ export default function MessageComposer({
     }
   }, [replyTo])
 
+  // Close mention autocomplete when switching channels
+  useEffect(() => {
+    setMentionActive(false)
+  }, [channelId])
+
   const handleSend = useCallback(async () => {
     const trimmed = content.trim()
     if (!trimmed || sending) return
 
     setSending(true)
+    setMentionActive(false)
     try {
       await window.united.chat.send(channelId, trimmed, replyTo?.id)
       setContent('')
@@ -77,8 +91,93 @@ export default function MessageComposer({
     }
   }, [content, channelId, replyTo, sending, onCancelReply, onMessageSent])
 
+  /** Get approximate caret position for dropdown anchor */
+  const getCaretAnchor = useCallback(() => {
+    const ta = textareaRef.current
+    if (!ta) return { x: 0, y: 0 }
+    const rect = ta.getBoundingClientRect()
+    // Approximate: use textarea position (top-left area)
+    return { x: rect.left + 12, y: rect.top }
+  }, [])
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const value = e.target.value
+      const cursorPos = e.target.selectionStart
+
+      setContent(value)
+
+      // Check for @mention trigger
+      // Look backwards from cursor for an '@' without a preceding word char
+      if (cursorPos > 0) {
+        const textBefore = value.slice(0, cursorPos)
+        const lastAtIndex = textBefore.lastIndexOf('@')
+
+        if (lastAtIndex >= 0) {
+          // Check that '@' is at start or preceded by a space/newline
+          const charBefore = lastAtIndex > 0 ? textBefore[lastAtIndex - 1] : ' '
+          const isWordBoundary = charBefore === ' ' || charBefore === '\n' || lastAtIndex === 0
+
+          if (isWordBoundary) {
+            const query = textBefore.slice(lastAtIndex + 1)
+            // Valid mention if no space in query (still typing the mention)
+            if (!query.includes(' ') && !query.includes('\n')) {
+              setMentionActive(true)
+              setMentionQuery(query)
+              setMentionStartIndex(lastAtIndex)
+              setMentionAnchor(getCaretAnchor())
+              return
+            }
+          }
+        }
+      }
+
+      setMentionActive(false)
+    },
+    [getCaretAnchor]
+  )
+
+  const handleMentionSelect = useCallback(
+    (item: MentionItem) => {
+      // Replace @query with mention token
+      const prefix = item.type === 'user' ? 'user' : 'role'
+      const token = `@[${item.displayName}](${prefix}:${item.id})`
+      const before = content.slice(0, mentionStartIndex)
+      const cursorPos = textareaRef.current?.selectionStart ?? content.length
+      const after = content.slice(cursorPos)
+      const newContent = before + token + ' ' + after
+
+      setContent(newContent)
+      setMentionActive(false)
+
+      // Re-focus and position cursor after the inserted mention
+      requestAnimationFrame(() => {
+        const ta = textareaRef.current
+        if (ta) {
+          ta.focus()
+          const newPos = before.length + token.length + 1
+          ta.setSelectionRange(newPos, newPos)
+        }
+      })
+    },
+    [content, mentionStartIndex]
+  )
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      // When mention autocomplete is active, let it handle navigation keys
+      if (mentionActive) {
+        if (['ArrowDown', 'ArrowUp', 'Enter', 'Tab'].includes(e.key)) {
+          // Don't handle here -- MentionAutocomplete handles via document listener
+          return
+        }
+        if (e.key === 'Escape') {
+          e.preventDefault()
+          setMentionActive(false)
+          return
+        }
+      }
+
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
         handleSend()
@@ -87,11 +186,11 @@ export default function MessageComposer({
         onCancelReply()
       }
     },
-    [handleSend, replyTo, onCancelReply]
+    [handleSend, replyTo, onCancelReply, mentionActive]
   )
 
   return (
-    <div className="shrink-0 border-t border-white/5 px-4 py-3">
+    <div className="relative shrink-0 border-t border-white/5 px-4 py-3">
       {/* Reply preview bar */}
       {replyTo && (
         <div className="mb-2 flex items-center gap-2 rounded border-l-2 border-[var(--color-accent)] bg-white/5 px-3 py-1.5">
@@ -117,11 +216,22 @@ export default function MessageComposer({
         </div>
       )}
 
+      {/* @mention autocomplete dropdown */}
+      {mentionActive && (
+        <MentionAutocomplete
+          query={mentionQuery}
+          onSelect={handleMentionSelect}
+          onClose={() => setMentionActive(false)}
+          anchorX={mentionAnchor.x}
+          anchorY={mentionAnchor.y}
+        />
+      )}
+
       {/* Textarea */}
       <textarea
         ref={textareaRef}
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={`Message #${channelName}`}
         className="w-full resize-none rounded-lg border border-white/10 bg-[var(--color-bg-tertiary)] p-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-white/20"

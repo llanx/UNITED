@@ -1,16 +1,19 @@
 import { useState, useRef, useEffect } from 'react'
 import type { CategoryWithChannelsResponse, ChannelResponse } from '@shared/ipc-bridge'
 import CategoryHeader from './CategoryHeader'
+import UnreadBadge from './UnreadBadge'
 
 interface ChannelListProps {
   categoriesWithChannels: CategoryWithChannelsResponse[]
   activeChannelId: string | null
   isAdmin: boolean
+  channelUnreadState?: Record<string, { unreadCount: number; mentionCount: number }>
   onSelectChannel: (id: string) => void
   onRenameChannel?: (id: string, name: string) => void
   onDeleteChannel?: (id: string) => void
   onRenameCategory?: (id: string, name: string) => void
   onDeleteCategory?: (id: string) => void
+  onMarkAsRead?: (channelId: string) => void
 }
 
 // Channel type icons
@@ -33,16 +36,22 @@ function ChannelItem({
   channel,
   active,
   isAdmin,
+  unreadCount,
+  mentionCount,
   onSelect,
   onRename,
-  onDelete
+  onDelete,
+  onMarkAsRead
 }: {
   channel: ChannelResponse
   active: boolean
   isAdmin: boolean
+  unreadCount: number
+  mentionCount: number
   onSelect: () => void
   onRename?: (name: string) => void
   onDelete?: () => void
+  onMarkAsRead?: () => void
 }) {
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
   const [renaming, setRenaming] = useState(false)
@@ -69,7 +78,6 @@ function ChannelItem({
   }, [renaming])
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    if (!isAdmin) return
     e.preventDefault()
     setContextMenu({ x: e.clientX, y: e.clientY })
   }
@@ -81,6 +89,8 @@ function ChannelItem({
     }
     setRenaming(false)
   }
+
+  const isUnread = unreadCount > 0
 
   if (renaming) {
     return (
@@ -108,7 +118,9 @@ function ChannelItem({
         className={`flex w-full items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors ${
           active
             ? 'bg-white/10 text-[var(--color-text-primary)]'
-            : 'text-[var(--color-text-muted)] hover:bg-white/5 hover:text-[var(--color-text-primary)]'
+            : isUnread
+              ? 'text-[var(--color-text-primary)] font-semibold hover:bg-white/5'
+              : 'text-[var(--color-text-muted)] hover:bg-white/5 hover:text-[var(--color-text-primary)]'
         }`}
         onClick={onSelect}
         onContextMenu={handleContextMenu}
@@ -118,34 +130,61 @@ function ChannelItem({
         {channel.channel_type === 'voice' && (
           <span className="ml-auto text-[10px] text-[var(--color-text-muted)]">0</span>
         )}
+        {channel.channel_type !== 'voice' && (
+          <UnreadBadge unreadCount={unreadCount} mentionCount={mentionCount} />
+        )}
       </button>
 
-      {/* Context menu (admin only) */}
+      {/* Context menu */}
       {contextMenu && (
         <div
           ref={menuRef}
-          className="fixed z-50 min-w-[140px] rounded-lg border border-white/10 bg-[var(--color-bg-rail)] py-1 shadow-lg"
+          className="fixed z-50 min-w-[160px] rounded-lg border border-white/10 bg-[var(--color-bg-rail)] py-1 shadow-lg"
           style={{ left: contextMenu.x, top: contextMenu.y }}
         >
-          <button
-            className="flex w-full items-center px-3 py-1.5 text-sm text-[var(--color-text-muted)] hover:bg-white/5 hover:text-[var(--color-text-primary)]"
-            onClick={() => {
-              setRenameValue(channel.name)
-              setRenaming(true)
-              setContextMenu(null)
-            }}
-          >
-            Rename Channel
-          </button>
-          <button
-            className="flex w-full items-center px-3 py-1.5 text-sm text-red-400 hover:bg-white/5 hover:text-red-300"
-            onClick={() => {
-              onDelete?.()
-              setContextMenu(null)
-            }}
-          >
-            Delete Channel
-          </button>
+          {/* Mark as Read (always available if unread) */}
+          {isUnread && onMarkAsRead && (
+            <button
+              className="flex w-full items-center px-3 py-1.5 text-sm text-[var(--color-text-muted)] hover:bg-white/5 hover:text-[var(--color-text-primary)]"
+              onClick={() => {
+                onMarkAsRead()
+                setContextMenu(null)
+              }}
+            >
+              Mark as Read
+            </button>
+          )}
+          {/* Admin actions */}
+          {isAdmin && (
+            <>
+              {isUnread && <div className="my-1 border-t border-white/5" />}
+              <button
+                className="flex w-full items-center px-3 py-1.5 text-sm text-[var(--color-text-muted)] hover:bg-white/5 hover:text-[var(--color-text-primary)]"
+                onClick={() => {
+                  setRenameValue(channel.name)
+                  setRenaming(true)
+                  setContextMenu(null)
+                }}
+              >
+                Rename Channel
+              </button>
+              <button
+                className="flex w-full items-center px-3 py-1.5 text-sm text-red-400 hover:bg-white/5 hover:text-red-300"
+                onClick={() => {
+                  onDelete?.()
+                  setContextMenu(null)
+                }}
+              >
+                Delete Channel
+              </button>
+            </>
+          )}
+          {/* If not admin and not unread, show at least "Mark as Read" for non-unread channels */}
+          {!isAdmin && !isUnread && (
+            <span className="flex w-full items-center px-3 py-1.5 text-xs text-[var(--color-text-muted)]">
+              No actions available
+            </span>
+          )}
         </div>
       )}
     </div>
@@ -156,11 +195,13 @@ export default function ChannelList({
   categoriesWithChannels,
   activeChannelId,
   isAdmin,
+  channelUnreadState,
   onSelectChannel,
   onRenameChannel,
   onDeleteChannel,
   onRenameCategory,
-  onDeleteCategory
+  onDeleteCategory,
+  onMarkAsRead
 }: ChannelListProps) {
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
 
@@ -199,18 +240,24 @@ export default function ChannelList({
             />
             {!collapsed && (
               <ul className="flex flex-col gap-0.5 pl-1">
-                {sortedChannels.map((ch) => (
-                  <li key={ch.id}>
-                    <ChannelItem
-                      channel={ch}
-                      active={ch.id === activeChannelId}
-                      isAdmin={isAdmin}
-                      onSelect={() => onSelectChannel(ch.id)}
-                      onRename={onRenameChannel ? (name) => onRenameChannel(ch.id, name) : undefined}
-                      onDelete={onDeleteChannel ? () => onDeleteChannel(ch.id) : undefined}
-                    />
-                  </li>
-                ))}
+                {sortedChannels.map((ch) => {
+                  const unreadInfo = channelUnreadState?.[ch.id] ?? { unreadCount: 0, mentionCount: 0 }
+                  return (
+                    <li key={ch.id}>
+                      <ChannelItem
+                        channel={ch}
+                        active={ch.id === activeChannelId}
+                        isAdmin={isAdmin}
+                        unreadCount={unreadInfo.unreadCount}
+                        mentionCount={unreadInfo.mentionCount}
+                        onSelect={() => onSelectChannel(ch.id)}
+                        onRename={onRenameChannel ? (name) => onRenameChannel(ch.id, name) : undefined}
+                        onDelete={onDeleteChannel ? () => onDeleteChannel(ch.id) : undefined}
+                        onMarkAsRead={onMarkAsRead ? () => onMarkAsRead(ch.id) : undefined}
+                      />
+                    </li>
+                  )
+                })}
               </ul>
             )}
           </div>
