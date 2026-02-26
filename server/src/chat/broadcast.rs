@@ -81,3 +81,49 @@ pub fn broadcast_typing(
     };
     broadcast_to_all(registry, &envelope);
 }
+
+/// Broadcast a PresenceUpdateEvent to all connected WS clients.
+/// Called from the presence module on status changes.
+pub fn broadcast_presence_update(
+    registry: &ConnectionRegistry,
+    user_pubkey: &str,
+    display_name: &str,
+    status_i32: i32,
+    timestamp: u64,
+) {
+    let envelope = Envelope {
+        request_id: String::new(),
+        payload: Some(Payload::PresenceUpdateEvent(proto_presence::PresenceUpdateEvent {
+            update: Some(proto_presence::PresenceUpdate {
+                user_pubkey: user_pubkey.to_string(),
+                display_name: display_name.to_string(),
+                status: status_i32,
+                timestamp,
+            }),
+        })),
+    };
+    broadcast_to_all(registry, &envelope);
+}
+
+/// Broadcast a TypingEvent (typing indicator) to all connected WS clients.
+/// Called from the presence REST endpoint.
+pub fn broadcast_typing_indicator(
+    registry: &ConnectionRegistry,
+    user_pubkey: &str,
+    channel_id: &str,
+    display_name: &str,
+    timestamp: u64,
+) {
+    let envelope = Envelope {
+        request_id: String::new(),
+        payload: Some(Payload::TypingEvent(proto_presence::TypingEvent {
+            indicator: Some(proto_presence::TypingIndicator {
+                user_pubkey: user_pubkey.to_string(),
+                channel_id: channel_id.to_string(),
+                display_name: display_name.to_string(),
+                timestamp,
+            }),
+        })),
+    };
+    broadcast_to_all(registry, &envelope);
+}

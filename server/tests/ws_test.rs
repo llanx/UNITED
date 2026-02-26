@@ -18,6 +18,26 @@ fn random_signing_key() -> SigningKey {
     SigningKey::from_bytes(&secret)
 }
 
+/// Drain any initial presence snapshot messages sent on WS connect.
+/// The server now broadcasts presence updates when a client connects.
+async fn drain_presence_messages(
+    read: &mut futures_util::stream::SplitStream<
+        tokio_tungstenite::WebSocketStream<
+            tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>,
+        >,
+    >,
+) {
+    loop {
+        match tokio::time::timeout(Duration::from_millis(200), read.next()).await {
+            Ok(Some(Ok(Message::Binary(_)))) => {
+                // Presence snapshot message — keep draining
+                continue;
+            }
+            _ => break, // Timeout or no more messages
+        }
+    }
+}
+
 /// Helper: start the server on a random port and return (base_url, setup_token, addr).
 async fn start_test_server() -> (String, String, SocketAddr) {
     let tmp_dir = tempfile::tempdir().expect("Failed to create temp dir");
@@ -46,6 +66,7 @@ async fn start_test_server() -> (String, String, SocketAddr) {
         peer_directory: Arc::new(united_server::p2p::PeerDirectory::new()),
         server_peer_id: "test-peer-id".to_string(),
         libp2p_port: 0,
+        presence: Arc::new(dashmap::DashMap::new()),
     };
 
     let app = united_server::routes::build_router(state);
@@ -118,12 +139,13 @@ async fn test_ws_connection_with_valid_jwt() {
 
     let (mut _write, mut read) = ws_stream.split();
 
-    // Connection should stay open — we can read with a timeout
-    let result = tokio::time::timeout(Duration::from_millis(500), read.next()).await;
+    // Server sends presence snapshot on connect (own ONLINE status).
+    // Drain initial presence messages, then verify connection stays open.
+    drain_presence_messages(&mut read).await;
 
-    // No immediate message expected (server doesn't send welcome message)
-    // Timeout is expected behavior here
-    assert!(result.is_err(), "Expected timeout, got message");
+    // After draining presence, connection should stay open with no further messages
+    let result = tokio::time::timeout(Duration::from_millis(500), read.next()).await;
+    assert!(result.is_err(), "Expected timeout after presence drain, got message");
 }
 
 #[tokio::test]
@@ -181,6 +203,9 @@ async fn test_ws_ping_pong() {
 
     let (mut write, mut read) = ws_stream.split();
 
+    // Drain presence snapshot messages first
+    drain_presence_messages(&mut read).await;
+
     // Send a client ping
     write
         .send(Message::Ping(vec![42, 43, 44].into()))
@@ -214,6 +239,9 @@ async fn test_ws_protobuf_server_info_request() {
         .expect("Failed to connect");
 
     let (mut write, mut read) = ws_stream.split();
+
+    // Drain presence snapshot messages first
+    drain_presence_messages(&mut read).await;
 
     // Send a ServerInfoRequest via protobuf envelope
     let envelope = united_server::proto::ws::Envelope {
@@ -292,7 +320,10 @@ async fn test_ws_connection_cleanup_on_disconnect() {
 
     let (mut _write2, mut read2) = ws_stream2.split();
 
-    // Connection should be alive
+    // Drain presence snapshot messages first
+    drain_presence_messages(&mut read2).await;
+
+    // After draining presence, connection should be alive with no further messages
     let result = tokio::time::timeout(Duration::from_millis(300), read2.next()).await;
-    assert!(result.is_err(), "Expected timeout (connection alive, no messages)");
+    assert!(result.is_err(), "Expected timeout after presence drain (connection alive)");
 }

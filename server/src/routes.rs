@@ -220,6 +220,12 @@ pub fn build_router(state: AppState) -> Router {
     let invite_landing_routes = Router::new()
         .route("/invite/{code}", axum::routing::get(invite_landing::invite_landing_page));
 
+    // Phase 4: Presence and typing routes
+    let presence_routes = Router::new()
+        .route("/api/presence", axum::routing::get(chat::presence::get_presence))
+        .route("/api/presence", axum::routing::post(chat::presence::set_presence))
+        .route("/api/typing", axum::routing::post(chat::presence::send_typing));
+
     // Phase 4: Chat message and reaction routes
     let chat_routes = Router::new()
         .route(
@@ -259,6 +265,7 @@ pub fn build_router(state: AppState) -> Router {
         .merge(invite_routes)
         .merge(invite_landing_routes)
         .merge(chat_routes)
+        .merge(presence_routes)
         .merge(ws_routes)
         .merge(health)
         .layer(middleware::from_fn_with_state(

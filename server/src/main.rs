@@ -243,6 +243,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         peer_directory,
         server_peer_id,
         libp2p_port: p2p_config.libp2p_port,
+        presence: Arc::new(DashMap::new()),
     };
 
     // Build router

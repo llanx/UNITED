@@ -116,7 +116,7 @@ export function setupChatEventListener(): void {
 
           const presenceEvent: PresenceUpdate = {
             userPubkey: update.userPubkey,
-            displayName: '',
+            displayName: update.displayName || '',
             status: statusMap[update.status] ?? 'offline'
           }
           broadcastToRenderers(IPC.PUSH_PRESENCE_EVENT, presenceEvent)

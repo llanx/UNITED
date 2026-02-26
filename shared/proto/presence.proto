@@ -15,6 +15,7 @@ message PresenceUpdate {
     string user_pubkey = 1;                // Hex-encoded Ed25519 public key
     PresenceStatus status = 2;
     uint64 timestamp = 3;                  // Unix millis
+    string display_name = 4;               // User's display name for client rendering
 }
 
 // Typing indicator for a channel
