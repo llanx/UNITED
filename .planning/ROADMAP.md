@@ -151,12 +151,12 @@ Plans:
   2. Images and videos render inline within messages — not as download links — with blurhash placeholders at exact aspect ratio shown while loading from peers
   3. User can configure their local storage buffer size and see seeding/contribution indicators showing upload/download stats and blocks seeded
   4. App prefetches content predictively: hovering the channel list begins pulling recent messages, scrolling near the bottom prefetches the next batch, and app launch pre-fetches top active channels
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
-- [ ] 07-03: TBD
+- [ ] 07-01-PLAN.md — Upload infrastructure: protobuf extensions, server migration, blurhash encoding, video thumbnails, blocking send with progress (Wave 1)
+- [ ] 07-02-PLAN.md — Media rendering UI: inline images/videos, adaptive grid, lightbox, composer attachments, drag-drop/paste (Wave 2, depends on 07-01)
+- [ ] 07-03-PLAN.md — Seeding stats dashboard and predictive prefetching: channel hover, scroll position, app launch (Wave 2, depends on 07-01)
 
 ### Phase 8: Voice Channels
 **Goal**: Users can join voice channels and talk to each other with peer-to-peer audio that feels as responsive as centralized alternatives
@@ -188,5 +188,5 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
 | 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
 | 6. Content Distribution | 4/4 | Complete   | 2026-02-26 |
-| 7. Media and Prefetching | 0/3 | Not started | - |
+| 7. Media and Prefetching | 0/3 | Planned | - |
 | 8. Voice Channels | 0/2 | Not started | - |
