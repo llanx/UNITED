@@ -85,7 +85,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **APP-02**: All P2P connections persist across channel navigation
 - [x] **APP-03**: All subscribed channels receive gossip simultaneously regardless of which channel is currently viewed
 - [ ] **APP-04**: All media attachments declare dimensions upfront; fixed layout with zero reflow during content loading
-- [ ] **APP-05**: User profiles display name, avatar, and custom status text
+- [x] **APP-05**: User profiles display name, avatar, and custom status text
 
 ## v2 Requirements
 
@@ -192,7 +192,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MSG-09 | Phase 4: Real-Time Chat | Pending |
 | SEC-03 | Phase 4: Real-Time Chat | Complete |
 | APP-03 | Phase 4: Real-Time Chat | Complete |
-| APP-05 | Phase 4: Real-Time Chat | Pending |
+| APP-05 | Phase 4: Real-Time Chat | Complete |
 | DM-01 | Phase 5: Direct Messages | Pending |
 | DM-02 | Phase 5: Direct Messages | Pending |
 | DM-03 | Phase 5: Direct Messages | Pending |

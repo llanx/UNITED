@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 4: Real-Time Chat — chat UI complete (plan 03), profiles/presence/mentions next
+**Current focus:** Phase 4: Real-Time Chat — presence/members complete (plan 04), mentions/notifications next
 
 ## Current Position
 
 Phase: 4 of 8 (Real-Time Chat)
-Plan: 3 of 5 in current phase
-Status: Plan 04-03 complete (chat UI)
-Last activity: 2026-02-26 — Plan 04-03 complete (ChatView, MessageGroup, MessageComposer, MarkdownContent, HoverToolbar)
+Plan: 4 of 5 in current phase
+Status: Plan 04-04 complete (presence and member list)
+Last activity: 2026-02-26 — Plan 04-04 complete (presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup)
 
-Progress: [██████░░░░] 47%
+Progress: [██████░░░░] 49%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 20
+- Total plans completed: 21
 - Average duration (GSD-tracked): 13 min
-- Total execution time (GSD-tracked): 2.6 hours
+- Total execution time (GSD-tracked): 2.9 hours
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [██████░░░░] 47%
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
 | 02-server-management | 8/8 | 37 min | 5 min | 02-01: schema, permissions, proto, broadcast; 02-02 to 02-04: server endpoints; 02-05: device provisioning; 02-06: channel/role UI; 02-07: invite join flow; 02-08: SRVR-04 gap closure |
 | 03-p2p-networking | 4/4 | 46 min | 12 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence; 03-02: client libp2p node with gossipsub, peer discovery, IPC; 03-03: P2P dev panel with stats pipeline and floating overlay; 03-04: fix reconnect bug (gap closure) |
-| 04-real-time-chat | 3/5 | 30 min | 10 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding; 04-03: ChatView, MessageGroup, MessageComposer, MarkdownContent |
+| 04-real-time-chat | 4/5 | 50 min | 13 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding; 04-03: ChatView, MessageGroup, MessageComposer, MarkdownContent; 04-04: presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -119,6 +119,11 @@ Recent decisions affecting current work:
 - [04-03]: useVirtualizer count on message groups (not individual messages) for correct height measurement
 - [04-03]: Stick-to-bottom threshold of 50px for auto-scroll detection
 - [04-03]: Context menu rendered as fixed-position portal-style overlay via client coordinates
+- [04-04]: Presence tracking via DashMap<String, PresenceInfo> on AppState — ephemeral, no DB persistence
+- [04-04]: Presence snapshot sent on WS connect (no separate REST fetch needed)
+- [04-04]: display_name field added to PresenceUpdate protobuf message (field 4)
+- [04-04]: Multi-device presence: OFFLINE only broadcast when last connection closes (ConnectionRegistry check)
+- [04-04]: Status grouping pattern: Online > Away > DND > Offline with alphabetical sort within groups
 
 ### Pending Todos
 
@@ -140,5 +145,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 04-03-PLAN.md (chat UI with virtualized list, markdown rendering, composer)
-Resume file: .planning/phases/04-real-time-chat/04-03-SUMMARY.md
+Stopped at: Completed 04-04-PLAN.md (presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup)
+Resume file: .planning/phases/04-real-time-chat/04-04-SUMMARY.md

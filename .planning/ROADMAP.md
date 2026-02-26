@@ -179,8 +179,8 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 |-------|----------------|--------|-----------|
 | 1. Foundation | 6/6 | Complete | 2026-02-24 |
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
-| 3. P2P Networking | 3/4 | Gap closure | 2026-02-26 |
-| 4. Real-Time Chat | 0/5 | Not started | - |
+| 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
+| 4. Real-Time Chat | 4/5 | In Progress | - |
 | 5. Direct Messages | 0/2 | Not started | - |
 | 6. Content Distribution | 0/3 | Not started | - |
 | 7. Media and Prefetching | 0/3 | Not started | - |
