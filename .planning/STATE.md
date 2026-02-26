@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 4: Real-Time Chat — presence/members complete (plan 04), mentions/notifications next
+**Current focus:** Phase 4 complete. Ready for Phase 5: DM System.
 
 ## Current Position
 
-Phase: 4 of 8 (Real-Time Chat)
-Plan: 4 of 5 in current phase
-Status: Plan 04-04 complete (presence and member list)
-Last activity: 2026-02-26 — Plan 04-04 complete (presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup)
+Phase: 4 of 8 (Real-Time Chat) -- COMPLETE
+Plan: 5 of 5 in current phase (all plans complete)
+Status: Phase 04 complete (all 5 plans executed)
+Last activity: 2026-02-26 — Plan 04-05 complete (emoji reactions, @mentions, unread badges, desktop notifications)
 
-Progress: [██████░░░░] 49%
+Progress: [██████░░░░] 52%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
+- Total plans completed: 22
 - Average duration (GSD-tracked): 13 min
-- Total execution time (GSD-tracked): 2.9 hours
+- Total execution time (GSD-tracked): 3.1 hours
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [██████░░░░] 49%
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
 | 02-server-management | 8/8 | 37 min | 5 min | 02-01: schema, permissions, proto, broadcast; 02-02 to 02-04: server endpoints; 02-05: device provisioning; 02-06: channel/role UI; 02-07: invite join flow; 02-08: SRVR-04 gap closure |
 | 03-p2p-networking | 4/4 | 46 min | 12 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence; 03-02: client libp2p node with gossipsub, peer discovery, IPC; 03-03: P2P dev panel with stats pipeline and floating overlay; 03-04: fix reconnect bug (gap closure) |
-| 04-real-time-chat | 4/5 | 50 min | 13 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding; 04-03: ChatView, MessageGroup, MessageComposer, MarkdownContent; 04-04: presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup |
+| 04-real-time-chat | 5/5 | 61 min | 12 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding; 04-03: ChatView, MessageGroup, MessageComposer, MarkdownContent; 04-04: presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup; 04-05: emoji reactions, @mentions, unread badges, desktop notifications |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -124,6 +124,12 @@ Recent decisions affecting current work:
 - [04-04]: display_name field added to PresenceUpdate protobuf message (field 4)
 - [04-04]: Multi-device presence: OFFLINE only broadcast when last connection closes (ConnectionRegistry check)
 - [04-04]: Status grouping pattern: Online > Away > DND > Offline with alphabetical sort within groups
+- [04-05]: @mention token format: @[display_name](user:id) or @[display_name](role:id) -- parsed before markdown
+- [04-05]: Mention rendering: simple messages get inline React spans, complex markdown falls back to stripped text
+- [04-05]: Desktop notifications triggered from renderer via IPC (renderer has member/role data for mention detection)
+- [04-05]: Notification click sends 'navigate' ChatEvent back to renderer for channel switching
+- [04-05]: EmojiPicker uses React.lazy with Suspense fallback for ~2.5MB emoji-picker-react code splitting
+- [04-05]: Channel unread state: compare lastReadSequence to latest server_sequence per channel in messages store
 
 ### Pending Todos
 
@@ -145,5 +151,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 04-04-PLAN.md (presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup)
-Resume file: .planning/phases/04-real-time-chat/04-04-SUMMARY.md
+Stopped at: Completed 04-05-PLAN.md (emoji reactions, @mentions, unread badges, desktop notifications) -- Phase 4 complete
+Resume file: .planning/phases/04-real-time-chat/04-05-SUMMARY.md

@@ -16,8 +16,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MSG-05**: User can see typing indicators when another user is composing a message in the current channel
 - [x] **MSG-06**: User can see online/offline/away status for other users
 - [x] **MSG-07**: User can see unread indicators showing which channels have new messages since last visit
-- [ ] **MSG-08**: User can @mention specific users or roles to trigger notifications
-- [ ] **MSG-09**: User receives desktop notifications for mentions and DM messages
+- [x] **MSG-08**: User can @mention specific users or roles to trigger notifications
+- [x] **MSG-09**: User receives desktop notifications for mentions and DM messages
 
 ### Direct Messages
 
@@ -188,8 +188,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MSG-05 | Phase 4: Real-Time Chat | Complete |
 | MSG-06 | Phase 4: Real-Time Chat | Complete |
 | MSG-07 | Phase 4: Real-Time Chat | Complete |
-| MSG-08 | Phase 4: Real-Time Chat | Pending |
-| MSG-09 | Phase 4: Real-Time Chat | Pending |
+| MSG-08 | Phase 4: Real-Time Chat | Complete |
+| MSG-09 | Phase 4: Real-Time Chat | Complete |
 | SEC-03 | Phase 4: Real-Time Chat | Complete |
 | APP-03 | Phase 4: Real-Time Chat | Complete |
 | APP-05 | Phase 4: Real-Time Chat | Complete |

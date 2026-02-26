@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Electron app shell, Rust coordination server, authentication, IPC bridge, and build pipeline
 - [x] **Phase 2: Server Management** - Channel/category CRUD, roles and permissions, moderation, and invite-based onboarding
 - [x] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
-- [ ] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
+- [x] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
 - [ ] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators
 - [ ] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback
 - [ ] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching
@@ -84,7 +84,7 @@ Plans:
 - [x] 03-01: Server libp2p node — gossipsub, relay, peer directory, message persistence (Wave 1, server)
 - [x] 03-02: Client libp2p node — WebSocket + WebRTC transports, gossipsub, discovery (Wave 2, client)
 - [x] 03-03: Dev panel — P2P stats IPC pipeline, floating overlay with peer/topic debug info (Wave 3, client)
-- [ ] 03-04: Gap closure — fix scheduleReconnect to dial disconnected remote peer (Wave 1, client)
+- [x] 03-04: Gap closure — fix scheduleReconnect to dial disconnected remote peer (Wave 1, client)
 
 ### Phase 4: Real-Time Chat
 **Goal**: Users can have real-time text conversations in channels with the full range of messaging features expected from a modern chat application
@@ -99,11 +99,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 04-01: Server chat infrastructure — proto schemas, DB migration, REST endpoints, WS broadcast (Wave 1, server)
-- [ ] 04-02: Client data layer — npm deps, IPC handlers, Zustand stores, WS event forwarding (Wave 1, client)
-- [ ] 04-03: Core chat UI — virtualized message list, markdown rendering, composer, hover toolbar (Wave 2, full-stack)
-- [ ] 04-04: Presence and member list — server presence tracking, member sidebar, profile popups (Wave 2, full-stack)
-- [ ] 04-05: Rich features — emoji reactions, @mention autocomplete, unread badges, desktop notifications (Wave 3, client)
+- [x] 04-01: Server chat infrastructure — proto schemas, DB migration, REST endpoints, WS broadcast (Wave 1, server)
+- [x] 04-02: Client data layer — npm deps, IPC handlers, Zustand stores, WS event forwarding (Wave 1, client)
+- [x] 04-03: Core chat UI — virtualized message list, markdown rendering, composer, hover toolbar (Wave 2, full-stack)
+- [x] 04-04: Presence and member list — server presence tracking, member sidebar, profile popups (Wave 2, full-stack)
+- [x] 04-05: Rich features — emoji reactions, @mention autocomplete, unread badges, desktop notifications (Wave 3, client)
 
 ### Phase 5: Direct Messages
 **Goal**: Users can have private one-on-one conversations where only the participants can read the messages, even if the coordination server is compromised
