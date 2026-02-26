@@ -39,4 +39,10 @@ pub struct AppState {
     pub libp2p_port: u16,
     /// In-memory presence tracking: user_pubkey -> PresenceInfo
     pub presence: Arc<DashMap<String, PresenceInfo>>,
+    /// Data directory path (for block file storage)
+    pub data_dir: String,
+    /// Block retention TTL in days (from config, default 30)
+    pub block_retention_days: Option<u32>,
+    /// Block retention cleanup interval in seconds (from config, default 3600)
+    pub block_cleanup_interval_secs: Option<u64>,
 }

@@ -41,6 +41,9 @@ async fn start_test_server() -> (String, String, SocketAddr) {
         server_peer_id: "test-peer-id".to_string(),
         libp2p_port: 0,
         presence: Arc::new(dashmap::DashMap::new()),
+        data_dir: data_dir.clone(),
+        block_retention_days: None,
+        block_cleanup_interval_secs: None,
     };
 
     let app = united_server::routes::build_router(state);
@@ -90,6 +93,9 @@ async fn start_invite_only_server() -> (String, String, SocketAddr) {
         server_peer_id: "test-peer-id".to_string(),
         libp2p_port: 0,
         presence: Arc::new(dashmap::DashMap::new()),
+        data_dir: data_dir.clone(),
+        block_retention_days: None,
+        block_cleanup_interval_secs: None,
     };
 
     let app = united_server::routes::build_router(state);

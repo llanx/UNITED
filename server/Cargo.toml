@@ -32,6 +32,7 @@ tower-http = { version = "0.6", features = ["cors", "trace"] }
 bitflags = "2"
 dashmap = "6"
 sha2 = "0.10"
+hkdf = "0.12"
 hex = "0.4"
 libp2p = { version = "0.56", features = [
     "gossipsub", "relay", "autonat", "noise", "identify",
