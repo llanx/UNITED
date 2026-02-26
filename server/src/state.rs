@@ -45,4 +45,6 @@ pub struct AppState {
     pub block_retention_days: Option<u32>,
     /// Block retention cleanup interval in seconds (from config, default 3600)
     pub block_cleanup_interval_secs: Option<u64>,
+    /// Maximum upload size in megabytes per block (from config, default 100)
+    pub max_upload_size_mb: Option<u32>,
 }

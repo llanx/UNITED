@@ -60,6 +60,10 @@ pub struct BlocksConfig {
     /// Interval in seconds between retention cleanup runs (default: 3600 = 1 hour)
     #[serde(default = "default_cleanup_interval")]
     pub cleanup_interval_secs: u64,
+
+    /// Maximum upload size in megabytes per block (default: 100)
+    #[serde(default = "default_max_upload_size")]
+    pub max_upload_size_mb: u32,
 }
 
 impl Default for BlocksConfig {
@@ -67,6 +71,7 @@ impl Default for BlocksConfig {
         Self {
             retention_days: 30,
             cleanup_interval_secs: 3600,
+            max_upload_size_mb: 100,
         }
     }
 }
@@ -77,6 +82,10 @@ fn default_retention_days() -> u32 {
 
 fn default_cleanup_interval() -> u64 {
     3600
+}
+
+fn default_max_upload_size() -> u32 {
+    100
 }
 
 fn default_p2p_config() -> Option<P2pConfig> {
@@ -165,6 +174,9 @@ pub fn generate_config_template() -> String {
 
 # Interval in seconds between retention cleanup runs (default: 3600 = 1 hour)
 # cleanup_interval_secs = 3600
+
+# Maximum upload size in megabytes per block (default: 100)
+# max_upload_size_mb = 100
 "#
     .to_string()
 }

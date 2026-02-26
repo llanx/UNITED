@@ -65,6 +65,19 @@ pub async fn put_block_route(
     let data = body.to_vec();
     let size = data.len() as u64;
 
+    // Enforce max upload size (default 100 MB)
+    let max_upload_bytes = state.max_upload_size_mb.unwrap_or(100) as u64 * 1024 * 1024;
+    if size > max_upload_bytes {
+        return Err((
+            StatusCode::PAYLOAD_TOO_LARGE,
+            format!(
+                "Block size {} bytes exceeds maximum upload size of {} MB",
+                size,
+                state.max_upload_size_mb.unwrap_or(100)
+            ),
+        ));
+    }
+
     // Get retention days from config
     let retention_days = state.block_retention_days.unwrap_or(DEFAULT_RETENTION_DAYS);
 

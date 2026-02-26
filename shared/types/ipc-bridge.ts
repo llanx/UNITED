@@ -174,6 +174,17 @@ export interface RoleEvent {
 // Chat types
 // ============================================================
 
+export interface BlockRefData {
+  hash: string;
+  size: number;
+  mimeType: string;
+  width: number;
+  height: number;
+  microThumbnail?: string;  // base64 encoded
+  blurhash?: string;
+  filename: string;
+}
+
 export interface ChatMessage {
   id: string;
   channel_id: string;
@@ -186,6 +197,7 @@ export interface ChatMessage {
   reply_to_preview: string | null;
   edited_at: string | null;
   reactions: ReactionSummary[];
+  block_refs?: BlockRefData[];
 }
 
 export interface ReactionSummary {

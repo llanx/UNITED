@@ -1,6 +1,8 @@
 syntax = "proto3";
 package united.chat;
 
+import "blocks.proto";
+
 // Chat message persisted and broadcast by the server.
 // Created via REST POST or decoded from gossipsub GossipEnvelope payload.
 message ChatMessage {
@@ -16,6 +18,7 @@ message ChatMessage {
     bool edited = 10;
     repeated string mention_user_ids = 11; // Parsed @user mentions
     repeated string mention_role_ids = 12; // Parsed @role mentions
+    repeated united.blocks.BlockRef block_refs = 13; // Media attachment references
 }
 
 // Emoji reaction on a message
