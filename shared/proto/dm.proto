@@ -1,0 +1,71 @@
+syntax = "proto3";
+package united.dm;
+
+// A DM conversation between two users
+message DmConversation {
+  string id = 1;                    // UUID
+  string participant_a_pubkey = 2;  // hex-encoded Ed25519 pubkey
+  string participant_b_pubkey = 3;  // hex-encoded Ed25519 pubkey
+  string participant_a_display_name = 4;
+  string participant_b_display_name = 5;
+  uint64 created_at = 6;           // Unix millis
+  uint64 last_message_at = 7;      // Unix millis, for ordering
+  string last_message_preview = 8;  // Empty string (server cannot read encrypted content)
+}
+
+// An encrypted DM message (server stores as opaque blob)
+message EncryptedDmMessage {
+  string id = 1;                   // UUID
+  string conversation_id = 2;
+  string sender_pubkey = 3;        // hex-encoded Ed25519 pubkey
+  bytes encrypted_payload = 4;     // XChaCha20-Poly1305 encrypted content
+  bytes nonce = 5;                 // 24-byte nonce for XChaCha20-Poly1305
+  bytes ephemeral_pubkey = 6;      // Sender's ephemeral X25519 public key (for forward secrecy per-message)
+  uint64 timestamp = 7;            // Unix millis (set by sender, not server)
+  uint64 server_sequence = 8;      // Server-assigned ordering within conversation
+  string sender_display_name = 9;  // Plaintext (for notification routing only -- not secret)
+}
+
+// X25519 public key publication
+message DmPublicKey {
+  string ed25519_pubkey = 1;       // hex-encoded Ed25519 public key (identity key)
+  bytes x25519_pubkey = 2;         // 32-byte X25519 public key derived from Ed25519
+  uint64 published_at = 3;         // Unix millis
+}
+
+// Events
+message DmMessageEvent {
+  EncryptedDmMessage message = 1;
+}
+
+message DmConversationCreatedEvent {
+  DmConversation conversation = 1;
+}
+
+message DmKeyRotatedEvent {
+  string user_pubkey = 1;          // Ed25519 pubkey of user who rotated
+  bytes new_x25519_pubkey = 2;     // New X25519 public key
+  uint64 timestamp = 3;
+}
+
+// Request/Response for REST-over-WS (if needed)
+message DmHistoryRequest {
+  string conversation_id = 1;
+  uint64 before_sequence = 2;
+  uint32 limit = 3;
+}
+
+message DmHistoryResponse {
+  repeated EncryptedDmMessage messages = 1;
+  bool has_more = 2;
+}
+
+message DmConversationListRequest {}
+
+message DmConversationListResponse {
+  repeated DmConversation conversations = 1;
+}
+
+message DmOfflineMessagesResponse {
+  repeated EncryptedDmMessage messages = 1;
+}

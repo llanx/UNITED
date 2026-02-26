@@ -191,5 +191,58 @@ CREATE TABLE last_read (
 );
 ",
         ),
+        M::up(
+            "-- Migration 5: Direct Messages (Phase 5)
+
+-- X25519 public keys for DM key exchange
+-- Ed25519 -> X25519 conversion is done client-side; server stores the result
+CREATE TABLE dm_public_keys (
+    ed25519_pubkey TEXT PRIMARY KEY,
+    x25519_pubkey BLOB NOT NULL,
+    published_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- DM conversations (one-to-one only in v1)
+CREATE TABLE dm_conversations (
+    id TEXT PRIMARY KEY,
+    participant_a TEXT NOT NULL,
+    participant_b TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_message_at TEXT,
+    UNIQUE(participant_a, participant_b)
+);
+CREATE INDEX idx_dm_conversations_a ON dm_conversations(participant_a);
+CREATE INDEX idx_dm_conversations_b ON dm_conversations(participant_b);
+
+-- Encrypted DM messages (server stores opaque encrypted blobs)
+CREATE TABLE dm_messages (
+    id TEXT PRIMARY KEY,
+    conversation_id TEXT NOT NULL,
+    sender_pubkey TEXT NOT NULL,
+    encrypted_payload BLOB NOT NULL,
+    nonce BLOB NOT NULL,
+    ephemeral_pubkey BLOB,
+    timestamp INTEGER NOT NULL,
+    server_sequence INTEGER NOT NULL,
+    sender_display_name TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (conversation_id) REFERENCES dm_conversations(id) ON DELETE CASCADE
+);
+CREATE INDEX idx_dm_messages_conv_seq ON dm_messages(conversation_id, server_sequence);
+
+-- Offline delivery queue (messages waiting for recipient to come online)
+-- Cleaned up after 30 days
+CREATE TABLE dm_offline_queue (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    recipient_pubkey TEXT NOT NULL,
+    dm_message_id TEXT NOT NULL,
+    queued_at TEXT NOT NULL DEFAULT (datetime('now')),
+    delivered INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (dm_message_id) REFERENCES dm_messages(id) ON DELETE CASCADE
+);
+CREATE INDEX idx_dm_offline_recipient ON dm_offline_queue(recipient_pubkey, delivered);
+",
+        ),
     ])
 }

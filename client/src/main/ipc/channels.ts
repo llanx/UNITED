@@ -96,6 +96,18 @@ export const IPC = {
   NOTIFICATIONS_SET_PREFS: 'notifications:set-prefs',
   NOTIFICATIONS_SHOW: 'notifications:show',
 
+  // Direct Messages
+  DM_PUBLISH_KEY: 'dm:publish-key',
+  DM_LIST_CONVERSATIONS: 'dm:list-conversations',
+  DM_CREATE_CONVERSATION: 'dm:create-conversation',
+  DM_SEND_MESSAGE: 'dm:send-message',
+  DM_FETCH_HISTORY: 'dm:fetch-history',
+  DM_FETCH_OFFLINE: 'dm:fetch-offline',
+  DM_DELETE_LOCAL: 'dm:delete-local',
+  DM_GET_PEER_KEY_STATUS: 'dm:get-peer-key-status',
+  DM_BLOCK_USER: 'dm:block-user',
+  DM_UNBLOCK_USER: 'dm:unblock-user',
+
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',
   PUSH_AUTH_ERROR: 'auth:error',
@@ -108,4 +120,6 @@ export const IPC = {
   PUSH_CHAT_EVENT: 'chat:event',
   PUSH_TYPING_EVENT: 'typing:event',
   PUSH_PRESENCE_EVENT: 'presence:event',
+  PUSH_DM_EVENT: 'dm:event',
+  PUSH_DM_KEY_ROTATED: 'dm:key-rotated',
 } as const
