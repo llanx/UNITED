@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Text Messaging
 
-- [ ] **MSG-01**: User can send and receive text messages in channels with real-time delivery via gossip propagation (<100ms to connected peers)
-- [ ] **MSG-02**: User can view message history by scrolling back, fetching older messages from peers or server fallback
+- [x] **MSG-01**: User can send and receive text messages in channels with real-time delivery via gossip propagation (<100ms to connected peers)
+- [x] **MSG-02**: User can view message history by scrolling back, fetching older messages from peers or server fallback
 - [ ] **MSG-03**: User can format messages with markdown (bold, italic, code blocks, lists, quotes)
-- [ ] **MSG-04**: User can react to messages with standard Unicode emoji
+- [x] **MSG-04**: User can react to messages with standard Unicode emoji
 - [ ] **MSG-05**: User can see typing indicators when another user is composing a message in the current channel
 - [ ] **MSG-06**: User can see online/offline/away status for other users
 - [ ] **MSG-07**: User can see unread indicators showing which channels have new messages since last visit
@@ -68,7 +68,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **SEC-01**: User creates an identity by generating an Ed25519 keypair protected by a passphrase (Argon2id-encrypted); a 24-word mnemonic backup is displayed at creation; no email or password is stored on any server
 - [x] **SEC-02**: User authenticates to servers via Ed25519 challenge-response signature; server issues JWT tokens (15min access + 7-day refresh) after successful verification
-- [ ] **SEC-03**: All messages are signed by the author's Ed25519 private key; receiving peers verify signatures before displaying
+- [x] **SEC-03**: All messages are signed by the author's Ed25519 private key; receiving peers verify signatures before displaying
 - [ ] **SEC-04**: All content written to the local block store is encrypted with AES-256-GCM using a key derived from the user's credentials via Argon2id
 - [ ] **SEC-05**: DMs use per-conversation keys negotiated via X25519 key exchange; coordination server stores only encrypted blobs
 - [x] **SEC-06**: All peer-to-peer communication is encrypted in transit (TLS for WebSocket, DTLS for WebRTC)
@@ -181,16 +181,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | P2P-02 | Phase 3: P2P Networking | Complete |
 | SEC-06 | Phase 3: P2P Networking | Complete |
 | APP-02 | Phase 3: P2P Networking | Complete |
-| MSG-01 | Phase 4: Real-Time Chat | Pending |
-| MSG-02 | Phase 4: Real-Time Chat | Pending |
+| MSG-01 | Phase 4: Real-Time Chat | Complete |
+| MSG-02 | Phase 4: Real-Time Chat | Complete |
 | MSG-03 | Phase 4: Real-Time Chat | Pending |
-| MSG-04 | Phase 4: Real-Time Chat | Pending |
+| MSG-04 | Phase 4: Real-Time Chat | Complete |
 | MSG-05 | Phase 4: Real-Time Chat | Pending |
 | MSG-06 | Phase 4: Real-Time Chat | Pending |
 | MSG-07 | Phase 4: Real-Time Chat | Pending |
 | MSG-08 | Phase 4: Real-Time Chat | Pending |
 | MSG-09 | Phase 4: Real-Time Chat | Pending |
-| SEC-03 | Phase 4: Real-Time Chat | Pending |
+| SEC-03 | Phase 4: Real-Time Chat | Complete |
 | APP-03 | Phase 4: Real-Time Chat | Pending |
 | APP-05 | Phase 4: Real-Time Chat | Pending |
 | DM-01 | Phase 5: Direct Messages | Pending |

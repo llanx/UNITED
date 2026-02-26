@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 3 complete (including gap closure). Next: Phase 4: Real-Time Chat
+**Current focus:** Phase 4: Real-Time Chat — client data layer complete (plan 02), chat UI next
 
 ## Current Position
 
-Phase: 3 of 8 (P2P Networking) -- PHASE COMPLETE
-Plan: 4 of 4 in current phase
-Status: Phase 03 complete (P2P Networking + gap closure fix)
-Last activity: 2026-02-26 — Plan 03-04 complete (fix P2P reconnection bug: scheduleReconnect now dials remote peer)
+Phase: 4 of 8 (Real-Time Chat)
+Plan: 2 of 5 in current phase
+Status: Plan 04-02 complete (client data layer)
+Last activity: 2026-02-26 — Plan 04-02 complete (IPC handlers, Zustand stores, hooks, WS event forwarding)
 
-Progress: [████░░░░░░] 35%
+Progress: [█████░░░░░] 42%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration (GSD-tracked): 15 min
-- Total execution time (GSD-tracked): 2.1 hours
+- Total plans completed: 19
+- Average duration (GSD-tracked): 14 min
+- Total execution time (GSD-tracked): 2.5 hours
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [████░░░░░░] 35%
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
 | 02-server-management | 8/8 | 37 min | 5 min | 02-01: schema, permissions, proto, broadcast; 02-02 to 02-04: server endpoints; 02-05: device provisioning; 02-06: channel/role UI; 02-07: invite join flow; 02-08: SRVR-04 gap closure |
 | 03-p2p-networking | 4/4 | 46 min | 12 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence; 03-02: client libp2p node with gossipsub, peer discovery, IPC; 03-03: P2P dev panel with stats pipeline and floating overlay; 03-04: fix reconnect bug (gap closure) |
+| 04-real-time-chat | 2/5 | 24 min | 12 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -100,6 +101,13 @@ Recent decisions affecting current work:
 - [03-03]: DevPanel uses inline styles (dev tool, not polished UI) with drag support via document-level listeners
 - [03-03]: MainContent refactored to renderPanel() + fragment so DevPanel overlay renders in all views
 - [03-04]: No new dependencies for reconnect fix — peerIdFromString already transitive dep from @libp2p/peer-id
+- [04-01]: REST as primary message creation path (simpler, more reliable for single-server)
+- [04-01]: UUIDv7 for message IDs (time-ordered, string-compatible with existing patterns)
+- [04-01]: Shared connection registry between gossip consumer and app state for WS broadcast
+- [04-01]: Soft-delete for messages (deleted=1 flag, filtered in queries)
+- [04-01]: INSERT OR IGNORE for reactions (UNIQUE constraint handles idempotency)
+- [04-01]: GossipPersistResult struct returns optional ChatMessage for gossip-to-WS broadcast
+- [04-01]: WS Envelope field allocation: chat events 120-126, history 130-131 (Phase 4 range 120-149)
 
 ### Pending Todos
 
@@ -121,5 +129,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 03-04-PLAN.md (reconnect bug fix, gap closure) — Phase 03 fully complete
-Resume file: .planning/phases/03-p2p-networking/03-04-SUMMARY.md
+Stopped at: Completed 04-01-PLAN.md (server chat infrastructure)
+Resume file: .planning/phases/04-real-time-chat/04-01-SUMMARY.md
