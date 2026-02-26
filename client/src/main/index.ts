@@ -16,6 +16,7 @@ import { registerPresenceHandlers } from './ipc/presence'
 import { registerNotificationHandlers } from './ipc/notifications'
 import { registerDmHandlers } from './ipc/dm'
 import { registerBlockHandlers } from './ipc/blocks'
+import { registerMediaHandlers } from './ipc/media'
 import { setupChatEventListener } from './ws/chat-events'
 import { setupDmEventListener } from './ws/dm-events'
 import { IPC } from './ipc/channels'
@@ -145,7 +146,8 @@ app.whenReady().then(() => {
   setupChatEventListener()
   setupDmEventListener()
 
-  createWindow()
+  const mainWindow = createWindow()
+  registerMediaHandlers(mainWindow)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

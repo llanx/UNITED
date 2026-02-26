@@ -5,7 +5,8 @@ import type {
   ChatMessage, ChatHistoryResponse, ChatEvent,
   ReactionSummary, PresenceUpdate, TypingEvent, NotificationPrefs,
   DmEvent,
-  BlockStorageUsage, BlockStoreConfig
+  BlockStorageUsage, BlockStoreConfig,
+  FileAttachment, UploadProgress
 } from '@shared/ipc-bridge'
 import type { ConnectionStatus } from '@shared/ws-protocol'
 import { IPC } from '../main/ipc/channels'
@@ -204,6 +205,18 @@ const api: UnitedAPI = {
       const listener = (_event: Electron.IpcRendererEvent, userPubkey: string) => callback(userPubkey)
       ipcRenderer.on(IPC.PUSH_DM_KEY_ROTATED, listener)
       return () => { ipcRenderer.removeListener(IPC.PUSH_DM_KEY_ROTATED, listener) }
+    },
+  },
+
+  // Media
+  media: {
+    uploadFiles: (params: { channelId: string; content: string; replyToId?: string; files: FileAttachment[] }) =>
+      ipcRenderer.invoke(IPC.MEDIA_UPLOAD_FILES, params),
+    pickFiles: () => ipcRenderer.invoke(IPC.MEDIA_PICK_FILES),
+    onUploadProgress: (cb: (progress: UploadProgress) => void) => {
+      const listener = (_event: Electron.IpcRendererEvent, data: UploadProgress) => cb(data)
+      ipcRenderer.on(IPC.PUSH_UPLOAD_PROGRESS, listener)
+      return () => { ipcRenderer.removeListener(IPC.PUSH_UPLOAD_PROGRESS, listener) }
     },
   },
 

@@ -276,6 +276,22 @@ export interface DmKeyStatus {
 }
 
 // ============================================================
+// Media upload types
+// ============================================================
+
+export interface FileAttachment {
+  path: string;
+  name: string;
+  mimeType: string;
+}
+
+export interface UploadProgress {
+  fileIndex: number;
+  totalFiles: number;
+  percent: number;
+}
+
+// ============================================================
 // Block store types
 // ============================================================
 
@@ -614,6 +630,18 @@ export interface UnitedAPI {
     onDmEvent(callback: (event: DmEvent) => void): () => void;
     /** Subscribe to DM key rotation events (returns cleanup function) */
     onKeyRotated(callback: (userPubkey: string) => void): () => void;
+  };
+
+  // ---- Media ----
+
+  /** Media upload with blocking send, file picker, and progress tracking */
+  media: {
+    /** Upload files as block-referenced attachments on a message (blocking send with progress) */
+    uploadFiles(params: { channelId: string; content: string; replyToId?: string; files: FileAttachment[] }): Promise<ChatMessage>;
+    /** Open native file picker dialog, returns selected file metadata */
+    pickFiles(): Promise<FileAttachment[]>;
+    /** Subscribe to upload progress events (returns cleanup function) */
+    onUploadProgress(callback: (progress: UploadProgress) => void): () => void;
   };
 
   // ---- Block Store ----
