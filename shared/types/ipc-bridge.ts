@@ -133,6 +133,7 @@ export interface MemberResponse {
   id: string;
   display_name: string;
   is_owner: boolean;
+  pubkey: string;
   role_ids: string[];
 }
 

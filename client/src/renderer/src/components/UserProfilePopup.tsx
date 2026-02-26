@@ -65,7 +65,7 @@ export default function UserProfilePopup({
     }
   }, [onClose])
 
-  const hue = useMemo(() => pubkeyToHue(member.id), [member.id])
+  const hue = useMemo(() => pubkeyToHue(member.pubkey), [member.pubkey])
 
   const memberRoles = useMemo(() => {
     const roleMap = new Map(roles.map((r) => [r.id, r]))
@@ -75,13 +75,13 @@ export default function UserProfilePopup({
   }, [member.role_ids, roles])
 
   // Truncate pubkey fingerprint for display (first 16 chars + ...)
-  const truncatedId = member.id.length > 16
-    ? `${member.id.slice(0, 16)}...`
-    : member.id
+  const truncatedPubkey = member.pubkey.length > 16
+    ? `${member.pubkey.slice(0, 16)}...`
+    : member.pubkey
 
-  const handleCopyId = useCallback(() => {
-    navigator.clipboard.writeText(member.id).catch(() => {})
-  }, [member.id])
+  const handleCopyPubkey = useCallback(() => {
+    navigator.clipboard.writeText(member.pubkey).catch(() => {})
+  }, [member.pubkey])
 
   return (
     <div
@@ -148,26 +148,26 @@ export default function UserProfilePopup({
         {/* Divider */}
         <div className="border-t border-white/5" />
 
-        {/* User ID / pubkey fingerprint */}
+        {/* Public key fingerprint */}
         <div>
           <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
-            User ID
+            Public Key
           </span>
           <p
             className="mt-0.5 cursor-pointer select-all break-all rounded bg-white/5 px-2 py-1 font-mono text-[11px] text-[var(--color-text-secondary)] hover:bg-white/10"
-            title="Click to copy full ID"
-            onClick={handleCopyId}
+            title="Click to copy full public key"
+            onClick={handleCopyPubkey}
           >
-            {truncatedId}
+            {truncatedPubkey}
           </p>
         </div>
 
         {/* Actions */}
         <button
-          onClick={handleCopyId}
+          onClick={handleCopyPubkey}
           className="w-full rounded bg-white/5 px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:bg-white/10"
         >
-          Copy ID
+          Copy Public Key
         </button>
       </div>
     </div>

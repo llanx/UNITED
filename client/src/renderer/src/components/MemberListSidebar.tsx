@@ -80,20 +80,8 @@ export default function MemberListSidebar() {
   // Resolve presence for each member and group by status
   const grouped = useMemo(() => {
     const membersWithPresence: MemberWithPresence[] = members.map((member) => {
-      // Try to find presence by matching pubkey — presence uses pubkey as key
-      // Member has `id` (user UUID) — we need to find the matching presence entry
-      // The presence store is keyed by pubkey. We do not have a direct mapping here.
-      // Let's check if any presence entry's displayName matches, or use 'offline' as default.
-      // A better approach: iterate presence entries to find one whose displayName matches
-      // Actually, the presence store from plan 02 uses userPubkey as key.
-      // The members list has `id` as the user UUID. We cannot directly map these.
-      // However, the server now populates presence with the user pubkey, and the member
-      // response from the server should also contain the pubkey in its id field, or we need
-      // to add that linkage.
-      //
-      // For now, we'll use the member's `id` to look up presence (server stores pubkey-based).
-      // If no match, default to offline.
-      const presenceInfo = userPresence[member.id]
+      // Presence store is keyed by pubkey — use member.pubkey for lookup
+      const presenceInfo = userPresence[member.pubkey]
       const status: PresenceStatus = presenceInfo?.status ?? 'offline'
       return { member, status }
     })
@@ -150,7 +138,7 @@ export default function MemberListSidebar() {
 
               {/* Member rows */}
               {group.map(({ member, status }) => {
-                const hue = stringToHue(member.id)
+                const hue = stringToHue(member.pubkey)
                 const memberRoles = member.role_ids
                   .map((rid) => roleMap.get(rid))
                   .filter((r): r is RoleResponse => r != null && !r.is_default)
@@ -221,7 +209,7 @@ export default function MemberListSidebar() {
           member={selectedMember.member}
           roles={roles}
           status={
-            userPresence[selectedMember.member.id]?.status ?? 'offline'
+            userPresence[selectedMember.member.pubkey]?.status ?? 'offline'
           }
           position={selectedMember.position}
           onClose={handleClosePopup}
