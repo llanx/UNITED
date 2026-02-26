@@ -62,7 +62,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **P2P-07**: User can see seeding/contribution indicators showing how much they contribute to the swarm (upload/download stats, blocks seeded)
 - [ ] **P2P-08**: App prefetches content predictively: channel list hover begins pulling recent messages, scroll position at 70% prefetches next batch, app launch pre-fetches top active channels
 - [ ] **P2P-09**: Requests are sent to multiple peers in parallel (first-responder-wins) for low-latency content fetching
-- [ ] **P2P-10**: Message text + thumbnails (<50KB) are inlined with gossip messages for instant rendering; full-res media is deferred and pulled on demand
+- [x] **P2P-10**: Message text + thumbnails (<50KB) are inlined with gossip messages for instant rendering; full-res media is deferred and pulled on demand
 
 ### Security
 
@@ -84,7 +84,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **APP-01**: App shell loads once from local cache; channel switches are instant DOM swaps via pushState (no full page reload)
 - [x] **APP-02**: All P2P connections persist across channel navigation
 - [x] **APP-03**: All subscribed channels receive gossip simultaneously regardless of which channel is currently viewed
-- [ ] **APP-04**: All media attachments declare dimensions upfront; fixed layout with zero reflow during content loading
+- [x] **APP-04**: All media attachments declare dimensions upfront; fixed layout with zero reflow during content loading
 - [x] **APP-05**: User profiles display name, avatar, and custom status text
 
 ## v2 Requirements
@@ -203,9 +203,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | P2P-05 | Phase 6: Content Distribution | Complete |
 | P2P-06 | Phase 6: Content Distribution | Complete |
 | P2P-09 | Phase 6: Content Distribution | Pending |
-| P2P-10 | Phase 6: Content Distribution | Pending |
+| P2P-10 | Phase 6: Content Distribution | Complete |
 | SEC-04 | Phase 6: Content Distribution | Complete |
-| APP-04 | Phase 6: Content Distribution | Pending |
+| APP-04 | Phase 6: Content Distribution | Complete |
 | MEDIA-01 | Phase 7: Media and Prefetching | Pending |
 | MEDIA-02 | Phase 7: Media and Prefetching | Pending |
 | MEDIA-03 | Phase 7: Media and Prefetching | Pending |

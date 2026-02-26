@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-02-26T07:47:26.685Z"
+last_updated: "2026-02-26T08:19:04.000Z"
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 32
-  completed_plans: 29
+  completed_plans: 31
 ---
 
 # Project State
@@ -18,23 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 6: Content Distribution (client block store complete).
+**Current focus:** Phase 6: Content Distribution (inline content UI and storage settings complete).
 
 ## Current Position
 
 Phase: 6 of 8 (Content Distribution)
-Plan: 2 of 4 in current phase
-Status: Executing Phase 6 plans
-Last activity: 2026-02-26 -- Completed 06-02-PLAN.md (client block store)
+Plan: 4 of 4 in current phase
+Status: Phase 6 complete
+Last activity: 2026-02-26 -- Completed 06-04-PLAN.md (inline content UI and storage settings)
 
-Progress: [██████░░░░] 66%
+Progress: [████████░░] 78%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 25
-- Average duration (GSD-tracked): 11 min
-- Total execution time (GSD-tracked): 3.25 hours
+- Total plans completed: 27
+- Average duration (GSD-tracked): 10 min
+- Total execution time (GSD-tracked): 3.58 hours
 
 **By Phase:**
 
@@ -47,13 +47,14 @@ Progress: [██████░░░░] 66%
 | 05-direct-messages | 4/4 | 27 min | 7 min | 05-01: DM protobuf schemas, migration 5, 8 REST endpoints (keys, conversations, messages, offline), WS targeted push, background cleanup; 05-02: DM crypto module, IPC handlers, Zustand store, hooks, preload bridge; 05-03: DM UI (conversation list, chat view, composer, encryption indicators, server rail DM icon, profile popup Message button); 05-04: gap closure (DM WS protobuf decoding fix) |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min), 06-04 (5 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
 | Phase 05 P04 | 3min | 2 tasks | 1 files |
 | Phase 06 P01 | 12min | 2 tasks | 23 files |
 | Phase 06 P02 | 8min | 2 tasks | 16 files |
+| Phase 06 P04 | 5min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -177,6 +178,11 @@ Recent decisions affecting current work:
 - [06-02]: Block store key derived with same Argon2id params as identity but separate dedicated salt
 - [06-02]: DM block persistence is fire-and-forget (wrapped in try/catch, non-blocking)
 - [06-02]: Block data transferred as base64 strings across IPC boundary (renderer cannot access Buffer natively)
+- [06-04]: 50KB inline threshold enforced on raw content before protobuf encoding (per research Pitfall 3)
+- [06-04]: 60KB envelope size guard as safety margin below 64KB gossipsub max_transmit_size
+- [06-04]: Progressive timeout: 3s shimmer, 3-15s fetching text, 15s+ unavailable with retry
+- [06-04]: Thumbnail generation failure falls back to metadata-only block reference (graceful degradation)
+- [06-04]: Block store config hydrated from IPC on app startup for settings persistence
 
 ### Pending Todos
 
@@ -198,5 +204,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 06-01-PLAN.md (server block store)
-Resume file: .planning/phases/06-content-distribution/06-03-PLAN.md
+Stopped at: Completed 06-04-PLAN.md (inline content UI and storage settings)
+Resume file: .planning/phases/07-media-and-prefetching/07-01-PLAN.md

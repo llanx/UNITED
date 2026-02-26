@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
 - [x] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
 - [x] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators (completed 2026-02-26)
-- [ ] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback
+- [x] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback (completed 2026-02-26)
 - [ ] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching
 - [ ] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
 
@@ -186,6 +186,6 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
 | 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
-| 6. Content Distribution | 0/4 | Not started | - |
+| 6. Content Distribution | 4/4 | Complete   | 2026-02-26 |
 | 7. Media and Prefetching | 0/3 | Not started | - |
 | 8. Voice Channels | 0/2 | Not started | - |
