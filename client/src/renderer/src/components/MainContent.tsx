@@ -6,12 +6,14 @@ import ChannelManagement from './ChannelManagement'
 import RoleManagement from './RoleManagement'
 import MemberList from './MemberList'
 import DevPanel from './DevPanel'
+import ChatView from './ChatView'
 import { useState, useEffect } from 'react'
 
 export default function MainContent() {
   const name = useStore((s) => s.name)
   const description = useStore((s) => s.description)
   const activePanel = useStore((s) => s.activePanel)
+  const activeChannelId = useStore((s) => s.activeChannelId)
   const isOwner = useStore((s) => s.isOwner)
   const devPanelOpen = useStore((s) => s.devPanelOpen)
   const toggleDevPanel = useStore((s) => s.toggleDevPanel)
@@ -97,7 +99,12 @@ export default function MainContent() {
       )
     }
 
-    // Default: Welcome / chat content
+    // Default: Chat view (if channel selected) or Welcome screen
+    if (activeChannelId) {
+      return <ChatView />
+    }
+
+    // No channel selected: Welcome screen
     return (
       <div className="flex flex-1 flex-col bg-[var(--color-bg-primary)]">
         {/* Channel header bar */}
