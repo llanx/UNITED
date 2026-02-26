@@ -15,7 +15,8 @@ import {
   getStorageUsage,
   getConfig,
   setConfig,
-  restartEviction
+  restartEviction,
+  getBlock
 } from '../blocks/index'
 import type { ContentTier } from '../blocks/types'
 import type { BlockMeta } from '../blocks/types'
@@ -74,5 +75,16 @@ export function registerBlockHandlers(ipcMain: IpcMain): void {
   ): Promise<void> => {
     setConfig(config)
     restartEviction()
+  })
+
+  // Resolve a block via the 5-layer cache cascade (returns base64 or null)
+  // This is the primary IPC method for the renderer to request content.
+  // Transparently cascades: L0 memory -> L1 local -> L2 hot peers -> L3 peer directory -> L4 server
+  ipcMain.handle(IPC.BLOCK_RESOLVE, async (
+    _event,
+    hash: string
+  ): Promise<string | null> => {
+    const data = await getBlock(hash)
+    return data ? data.toString('base64') : null
   })
 }

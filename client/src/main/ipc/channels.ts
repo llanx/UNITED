@@ -104,6 +104,7 @@ export const IPC = {
   BLOCK_STORAGE_USAGE: 'block:storage-usage',
   BLOCK_GET_CONFIG: 'block:get-config',
   BLOCK_SET_CONFIG: 'block:set-config',
+  BLOCK_RESOLVE: 'block:resolve',
 
   // Direct Messages
   DM_PUBLISH_KEY: 'dm:publish-key',
