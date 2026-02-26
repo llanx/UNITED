@@ -27,10 +27,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Media
 
-- [ ] **MEDIA-01**: User can upload and share files (images, video, documents, archives) in channels and DMs
+- [x] **MEDIA-01**: User can upload and share files (images, video, documents, archives) in channels and DMs
 - [ ] **MEDIA-02**: User can see images and videos rendered inline within messages (not as download links)
 - [ ] **MEDIA-03**: User sees blurhash placeholders at exact aspect ratio while media loads from peers (zero layout reflow)
-- [ ] **MEDIA-04**: Media is chunked into content-addressed blocks and distributed across the peer swarm
+- [x] **MEDIA-04**: Media is chunked into content-addressed blocks and distributed across the peer swarm
 
 ### Voice
 
@@ -206,10 +206,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | P2P-10 | Phase 6: Content Distribution | Complete |
 | SEC-04 | Phase 6: Content Distribution | Complete |
 | APP-04 | Phase 6: Content Distribution | Complete |
-| MEDIA-01 | Phase 7: Media and Prefetching | Pending |
+| MEDIA-01 | Phase 7: Media and Prefetching | Complete |
 | MEDIA-02 | Phase 7: Media and Prefetching | Pending |
 | MEDIA-03 | Phase 7: Media and Prefetching | Pending |
-| MEDIA-04 | Phase 7: Media and Prefetching | Pending |
+| MEDIA-04 | Phase 7: Media and Prefetching | Complete |
 | P2P-04 | Phase 7: Media and Prefetching | Pending |
 | P2P-07 | Phase 7: Media and Prefetching | Pending |
 | P2P-08 | Phase 7: Media and Prefetching | Pending |
