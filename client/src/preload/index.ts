@@ -3,7 +3,8 @@ import type {
   UnitedAPI, ServerInfo, ServerSettings, StorageAPI,
   ChannelEvent, RoleEvent, P2PStats,
   ChatMessage, ChatHistoryResponse, ChatEvent,
-  ReactionSummary, PresenceUpdate, TypingEvent, NotificationPrefs
+  ReactionSummary, PresenceUpdate, TypingEvent, NotificationPrefs,
+  DmEvent
 } from '@shared/ipc-bridge'
 import type { ConnectionStatus } from '@shared/ws-protocol'
 import { IPC } from '../main/ipc/channels'
@@ -175,6 +176,36 @@ const api: UnitedAPI = {
       ipcRenderer.invoke(IPC.NOTIFICATIONS_SHOW, opts),
   },
 
+  // Direct Messages
+  dm: {
+    publishKey: () =>
+      ipcRenderer.invoke(IPC.DM_PUBLISH_KEY),
+    listConversations: () =>
+      ipcRenderer.invoke(IPC.DM_LIST_CONVERSATIONS),
+    createConversation: (recipientPubkey: string) =>
+      ipcRenderer.invoke(IPC.DM_CREATE_CONVERSATION, recipientPubkey),
+    sendMessage: (conversationId: string, recipientPubkey: string, content: string) =>
+      ipcRenderer.invoke(IPC.DM_SEND_MESSAGE, conversationId, recipientPubkey, content),
+    fetchHistory: (conversationId: string, recipientPubkey: string, beforeSeq?: number, limit?: number) =>
+      ipcRenderer.invoke(IPC.DM_FETCH_HISTORY, conversationId, recipientPubkey, beforeSeq, limit),
+    fetchOffline: () =>
+      ipcRenderer.invoke(IPC.DM_FETCH_OFFLINE),
+    deleteLocal: (conversationId: string, messageId: string) =>
+      ipcRenderer.invoke(IPC.DM_DELETE_LOCAL, conversationId, messageId),
+    getPeerKeyStatus: (peerPubkey: string) =>
+      ipcRenderer.invoke(IPC.DM_GET_PEER_KEY_STATUS, peerPubkey),
+    onDmEvent: (callback: (event: DmEvent) => void) => {
+      const listener = (_event: Electron.IpcRendererEvent, data: DmEvent) => callback(data)
+      ipcRenderer.on(IPC.PUSH_DM_EVENT, listener)
+      return () => { ipcRenderer.removeListener(IPC.PUSH_DM_EVENT, listener) }
+    },
+    onKeyRotated: (callback: (userPubkey: string) => void) => {
+      const listener = (_event: Electron.IpcRendererEvent, userPubkey: string) => callback(userPubkey)
+      ipcRenderer.on(IPC.PUSH_DM_KEY_ROTATED, listener)
+      return () => { ipcRenderer.removeListener(IPC.PUSH_DM_KEY_ROTATED, listener) }
+    },
+  },
+
   // Device Provisioning (SEC-12)
   provisioning: {
     startProvisioning: () =>
@@ -252,6 +283,20 @@ const api: UnitedAPI = {
       callback(data)
     ipcRenderer.on(IPC.PUSH_PRESENCE_EVENT, listener)
     return () => { ipcRenderer.removeListener(IPC.PUSH_PRESENCE_EVENT, listener) }
+  },
+
+  onDmEvent: (callback: (event: DmEvent) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, data: DmEvent) =>
+      callback(data)
+    ipcRenderer.on(IPC.PUSH_DM_EVENT, listener)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_DM_EVENT, listener) }
+  },
+
+  onDmKeyRotated: (callback: (userPubkey: string) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, userPubkey: string) =>
+      callback(userPubkey)
+    ipcRenderer.on(IPC.PUSH_DM_KEY_ROTATED, listener)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_DM_KEY_ROTATED, listener) }
   }
 }
 
