@@ -7,6 +7,9 @@ import { createSettingsSlice, type SettingsSlice } from './settings'
 import { createUiSlice, type UiSlice } from './ui'
 import { createRolesSlice, type RolesSlice } from './roles'
 import { createP2PSlice, type P2PSlice } from './p2p'
+import { createMessagesSlice, type MessagesSlice } from './messages'
+import { createPresenceSlice, type PresenceSlice } from './presence'
+import { createNotificationsSlice, type NotificationsSlice } from './notifications'
 
 export type RootStore =
   AuthSlice &
@@ -16,7 +19,10 @@ export type RootStore =
   SettingsSlice &
   UiSlice &
   RolesSlice &
-  P2PSlice
+  P2PSlice &
+  MessagesSlice &
+  PresenceSlice &
+  NotificationsSlice
 
 export const useStore = create<RootStore>()((...a) => ({
   ...createAuthSlice(...a),
@@ -27,6 +33,9 @@ export const useStore = create<RootStore>()((...a) => ({
   ...createUiSlice(...a),
   ...createRolesSlice(...a),
   ...createP2PSlice(...a),
+  ...createMessagesSlice(...a),
+  ...createPresenceSlice(...a),
+  ...createNotificationsSlice(...a),
 }))
 
 /**

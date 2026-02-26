@@ -1,5 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { UnitedAPI, ServerInfo, ServerSettings, StorageAPI, ChannelEvent, RoleEvent, P2PStats } from '@shared/ipc-bridge'
+import type {
+  UnitedAPI, ServerInfo, ServerSettings, StorageAPI,
+  ChannelEvent, RoleEvent, P2PStats,
+  ChatMessage, ChatHistoryResponse, ChatEvent,
+  ReactionSummary, PresenceUpdate, TypingEvent, NotificationPrefs
+} from '@shared/ipc-bridge'
 import type { ConnectionStatus } from '@shared/ws-protocol'
 import { IPC } from '../main/ipc/channels'
 
@@ -126,6 +131,48 @@ const api: UnitedAPI = {
     closePanel: () => { ipcRenderer.invoke(IPC.P2P_PANEL_CLOSE) },
   },
 
+  // Chat
+  chat: {
+    send: (channelId: string, content: string, replyToId?: string) =>
+      ipcRenderer.invoke(IPC.CHAT_SEND, channelId, content, replyToId),
+    fetchHistory: (channelId: string, beforeSequence?: number, limit?: number) =>
+      ipcRenderer.invoke(IPC.CHAT_FETCH_HISTORY, channelId, beforeSequence, limit),
+    edit: (channelId: string, messageId: string, content: string) =>
+      ipcRenderer.invoke(IPC.CHAT_EDIT, channelId, messageId, content),
+    delete: (channelId: string, messageId: string) =>
+      ipcRenderer.invoke(IPC.CHAT_DELETE, channelId, messageId),
+  },
+
+  // Reactions
+  reactions: {
+    add: (messageId: string, emoji: string) =>
+      ipcRenderer.invoke(IPC.REACTIONS_ADD, messageId, emoji),
+    remove: (messageId: string, emoji: string) =>
+      ipcRenderer.invoke(IPC.REACTIONS_REMOVE, messageId, emoji),
+    fetch: (messageId: string) =>
+      ipcRenderer.invoke(IPC.REACTIONS_FETCH, messageId),
+  },
+
+  // Presence
+  presence: {
+    set: (status: 'online' | 'away' | 'dnd' | 'offline') =>
+      ipcRenderer.invoke(IPC.PRESENCE_SET, status),
+  },
+
+  // Last Read
+  lastRead: {
+    update: (channelId: string, lastSequence: number) =>
+      ipcRenderer.invoke(IPC.LAST_READ_UPDATE, channelId, lastSequence),
+    fetch: (channelId: string) =>
+      ipcRenderer.invoke(IPC.LAST_READ_FETCH, channelId),
+  },
+
+  // Notifications
+  notifications: {
+    setPrefs: (channelId: string, prefs: NotificationPrefs) =>
+      ipcRenderer.invoke(IPC.NOTIFICATIONS_SET_PREFS, channelId, prefs),
+  },
+
   // Device Provisioning (SEC-12)
   provisioning: {
     startProvisioning: () =>
@@ -182,6 +229,27 @@ const api: UnitedAPI = {
       callback(inviteCode, serverUrl)
     ipcRenderer.on(IPC.PUSH_DEEP_LINK, listener)
     return () => { ipcRenderer.removeListener(IPC.PUSH_DEEP_LINK, listener) }
+  },
+
+  onChatEvent: (callback: (event: ChatEvent) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, data: ChatEvent) =>
+      callback(data)
+    ipcRenderer.on(IPC.PUSH_CHAT_EVENT, listener)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_CHAT_EVENT, listener) }
+  },
+
+  onTypingEvent: (callback: (event: TypingEvent) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, data: TypingEvent) =>
+      callback(data)
+    ipcRenderer.on(IPC.PUSH_TYPING_EVENT, listener)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_TYPING_EVENT, listener) }
+  },
+
+  onPresenceEvent: (callback: (event: PresenceUpdate) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, data: PresenceUpdate) =>
+      callback(data)
+    ipcRenderer.on(IPC.PUSH_PRESENCE_EVENT, listener)
+    return () => { ipcRenderer.removeListener(IPC.PUSH_PRESENCE_EVENT, listener) }
   }
 }
 

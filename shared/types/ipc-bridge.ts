@@ -170,6 +170,63 @@ export interface RoleEvent {
 }
 
 // ============================================================
+// Chat types
+// ============================================================
+
+export interface ChatMessage {
+  id: string;
+  channel_id: string;
+  sender_pubkey: string;
+  sender_display_name: string;
+  content: string;
+  timestamp: string;
+  server_sequence: number;
+  reply_to_id: string | null;
+  reply_to_preview: string | null;
+  edited_at: string | null;
+  reactions: ReactionSummary[];
+}
+
+export interface ReactionSummary {
+  emoji: string;
+  count: number;
+  user_pubkeys: string[];
+}
+
+export interface ChatHistoryResponse {
+  messages: ChatMessage[];
+  has_more: boolean;
+}
+
+export interface ChatEvent {
+  type: 'new' | 'edited' | 'deleted' | 'reaction-added' | 'reaction-removed';
+  message?: ChatMessage;
+  messageId?: string;
+  channelId?: string;
+  newContent?: string;
+  editTimestamp?: string;
+  userPubkey?: string;
+  emoji?: string;
+}
+
+export interface PresenceUpdate {
+  userPubkey: string;
+  displayName: string;
+  status: 'online' | 'away' | 'dnd' | 'offline';
+}
+
+export interface TypingEvent {
+  channelId: string;
+  userId: string;
+  displayName: string;
+}
+
+export interface NotificationPrefs {
+  muted: boolean;
+  notifyAll: boolean;
+}
+
+// ============================================================
 // P2P types
 // ============================================================
 
@@ -370,6 +427,51 @@ export interface UnitedAPI {
     joinViaInvite(serverUrl: string, inviteCode: string): Promise<JoinResult>;
   };
 
+  // ---- Chat ----
+
+  /** Chat message operations (all go through main process IPC) */
+  chat: {
+    /** Send a message to a channel */
+    send(channelId: string, content: string, replyToId?: string): Promise<ChatMessage>;
+    /** Fetch paginated message history */
+    fetchHistory(channelId: string, beforeSequence?: number, limit?: number): Promise<ChatHistoryResponse>;
+    /** Edit one of your own messages */
+    edit(channelId: string, messageId: string, content: string): Promise<ChatMessage>;
+    /** Delete one of your own messages */
+    delete(channelId: string, messageId: string): Promise<void>;
+  };
+
+  // ---- Reactions ----
+
+  /** Emoji reaction operations */
+  reactions: {
+    add(messageId: string, emoji: string): Promise<void>;
+    remove(messageId: string, emoji: string): Promise<void>;
+    fetch(messageId: string): Promise<ReactionSummary[]>;
+  };
+
+  // ---- Presence ----
+
+  /** Presence status operations */
+  presence: {
+    set(status: 'online' | 'away' | 'dnd' | 'offline'): Promise<void>;
+  };
+
+  // ---- Last Read ----
+
+  /** Last-read tracking for unread indicators */
+  lastRead: {
+    update(channelId: string, lastSequence: number): Promise<void>;
+    fetch(channelId: string): Promise<{ last_sequence: number }>;
+  };
+
+  // ---- Notifications ----
+
+  /** Notification preference operations */
+  notifications: {
+    setPrefs(channelId: string, prefs: NotificationPrefs): Promise<void>;
+  };
+
   // ---- Device Provisioning (SEC-12) ----
 
   /** Device provisioning for local keypair transfer via QR + TCP */
@@ -464,6 +566,24 @@ export interface UnitedAPI {
    * @returns Cleanup function to unsubscribe
    */
   onDeepLinkInvite(callback: (inviteCode: string, serverUrl?: string) => void): () => void;
+
+  /**
+   * Subscribe to chat events (new message, edit, delete, reactions).
+   * @returns Cleanup function to unsubscribe
+   */
+  onChatEvent(callback: (event: ChatEvent) => void): () => void;
+
+  /**
+   * Subscribe to typing indicator events.
+   * @returns Cleanup function to unsubscribe
+   */
+  onTypingEvent(callback: (event: TypingEvent) => void): () => void;
+
+  /**
+   * Subscribe to presence update events.
+   * @returns Cleanup function to unsubscribe
+   */
+  onPresenceEvent(callback: (event: PresenceUpdate) => void): () => void;
 }
 
 // ============================================================
