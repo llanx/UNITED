@@ -10,6 +10,8 @@ fn main() -> Result<()> {
         "../shared/proto/moderation.proto",
         "../shared/proto/invite.proto",
         "../shared/proto/p2p.proto",
+        "../shared/proto/chat.proto",
+        "../shared/proto/presence.proto",
         "../shared/proto/ws.proto",
     ];
 

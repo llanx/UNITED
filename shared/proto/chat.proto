@@ -1,0 +1,68 @@
+syntax = "proto3";
+package united.chat;
+
+// Chat message persisted and broadcast by the server.
+// Created via REST POST or decoded from gossipsub GossipEnvelope payload.
+message ChatMessage {
+    string id = 1;                         // UUID assigned by server
+    string channel_id = 2;
+    string sender_pubkey = 3;              // Hex-encoded Ed25519 public key
+    string sender_display_name = 4;
+    string content = 5;                    // Plain-text content
+    uint64 timestamp = 6;                  // Unix millis
+    uint64 server_sequence = 7;            // Server-assigned ordering per channel
+    bytes signature = 8;                   // Ed25519 signature (from gossip path; empty for REST)
+    optional string reply_to_id = 9;       // UUID of parent message (threading)
+    bool edited = 10;
+    repeated string mention_user_ids = 11; // Parsed @user mentions
+    repeated string mention_role_ids = 12; // Parsed @role mentions
+}
+
+// Emoji reaction on a message
+message Reaction {
+    string message_id = 1;
+    string user_pubkey = 2;                // Hex-encoded
+    string emoji = 3;
+    uint64 timestamp = 4;                  // Unix millis
+}
+
+// --- Events broadcast over WebSocket ---
+
+message NewMessageEvent {
+    ChatMessage message = 1;
+}
+
+message MessageEditedEvent {
+    string message_id = 1;
+    string channel_id = 2;
+    string new_content = 3;
+    uint64 edit_timestamp = 4;             // Unix millis
+}
+
+message MessageDeletedEvent {
+    string message_id = 1;
+    string channel_id = 2;
+}
+
+message ReactionAddedEvent {
+    Reaction reaction = 1;
+}
+
+message ReactionRemovedEvent {
+    string message_id = 1;
+    string user_pubkey = 2;
+    string emoji = 3;
+}
+
+// --- History fetch (used over WS or REST) ---
+
+message FetchHistoryRequest {
+    string channel_id = 1;
+    uint64 before_sequence = 2;
+    uint32 limit = 3;
+}
+
+message FetchHistoryResponse {
+    repeated ChatMessage messages = 1;
+    bool has_more = 2;
+}

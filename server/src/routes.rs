@@ -7,6 +7,7 @@ use crate::admin::settings;
 use crate::auth::challenge;
 use crate::auth::middleware::JwtSecret;
 use crate::auth::totp;
+use crate::chat;
 use crate::identity::{blob, registration, rotation};
 use crate::channels::crud as channel_crud;
 use crate::invite::{generate as invite_gen, landing as invite_landing};
@@ -219,6 +220,33 @@ pub fn build_router(state: AppState) -> Router {
     let invite_landing_routes = Router::new()
         .route("/invite/{code}", axum::routing::get(invite_landing::invite_landing_page));
 
+    // Phase 4: Chat message and reaction routes
+    let chat_routes = Router::new()
+        .route(
+            "/api/channels/{channel_id}/messages",
+            axum::routing::get(chat::messages::get_channel_messages)
+                .post(chat::messages::create_message),
+        )
+        .route(
+            "/api/channels/{channel_id}/messages/{message_id}",
+            axum::routing::put(chat::messages::edit_message)
+                .delete(chat::messages::delete_message),
+        )
+        .route(
+            "/api/channels/{channel_id}/last-read",
+            axum::routing::put(chat::messages::update_last_read)
+                .get(chat::messages::get_last_read),
+        )
+        .route(
+            "/api/messages/{message_id}/reactions",
+            axum::routing::post(chat::reactions::add_reaction)
+                .get(chat::reactions::get_reactions),
+        )
+        .route(
+            "/api/messages/{message_id}/reactions/{emoji}",
+            axum::routing::delete(chat::reactions::remove_reaction),
+        );
+
     Router::new()
         .merge(auth_routes)
         .merge(public_identity_routes)
@@ -230,6 +258,7 @@ pub fn build_router(state: AppState) -> Router {
         .merge(moderation_routes)
         .merge(invite_routes)
         .merge(invite_landing_routes)
+        .merge(chat_routes)
         .merge(ws_routes)
         .merge(health)
         .layer(middleware::from_fn_with_state(

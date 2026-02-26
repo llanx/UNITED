@@ -9,6 +9,8 @@ import "roles.proto";
 import "moderation.proto";
 import "invite.proto";
 import "p2p.proto";
+import "chat.proto";
+import "presence.proto";
 
 // WebSocket envelope: all WS messages are wrapped in this type
 // Both client->server and server->client use the same envelope format
@@ -26,6 +28,7 @@ import "p2p.proto";
 //   99:    Errors
 //   100-109: Overflow from Phase 2
 //   110-119: P2P networking (Phase 3)
+//   120-149: Real-Time Chat (Phase 4)
 
 message Envelope {
   // Client-generated request ID, echoed in response for correlation
@@ -107,6 +110,17 @@ message Envelope {
     united.p2p.PeerDirectoryResponse peer_directory_response = 111;
     united.p2p.RegisterPeerIdRequest register_peer_id_request = 112;
     united.p2p.RegisterPeerIdResponse register_peer_id_response = 113;
+
+    // --- Phase 4: Real-Time Chat (120-149) ---
+    united.chat.NewMessageEvent new_message_event = 120;
+    united.chat.MessageEditedEvent message_edited_event = 121;
+    united.chat.MessageDeletedEvent message_deleted_event = 122;
+    united.chat.ReactionAddedEvent reaction_added_event = 123;
+    united.chat.ReactionRemovedEvent reaction_removed_event = 124;
+    united.presence.PresenceUpdateEvent presence_update_event = 125;
+    united.presence.TypingEvent typing_event = 126;
+    united.chat.FetchHistoryRequest fetch_history_request = 130;
+    united.chat.FetchHistoryResponse fetch_history_response = 131;
   }
 }
 

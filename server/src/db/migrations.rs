@@ -160,5 +160,36 @@ CREATE INDEX IF NOT EXISTS idx_messages_channel_seq ON messages(channel_id, serv
 CREATE INDEX IF NOT EXISTS idx_messages_channel_time ON messages(channel_id, created_at);
 ",
         ),
+        M::up(
+            "-- Migration 4: Chat Features (Phase 4)
+
+ALTER TABLE messages ADD COLUMN content_text TEXT;
+ALTER TABLE messages ADD COLUMN edited INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE messages ADD COLUMN edit_timestamp TEXT;
+ALTER TABLE messages ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE messages ADD COLUMN reply_to_id TEXT;
+
+CREATE TABLE reactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id INTEGER NOT NULL,
+    user_pubkey TEXT NOT NULL,
+    emoji TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
+    UNIQUE(message_id, user_pubkey, emoji)
+);
+CREATE INDEX idx_reactions_message ON reactions(message_id);
+
+CREATE TABLE last_read (
+    user_id TEXT NOT NULL,
+    channel_id TEXT NOT NULL,
+    last_sequence INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (user_id, channel_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE
+);
+",
+        ),
     ])
 }

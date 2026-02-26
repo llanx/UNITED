@@ -1,0 +1,36 @@
+syntax = "proto3";
+package united.presence;
+
+// Online status for a user
+enum PresenceStatus {
+    PRESENCE_STATUS_UNSPECIFIED = 0;
+    PRESENCE_STATUS_ONLINE = 1;
+    PRESENCE_STATUS_AWAY = 2;
+    PRESENCE_STATUS_DND = 3;
+    PRESENCE_STATUS_OFFLINE = 4;
+}
+
+// Presence state change for a user
+message PresenceUpdate {
+    string user_pubkey = 1;                // Hex-encoded Ed25519 public key
+    PresenceStatus status = 2;
+    uint64 timestamp = 3;                  // Unix millis
+}
+
+// Typing indicator for a channel
+message TypingIndicator {
+    string user_pubkey = 1;                // Hex-encoded
+    string channel_id = 2;
+    string display_name = 3;
+    uint64 timestamp = 4;                  // Unix millis
+}
+
+// --- Events broadcast over WebSocket ---
+
+message PresenceUpdateEvent {
+    PresenceUpdate update = 1;
+}
+
+message TypingEvent {
+    TypingIndicator indicator = 1;
+}
