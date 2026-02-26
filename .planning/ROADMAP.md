@@ -133,12 +133,13 @@ Plans:
   3. Small content (<50KB messages and thumbnails) is inlined with gossip for instant rendering; larger content is referenced and pulled on demand
   4. Content is managed in priority tiers (own messages never evicted, hot/warm/altruistic tiers with 7-day default TTL and LRU eviction)
   5. Media attachments declare dimensions upfront and the layout is fixed — no reflow occurs while content loads from peers
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
-- [ ] 06-03: TBD
+- [ ] 06-01-PLAN.md — Server block store: protobuf schemas, migration 6, HKDF crypto, REST endpoints, retention purge
+- [ ] 06-02-PLAN.md — Client block store: types, crypto, file store, L0 cache, tiers, eviction, IPC bridge
+- [ ] 06-03-PLAN.md — Block exchange protocol and 5-layer cache cascade with parallel peer fetch
+- [ ] 06-04-PLAN.md — Gossip inline/deferred content, micro-thumbnails, content loading UI, storage settings
 
 ### Phase 7: Media and Prefetching
 **Goal**: Users can share and view rich media seamlessly, with the P2P distribution invisible behind fast loading and predictive prefetching
@@ -185,6 +186,6 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
 | 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
-| 6. Content Distribution | 0/3 | Not started | - |
+| 6. Content Distribution | 0/4 | Not started | - |
 | 7. Media and Prefetching | 0/3 | Not started | - |
 | 8. Voice Channels | 0/2 | Not started | - |
