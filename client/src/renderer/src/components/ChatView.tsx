@@ -20,11 +20,12 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { useStore } from '../stores'
 import { useMessages } from '../hooks/useMessages'
 import { useTypingIndicator } from '../hooks/usePresence'
+import { useAppLaunchPrefetch } from '../hooks/usePrefetch'
 import { groupMessages, type MessageGroupData } from './MessageGroup'
 import MessageGroupComponent from './MessageGroup'
 import MessageComposer from './MessageComposer'
 import { extractMentionIds } from './MarkdownContent'
-import type { ChatMessage, ChatEvent } from '@shared/ipc-bridge'
+import type { ChatMessage, ChatEvent, FileAttachment } from '@shared/ipc-bridge'
 
 interface ChatViewProps {
   memberListVisible?: boolean
@@ -41,6 +42,20 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
   const publicKey = useStore((s) => s.publicKey)
   const members = useStore((s) => s.members)
   const serverName = useStore((s) => s.name)
+
+  // App launch prefetch: last-viewed + most active channel (runs once)
+  useAppLaunchPrefetch()
+
+  // Persist last-viewed channel to localStorage for app launch prefetch
+  useEffect(() => {
+    if (activeChannelId) {
+      try {
+        localStorage.setItem('united-last-viewed-channel', activeChannelId)
+      } catch {
+        // localStorage may be unavailable
+      }
+    }
+  }, [activeChannelId])
 
   // Find the active channel info for header display
   const activeChannel = useMemo(() => {
@@ -163,6 +178,10 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
   const prevMessageCountRef = useRef(messages.length)
   const isLoadingOlderRef = useRef(false)
 
+  // Scroll-based prefetch: 2s debounce for 70% threshold
+  const scrollPrefetchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastScrollPrefetchRef = useRef(0)
+
   // Virtualizer
   const virtualizer = useVirtualizer({
     count: groups.length,
@@ -199,6 +218,20 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
     if (el.scrollTop < 200 && hasMore && !loading && !isLoadingOlderRef.current) {
       isLoadingOlderRef.current = true
       loadOlder()
+    }
+
+    // 70% scroll prefetch: when user has scrolled up past 70% of content,
+    // trigger loading older messages with 2s debounce
+    if (el.scrollHeight > 0 && hasMore && !loading) {
+      const scrollUpPercentage = 1 - (el.scrollTop / (el.scrollHeight - el.clientHeight))
+      if (scrollUpPercentage >= 0.7) {
+        const now = Date.now()
+        if (now - lastScrollPrefetchRef.current > 2000 && !isLoadingOlderRef.current) {
+          lastScrollPrefetchRef.current = now
+          isLoadingOlderRef.current = true
+          loadOlder()
+        }
+      }
     }
   }, [hasMore, loading, loadOlder, hasNewMessages, activeChannelId, markChannelRead, clearMentionCount])
 
@@ -270,8 +303,99 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
     [groups, virtualizer]
   )
 
+  // ============================================================
+  // Drag-and-drop zone (wraps entire chat view for larger drop target)
+  // ============================================================
+
+  const [isDragging, setIsDragging] = useState(false)
+  const [droppedFiles, setDroppedFiles] = useState<FileAttachment[] | undefined>(undefined)
+  const dragCounterRef = useRef(0)
+
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounterRef.current++
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDragging(true)
+    }
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounterRef.current--
+    if (dragCounterRef.current === 0) {
+      setIsDragging(false)
+    }
+  }, [])
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounterRef.current = 0
+    setIsDragging(false)
+
+    const fileList = e.dataTransfer.files
+    if (!fileList.length) return
+
+    const newFiles: FileAttachment[] = []
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i]
+      const filePath = (file as File & { path?: string }).path || ''
+      newFiles.push({
+        path: filePath,
+        name: file.name,
+        mimeType: file.type || 'application/octet-stream',
+      })
+    }
+
+    setDroppedFiles(newFiles)
+  }, [])
+
+  const handleDroppedFilesConsumed = useCallback(() => {
+    setDroppedFiles(undefined)
+  }, [])
+
   return (
-    <div className="flex h-full flex-1 flex-col bg-[var(--color-bg-primary)]">
+    <div
+      className="flex h-full flex-1 flex-col bg-[var(--color-bg-primary)]"
+      style={{ position: 'relative' }}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      {/* Full-view drag overlay */}
+      {isDragging && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(88, 101, 242, 0.12)',
+            border: '2px dashed var(--color-accent, #5865f2)',
+            borderRadius: 8,
+            pointerEvents: 'none',
+          }}
+        >
+          <span
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: 'var(--color-accent, #5865f2)',
+            }}
+          >
+            Drop files to attach
+          </span>
+        </div>
+      )}
       {/* Channel header */}
       <div className="flex h-12 shrink-0 items-center gap-2 border-b border-white/5 px-4">
         <span className="text-lg text-[var(--color-text-muted)]">#</span>
@@ -411,6 +535,8 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
         replyTo={replyTo}
         onCancelReply={handleCancelReply}
         onMessageSent={handleMessageSent}
+        droppedFiles={droppedFiles}
+        onDroppedFilesConsumed={handleDroppedFilesConsumed}
       />
     </div>
   )

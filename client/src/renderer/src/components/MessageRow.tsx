@@ -6,10 +6,11 @@
  * - Grouped: Content only, aligned with full message content (continuation messages)
  *
  * Features: inline reply preview, edited/deleted states, mention highlight,
- * signature verification indicator, hover toolbar, right-click context menu.
+ * signature verification indicator, hover toolbar, right-click context menu,
+ * inline media attachments (images in grid, videos, file cards).
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import type { ChatMessage } from '@shared/ipc-bridge'
 import { useStore } from '../stores'
 import MarkdownContent, { extractMentionIds } from './MarkdownContent'
@@ -17,6 +18,10 @@ import HoverToolbar from './HoverToolbar'
 import ReactionPills from './ReactionPills'
 import EmojiPicker from './EmojiPicker'
 import EncryptionIndicator from './EncryptionIndicator'
+import ImageGrid from './ImageGrid'
+import InlineVideo from './InlineVideo'
+import AttachmentCard from './AttachmentCard'
+import Lightbox from './Lightbox'
 
 interface MessageRowProps {
   message: ChatMessage
@@ -73,6 +78,8 @@ export default function MessageRow({
   const [hovered, setHovered] = useState(false)
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
   const [emojiPickerPos, setEmojiPickerPos] = useState<{ x: number; y: number } | null>(null)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
   const contextMenuRef = useRef<HTMLDivElement>(null)
 
   const publicKey = useStore((s) => s.publicKey)
@@ -114,6 +121,18 @@ export default function MessageRow({
   }, [userPresence])
 
   const avatarHue = pubkeyToHue(message.sender_pubkey)
+
+  // Separate media attachments by type
+  const { images, videos, files } = useMemo(() => {
+    const refs = message.block_refs ?? []
+    return {
+      images: refs.filter((r) => r.mimeType.startsWith('image/')),
+      videos: refs.filter((r) => r.mimeType.startsWith('video/')),
+      files: refs.filter((r) => !r.mimeType.startsWith('image/') && !r.mimeType.startsWith('video/')),
+    }
+  }, [message.block_refs])
+
+  const hasAttachments = images.length > 0 || videos.length > 0 || files.length > 0
 
   // Context menu close handler
   useEffect(() => {
@@ -199,6 +218,32 @@ export default function MessageRow({
               <span className="ml-1 text-[10px] text-[var(--color-text-muted)]">(edited)</span>
             )}
           </div>
+
+          {/* Media attachments: images grid, videos, file cards */}
+          {hasAttachments && (
+            <div className="mt-1.5 flex flex-col gap-1.5">
+              {images.length > 0 && (
+                <ImageGrid
+                  images={images}
+                  onImageClick={(i) => {
+                    setLightboxIndex(i)
+                    setLightboxOpen(true)
+                  }}
+                />
+              )}
+              {videos.map((v) => (
+                <InlineVideo key={v.hash} blockRef={v} />
+              ))}
+              {files.length > 0 && (
+                <div className="flex flex-col gap-1" style={{ maxWidth: 400 }}>
+                  {files.map((f) => (
+                    <AttachmentCard key={f.hash} filename={f.filename} size={f.size} mimeType={f.mimeType} hash={f.hash} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {(message.reactions.length > 0 || hovered) && (
             <ReactionPills
               reactions={message.reactions}
@@ -238,6 +283,16 @@ export default function MessageRow({
             onDelete={isOwnMessage || isOwner ? handleDelete : undefined}
             onCopyText={handleCopyText}
             onCopyId={handleCopyId}
+          />
+        )}
+
+        {/* Lightbox for image gallery */}
+        {lightboxOpen && images.length > 0 && (
+          <Lightbox
+            images={images}
+            open={lightboxOpen}
+            initialIndex={lightboxIndex}
+            onClose={() => setLightboxOpen(false)}
           />
         )}
       </div>
@@ -301,6 +356,31 @@ export default function MessageRow({
           )}
         </div>
 
+        {/* Media attachments: images grid, videos, file cards */}
+        {hasAttachments && (
+          <div className="mt-1.5 flex flex-col gap-1.5">
+            {images.length > 0 && (
+              <ImageGrid
+                images={images}
+                onImageClick={(i) => {
+                  setLightboxIndex(i)
+                  setLightboxOpen(true)
+                }}
+              />
+            )}
+            {videos.map((v) => (
+              <InlineVideo key={v.hash} blockRef={v} />
+            ))}
+            {files.length > 0 && (
+              <div className="flex flex-col gap-1" style={{ maxWidth: 400 }}>
+                {files.map((f) => (
+                  <AttachmentCard key={f.hash} filename={f.filename} size={f.size} mimeType={f.mimeType} hash={f.hash} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Reactions */}
         {(message.reactions.length > 0 || hovered) && (
           <ReactionPills
@@ -341,6 +421,16 @@ export default function MessageRow({
           onDelete={isOwnMessage || isOwner ? handleDelete : undefined}
           onCopyText={handleCopyText}
           onCopyId={handleCopyId}
+        />
+      )}
+
+      {/* Lightbox for image gallery */}
+      {lightboxOpen && images.length > 0 && (
+        <Lightbox
+          images={images}
+          open={lightboxOpen}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
         />
       )}
     </div>

@@ -292,6 +292,23 @@ export interface UploadProgress {
 }
 
 // ============================================================
+// Network stats types
+// ============================================================
+
+export interface NetworkStats {
+  /** Cumulative bytes uploaded (served to peers) */
+  bytesUploaded: number;
+  /** Cumulative bytes downloaded (received from peers) */
+  bytesDownloaded: number;
+  /** Total blocks served to peers */
+  blocksSeeded: number;
+  /** Upload speed in bytes/sec (rolling 10s window) */
+  uploadSpeed: number;
+  /** Download speed in bytes/sec (rolling 10s window) */
+  downloadSpeed: number;
+}
+
+// ============================================================
 // Block store types
 // ============================================================
 
@@ -642,6 +659,18 @@ export interface UnitedAPI {
     pickFiles(): Promise<FileAttachment[]>;
     /** Subscribe to upload progress events (returns cleanup function) */
     onUploadProgress(callback: (progress: UploadProgress) => void): () => void;
+  };
+
+  // ---- Network Stats ----
+
+  /** Network stats tracking (private only -- never exposed to other users) */
+  stats: {
+    /** Get current network stats snapshot */
+    getNetworkStats(): Promise<NetworkStats>;
+    /** Get storage usage breakdown by tier */
+    getStorageUsage(): Promise<BlockStorageUsage>;
+    /** Subscribe to periodic network stats updates (returns cleanup function) */
+    onNetworkStats(callback: (stats: NetworkStats) => void): () => void;
   };
 
   // ---- Block Store ----

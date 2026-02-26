@@ -122,6 +122,10 @@ export const IPC = {
   MEDIA_UPLOAD_FILES: 'media:upload-files',
   MEDIA_PICK_FILES: 'media:pick-files',
 
+  // Network stats
+  STATS_GET_NETWORK: 'stats:get-network',
+  STATS_GET_STORAGE: 'stats:get-storage',
+
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',
   PUSH_AUTH_ERROR: 'auth:error',
@@ -137,4 +141,5 @@ export const IPC = {
   PUSH_DM_EVENT: 'dm:event',
   PUSH_DM_KEY_ROTATED: 'dm:key-rotated',
   PUSH_UPLOAD_PROGRESS: 'media:upload-progress',
+  PUSH_NETWORK_STATS: 'stats:network-push',
 } as const

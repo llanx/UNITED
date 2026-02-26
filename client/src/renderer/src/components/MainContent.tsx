@@ -9,6 +9,9 @@ import MemberListSidebar from './MemberListSidebar'
 import DevPanel from './DevPanel'
 import ChatView from './ChatView'
 import DmChatView from './DmChatView'
+import NetworkStatsPanel from './NetworkStats'
+import StatusBarIndicator from './StatusBarIndicator'
+import { useNetworkStats } from '../hooks/useNetworkStats'
 import { useState, useEffect } from 'react'
 
 export default function MainContent() {
@@ -19,6 +22,9 @@ export default function MainContent() {
   const isOwner = useStore((s) => s.isOwner)
   const devPanelOpen = useStore((s) => s.devPanelOpen)
   const toggleDevPanel = useStore((s) => s.toggleDevPanel)
+
+  // Subscribe to network stats push events
+  useNetworkStats()
 
   // DM state
   const dmView = useStore((s) => s.dmView)
@@ -116,6 +122,11 @@ export default function MainContent() {
       return <RoleManagement />
     }
 
+    // Network Stats panel
+    if (activePanel === 'network-stats') {
+      return <NetworkStatsPanel />
+    }
+
     // Members panel (full-screen view from sidebar nav)
     if (activePanel === 'members') {
       return (
@@ -193,9 +204,12 @@ export default function MainContent() {
   }
 
   return (
-    <>
-      {renderPanel()}
+    <div className="flex h-full flex-col">
+      <div className="flex flex-1 overflow-hidden">
+        {renderPanel()}
+      </div>
+      <StatusBarIndicator />
       {devPanelOpen && <DevPanel />}
-    </>
+    </div>
   )
 }

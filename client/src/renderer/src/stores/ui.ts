@@ -3,7 +3,7 @@ import type { RootStore } from './index'
 
 export interface UiSlice {
   sidebarCollapsed: boolean
-  activePanel: 'chat' | 'settings' | 'members' | 'channel-management' | 'role-management'
+  activePanel: 'chat' | 'settings' | 'members' | 'channel-management' | 'role-management' | 'network-stats'
 }
 
 export const createUiSlice: StateCreator<RootStore, [], [], UiSlice> = () => ({
