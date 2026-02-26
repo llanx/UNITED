@@ -4609,6 +4609,7 @@ dependencies = [
  "figment",
  "futures-util",
  "hex",
+ "hkdf",
  "hostname",
  "jsonwebtoken",
  "libp2p",

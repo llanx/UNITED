@@ -47,6 +47,7 @@ async fn start_test_server() -> (String, SocketAddr) {
         data_dir: data_dir.clone(),
         block_retention_days: None,
         block_cleanup_interval_secs: None,
+        max_upload_size_mb: None,
     };
 
     let app = united_server::routes::build_router(state);

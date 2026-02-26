@@ -118,6 +118,10 @@ export const IPC = {
   DM_BLOCK_USER: 'dm:block-user',
   DM_UNBLOCK_USER: 'dm:unblock-user',
 
+  // Media upload
+  MEDIA_UPLOAD_FILES: 'media:upload-files',
+  MEDIA_PICK_FILES: 'media:pick-files',
+
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',
   PUSH_AUTH_ERROR: 'auth:error',
@@ -132,4 +136,5 @@ export const IPC = {
   PUSH_PRESENCE_EVENT: 'presence:event',
   PUSH_DM_EVENT: 'dm:event',
   PUSH_DM_KEY_ROTATED: 'dm:key-rotated',
+  PUSH_UPLOAD_PROGRESS: 'media:upload-progress',
 } as const

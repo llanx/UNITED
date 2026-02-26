@@ -1,4 +1,4 @@
-use axum::{middleware, Router};
+use axum::{extract::DefaultBodyLimit, middleware, Router};
 use std::sync::Arc;
 use tower_governor::key_extractor::PeerIpKeyExtractor;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
@@ -276,8 +276,18 @@ pub fn build_router(state: AppState) -> Router {
         .route("/api/dm/offline/ack", axum::routing::post(dm::offline::ack_offline_messages));
 
     // Phase 6: Block storage routes (content distribution)
+    // Apply DefaultBodyLimit to block uploads based on configured max_upload_size_mb
+    let max_upload_bytes = state
+        .max_upload_size_mb
+        .unwrap_or(100) as usize
+        * 1024
+        * 1024;
     let block_storage_routes = Router::new()
-        .route("/api/blocks", axum::routing::put(block_routes::put_block_route))
+        .route(
+            "/api/blocks",
+            axum::routing::put(block_routes::put_block_route)
+                .layer(DefaultBodyLimit::max(max_upload_bytes)),
+        )
         .route("/api/blocks/{hash}", axum::routing::get(block_routes::get_block_route));
 
     Router::new()

@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-02-26T08:49:45.000Z"
+status: in-progress
+last_updated: "2026-02-26T21:25:21.000Z"
 progress:
-  total_phases: 7
+  total_phases: 8
   completed_phases: 6
-  total_plans: 33
-  completed_plans: 33
+  total_plans: 36
+  completed_plans: 34
 ---
 
 # Project State
@@ -18,23 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 6: Content Distribution (complete, including resolveBlock bridge wiring).
+**Current focus:** Phase 7: Media and Prefetching (in progress).
 
 ## Current Position
 
-Phase: 6 of 8 (Content Distribution)
-Plan: 5 of 5 in current phase
-Status: Phase 6 complete
-Last activity: 2026-02-26 -- Completed 06-05-PLAN.md (resolveBlock preload bridge wiring)
+Phase: 7 of 8 (Media and Prefetching)
+Plan: 1 of 3 in current phase
+Status: Plan 07-01 complete
+Last activity: 2026-02-26 -- Completed 07-01-PLAN.md (media upload infrastructure)
 
-Progress: [████████░░] 80%
+Progress: [████████░░] 85%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 29
+- Total plans completed: 30
 - Average duration (GSD-tracked): 10 min
-- Total execution time (GSD-tracked): 3.58 hours
+- Total execution time (GSD-tracked): 3.77 hours
 
 **By Phase:**
 
@@ -46,9 +46,10 @@ Progress: [████████░░] 80%
 | 04-real-time-chat | 6/6 | 65 min | 11 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding; 04-03: ChatView, MessageGroup, MessageComposer, MarkdownContent; 04-04: presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup; 04-05: emoji reactions, @mentions, unread badges, desktop notifications; 04-06: gap closure (presence pubkey, message ID consistency) |
 | 05-direct-messages | 4/4 | 27 min | 7 min | 05-01: DM protobuf schemas, migration 5, 8 REST endpoints (keys, conversations, messages, offline), WS targeted push, background cleanup; 05-02: DM crypto module, IPC handlers, Zustand store, hooks, preload bridge; 05-03: DM UI (conversation list, chat view, composer, encryption indicators, server rail DM icon, profile popup Message button); 05-04: gap closure (DM WS protobuf decoding fix) |
 | 06-content-distribution | 5/5 | 32 min | 6 min | 06-01: server block store, REST endpoints, WS events; 06-02: client block store, encryption, IPC; 06-03: block protocol, 5-layer cache cascade; 06-04: inline content UI, storage settings; 06-05: resolveBlock bridge wiring (gap closure) |
+| 07-media-and-prefetching | 1/3 | 11 min | 11 min | 07-01: protobuf extensions, migration 7, upload size enforcement, media IPC with blurhash + video thumbnails |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min), 06-03 (6 min), 06-04 (5 min), 06-05 (1 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min), 06-03 (6 min), 06-04 (5 min), 06-05 (1 min), 07-01 (11 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -58,6 +59,7 @@ Progress: [████████░░] 80%
 | Phase 06 P03 | 6min | 2 tasks | 6 files |
 | Phase 06 P04 | 5min | 2 tasks | 10 files |
 | Phase 06 P05 | 1min | 1 tasks | 3 files |
+| Phase 07 P01 | 11min | 2 tasks | 25 files |
 
 ## Accumulated Context
 
@@ -191,6 +193,11 @@ Recent decisions affecting current work:
 - [06-04]: Thumbnail generation failure falls back to metadata-only block reference (graceful degradation)
 - [06-04]: Block store config hydrated from IPC on app startup for settings persistence
 - [06-05]: No new patterns -- gap closure wires existing infrastructure through the preload bridge
+- [07-01]: Blurhash encoding at 32x32 with 4x3 components for ~30 byte strings
+- [07-01]: Video thumbnail extracted at 1-second mark via ffmpeg to avoid black first frames
+- [07-01]: block_refs carried as JSON string in REST (block_refs_json), proto repeated field for WS
+- [07-01]: DefaultBodyLimit layer on PUT /api/blocks route for axum-level enforcement alongside handler check
+- [07-01]: Blocking send pattern: files processed sequentially, all blocks uploaded before message published
 
 ### Pending Todos
 
@@ -212,5 +219,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 06-05-PLAN.md (resolveBlock preload bridge wiring)
-Resume file: .planning/phases/07-media-and-prefetching/07-01-PLAN.md
+Stopped at: Completed 07-01-PLAN.md (media upload infrastructure)
+Resume file: .planning/phases/07-media-and-prefetching/07-02-PLAN.md

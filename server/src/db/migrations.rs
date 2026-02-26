@@ -260,5 +260,11 @@ CREATE INDEX idx_blocks_expires ON blocks(expires_at);
 CREATE INDEX idx_blocks_channel ON blocks(channel_id);
 ",
         ),
+        M::up(
+            "-- Migration 7: Media Attachments (Phase 7)
+
+ALTER TABLE messages ADD COLUMN block_refs_json TEXT;
+",
+        ),
     ])
 }

@@ -249,6 +249,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         data_dir: config.data_dir.clone(),
         block_retention_days: config.blocks.as_ref().map(|b| b.retention_days),
         block_cleanup_interval_secs: config.blocks.as_ref().map(|b| b.cleanup_interval_secs),
+        max_upload_size_mb: config.blocks.as_ref().map(|b| b.max_upload_size_mb),
     };
 
     // Spawn DM offline queue cleanup task (runs hourly, purges entries older than 30 days)

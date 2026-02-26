@@ -26,6 +26,7 @@ const MAX_LIMIT: u32 = 100;
 pub struct CreateMessageRequest {
     pub content: String,
     pub reply_to_id: Option<String>,
+    pub block_refs_json: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -40,6 +41,7 @@ pub struct MessageResponse {
     pub reply_to_id: Option<String>,
     pub edited: bool,
     pub reactions: Vec<ReactionGroup>,
+    pub block_refs_json: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -98,6 +100,7 @@ pub async fn create_message(
     let db = state.db.clone();
     let user_id = claims.sub.clone();
     let reply_to_id = body.reply_to_id.clone();
+    let block_refs_json = body.block_refs_json.clone();
     let cid = channel_id.clone();
 
     let result = tokio::task::spawn_blocking(move || {
@@ -149,8 +152,8 @@ pub async fn create_message(
 
         // Insert message — message_type = 1 (CHAT), signature empty for REST path
         conn.execute(
-            "INSERT INTO messages (channel_id, sender_pubkey, message_type, payload, timestamp, sequence_hint, server_sequence, signature, created_at, content_text, edited, deleted, reply_to_id)
-             VALUES (?1, ?2, 1, NULL, ?3, 0, ?4, X'', ?5, ?6, 0, 0, ?7)",
+            "INSERT INTO messages (channel_id, sender_pubkey, message_type, payload, timestamp, sequence_hint, server_sequence, signature, created_at, content_text, edited, deleted, reply_to_id, block_refs_json)
+             VALUES (?1, ?2, 1, NULL, ?3, 0, ?4, X'', ?5, ?6, 0, 0, ?7, ?8)",
             rusqlite::params![
                 cid,
                 sender_pubkey,
@@ -159,6 +162,7 @@ pub async fn create_message(
                 now_rfc,
                 content,
                 reply_to_id,
+                block_refs_json,
             ],
         )
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
@@ -180,6 +184,7 @@ pub async fn create_message(
             edited: false,
             mention_user_ids,
             mention_role_ids,
+            block_refs: vec![], // Block refs are carried as JSON in REST responses, not as proto in WS
         };
 
         let response = MessageResponse {
@@ -193,6 +198,7 @@ pub async fn create_message(
             reply_to_id,
             edited: false,
             reactions: vec![],
+            block_refs_json,
         };
 
         Ok((response, chat_message))
@@ -229,7 +235,7 @@ pub async fn get_channel_messages(
             .prepare(
                 "SELECT m.id, m.channel_id, m.sender_pubkey, m.server_sequence,
                         m.content_text, m.timestamp, m.edited, m.reply_to_id, m.created_at,
-                        u.display_name
+                        u.display_name, m.block_refs_json
                  FROM messages m
                  LEFT JOIN users u ON m.sender_pubkey = lower(hex(u.public_key))
                  WHERE m.channel_id = ?1 AND m.server_sequence < ?2 AND m.deleted = 0
@@ -251,6 +257,7 @@ pub async fn get_channel_messages(
                     let edited: bool = row.get::<_, i64>(6)? != 0;
                     let reply_to_id: Option<String> = row.get(7)?;
                     let display_name: Option<String> = row.get(9)?;
+                    let block_refs_json: Option<String> = row.get(10)?;
 
                     Ok(MessageResponse {
                         id: msg_id.to_string(),
@@ -263,6 +270,7 @@ pub async fn get_channel_messages(
                         reply_to_id,
                         edited,
                         reactions: vec![], // filled below
+                        block_refs_json,
                     })
                 },
             )
