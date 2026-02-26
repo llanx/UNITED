@@ -13,9 +13,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MSG-02**: User can view message history by scrolling back, fetching older messages from peers or server fallback
 - [ ] **MSG-03**: User can format messages with markdown (bold, italic, code blocks, lists, quotes)
 - [x] **MSG-04**: User can react to messages with standard Unicode emoji
-- [ ] **MSG-05**: User can see typing indicators when another user is composing a message in the current channel
-- [ ] **MSG-06**: User can see online/offline/away status for other users
-- [ ] **MSG-07**: User can see unread indicators showing which channels have new messages since last visit
+- [x] **MSG-05**: User can see typing indicators when another user is composing a message in the current channel
+- [x] **MSG-06**: User can see online/offline/away status for other users
+- [x] **MSG-07**: User can see unread indicators showing which channels have new messages since last visit
 - [ ] **MSG-08**: User can @mention specific users or roles to trigger notifications
 - [ ] **MSG-09**: User receives desktop notifications for mentions and DM messages
 
@@ -83,7 +83,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **APP-01**: App shell loads once from local cache; channel switches are instant DOM swaps via pushState (no full page reload)
 - [x] **APP-02**: All P2P connections persist across channel navigation
-- [ ] **APP-03**: All subscribed channels receive gossip simultaneously regardless of which channel is currently viewed
+- [x] **APP-03**: All subscribed channels receive gossip simultaneously regardless of which channel is currently viewed
 - [ ] **APP-04**: All media attachments declare dimensions upfront; fixed layout with zero reflow during content loading
 - [ ] **APP-05**: User profiles display name, avatar, and custom status text
 
@@ -185,13 +185,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MSG-02 | Phase 4: Real-Time Chat | Complete |
 | MSG-03 | Phase 4: Real-Time Chat | Pending |
 | MSG-04 | Phase 4: Real-Time Chat | Complete |
-| MSG-05 | Phase 4: Real-Time Chat | Pending |
-| MSG-06 | Phase 4: Real-Time Chat | Pending |
-| MSG-07 | Phase 4: Real-Time Chat | Pending |
+| MSG-05 | Phase 4: Real-Time Chat | Complete |
+| MSG-06 | Phase 4: Real-Time Chat | Complete |
+| MSG-07 | Phase 4: Real-Time Chat | Complete |
 | MSG-08 | Phase 4: Real-Time Chat | Pending |
 | MSG-09 | Phase 4: Real-Time Chat | Pending |
 | SEC-03 | Phase 4: Real-Time Chat | Complete |
-| APP-03 | Phase 4: Real-Time Chat | Pending |
+| APP-03 | Phase 4: Real-Time Chat | Complete |
 | APP-05 | Phase 4: Real-Time Chat | Pending |
 | DM-01 | Phase 5: Direct Messages | Pending |
 | DM-02 | Phase 5: Direct Messages | Pending |

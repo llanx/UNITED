@@ -33,7 +33,7 @@ Progress: [█████░░░░░] 42%
 | 04-real-time-chat | 2/5 | 24 min | 12 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -108,6 +108,12 @@ Recent decisions affecting current work:
 - [04-01]: INSERT OR IGNORE for reactions (UNIQUE constraint handles idempotency)
 - [04-01]: GossipPersistResult struct returns optional ChatMessage for gossip-to-WS broadcast
 - [04-01]: WS Envelope field allocation: chat events 120-126, history 130-131 (Phase 4 range 120-149)
+- [04-02]: Per-channel message cap of 500 with oldest-end trimming on append, oldest-end trimming on history prepend
+- [04-02]: Typing timeout 3s via window.setTimeout with auto-clear on unmount
+- [04-02]: Idle detection via Electron powerMonitor.getSystemIdleTime() polled every 30s, threshold 15min
+- [04-02]: Notification coalescing: 2s window per channel, skip if window focused on same channel
+- [04-02]: WS event forwarding: separate module (chat-events.ts) decodes protobuf envelopes, switches on payload.case
+- [04-02]: buf + protoc-gen-es installed as devDeps in shared/ for proto codegen
 
 ### Pending Todos
 
@@ -129,5 +135,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 04-01-PLAN.md (server chat infrastructure)
-Resume file: .planning/phases/04-real-time-chat/04-01-SUMMARY.md
+Stopped at: Completed 04-02-PLAN.md (client data layer for real-time chat)
+Resume file: .planning/phases/04-real-time-chat/04-02-SUMMARY.md
