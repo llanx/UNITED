@@ -8,6 +8,7 @@ pub mod channels;
 pub mod chat;
 pub mod config;
 pub mod db;
+pub mod dm;
 pub mod identity;
 pub mod invite;
 pub mod moderation;
