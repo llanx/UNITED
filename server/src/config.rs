@@ -234,11 +234,14 @@ pub fn generate_config_template() -> String {
 # max_upload_size_mb = 100
 
 # ---- TURN Relay (Voice Channels) ----
+# Required for voice channels to work across NATs (~20-30% of connections need TURN)
+# The shared_secret MUST match static-auth-secret in turnserver.conf
+# When using docker-compose, coturn runs as a sidecar service automatically.
 # [turn]
-# enabled = false
-# host = "127.0.0.1"
+# enabled = true
+# host = "your-server-hostname-or-ip"
 # port = 3478
-# shared_secret = ""  # Auto-generated on first boot if empty
+# shared_secret = "CHANGE_ME_GENERATE_A_RANDOM_SECRET"
 # credential_ttl_secs = 86400  # 24 hours
 "#
     .to_string()
