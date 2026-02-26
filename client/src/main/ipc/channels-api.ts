@@ -1,6 +1,7 @@
 import type { IpcMain } from 'electron'
 import { IPC } from './channels'
 import { getAccessToken, getServerUrl } from './auth'
+import { onChannelCreated, onChannelDeleted, setChannelIds } from './p2p'
 import type {
   ChannelListResponse,
   ChannelResponse,
@@ -76,7 +77,15 @@ export function registerChannelHandlers(ipcMain: IpcMain): void {
     const token = getAccessToken()
     if (!url || !token) throw new Error('Not connected or not authenticated')
 
-    return apiGet<ChannelListResponse>(url, '/api/channels', token)
+    const result = await apiGet<ChannelListResponse>(url, '/api/channels', token)
+
+    // Update P2P topic subscriptions with all channel IDs
+    const allChannelIds = result.categories.flatMap(cat =>
+      cat.channels.map(ch => ch.id)
+    )
+    setChannelIds(allChannelIds)
+
+    return result
   })
 
   ipcMain.handle(IPC.CHANNELS_CREATE, async (_event, name: string, channelType: string, categoryId: string): Promise<ChannelResponse> => {
@@ -84,11 +93,16 @@ export function registerChannelHandlers(ipcMain: IpcMain): void {
     const token = getAccessToken()
     if (!url || !token) throw new Error('Not connected or not authenticated')
 
-    return apiPost<ChannelResponse>(url, '/api/channels', {
+    const result = await apiPost<ChannelResponse>(url, '/api/channels', {
       name,
       channel_type: channelType,
       category_id: categoryId
     }, token)
+
+    // Subscribe to gossipsub topic for new channel
+    onChannelCreated(result.id)
+
+    return result
   })
 
   ipcMain.handle(IPC.CHANNELS_UPDATE, async (_event, id: string, name: string): Promise<ChannelResponse> => {
@@ -105,6 +119,9 @@ export function registerChannelHandlers(ipcMain: IpcMain): void {
     if (!url || !token) throw new Error('Not connected or not authenticated')
 
     await apiDelete(url, `/api/channels/${id}`, token)
+
+    // Unsubscribe from gossipsub topic for deleted channel
+    onChannelDeleted(id)
   })
 
   ipcMain.handle(IPC.CHANNELS_REORDER, async (_event, channels: Array<{ id: string; position: number }>): Promise<void> => {

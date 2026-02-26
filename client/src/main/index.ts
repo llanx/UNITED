@@ -10,6 +10,7 @@ import { registerChannelHandlers } from './ipc/channels-api'
 import { registerRoleHandlers } from './ipc/roles-api'
 import { registerInviteHandlers } from './ipc/invite'
 import { parseInviteInput } from './ipc/invite'
+import { registerP2PHandlers, initP2PListener } from './ipc/p2p'
 import { IPC } from './ipc/channels'
 
 // ============================================================
@@ -127,6 +128,8 @@ app.whenReady().then(() => {
   registerChannelHandlers(ipcMain)
   registerRoleHandlers(ipcMain)
   registerInviteHandlers(ipcMain)
+  registerP2PHandlers(ipcMain)
+  initP2PListener()
 
   createWindow()
 

@@ -63,6 +63,16 @@ export const IPC = {
   INVITE_JOIN: 'invite:join',
   INVITE_VALIDATE: 'invite:validate',
 
+  // P2P
+  P2P_START_MESH: 'p2p:start-mesh',
+  P2P_STOP_MESH: 'p2p:stop-mesh',
+  P2P_SEND_TEST_MESSAGE: 'p2p:send-test-message',
+  P2P_PING_PEER: 'p2p:ping-peer',
+  P2P_FORCE_RECONNECT: 'p2p:force-reconnect',
+  P2P_GET_STATS: 'p2p:get-stats',
+  P2P_PANEL_OPEN: 'p2p:panel-open',
+  P2P_PANEL_CLOSE: 'p2p:panel-close',
+
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',
   PUSH_AUTH_ERROR: 'auth:error',
@@ -70,4 +80,6 @@ export const IPC = {
   PUSH_CHANNEL_EVENT: 'channels:event',
   PUSH_ROLE_EVENT: 'roles:event',
   PUSH_DEEP_LINK: 'deep-link:invite',
+  PUSH_P2P_STATS: 'p2p:stats',
+  PUSH_P2P_MESSAGE: 'p2p:message',
 } as const

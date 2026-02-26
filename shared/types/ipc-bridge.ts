@@ -170,6 +170,34 @@ export interface RoleEvent {
 }
 
 // ============================================================
+// P2P types
+// ============================================================
+
+export interface P2PPeerInfo {
+  unitedId: string;
+  peerId: string;
+  multiaddrs: string[];
+  channels: string[];
+  natType: 'public' | 'private' | 'unknown';
+  latencyMs?: number;
+  connectionType?: 'direct' | 'relayed';
+}
+
+export interface P2PTopicStats {
+  topic: string;
+  messageCount: number;
+  lastReceived?: number;
+}
+
+export interface P2PStats {
+  peers: P2PPeerInfo[];
+  topics: P2PTopicStats[];
+  natType: string;
+  isConnected: boolean;
+  serverPeerId: string;
+}
+
+// ============================================================
 // Storage types (renderer-side mirrors of SQLite row shapes)
 // ============================================================
 
@@ -367,6 +395,30 @@ export interface UnitedAPI {
      */
     receiveProvisioning: (qrPayload: string) => Promise<{ fingerprint: string }>
   }
+
+  // ---- P2P ----
+
+  /** P2P mesh control and monitoring */
+  p2p: {
+    /** Start the P2P mesh (connects to server, subscribes to channels, discovers peers) */
+    startMesh(): Promise<{ peerId: string }>;
+    /** Stop the P2P mesh */
+    stopMesh(): Promise<void>;
+    /** Send a test gossipsub message to a topic */
+    sendTestMessage(topic: string, text: string): Promise<void>;
+    /** Ping a peer and return RTT */
+    pingPeer(peerId: string): Promise<{ rttMs: number }>;
+    /** Force disconnect and reconnect to all peers */
+    forceReconnect(): Promise<void>;
+    /** Get current P2P stats snapshot */
+    getStats(): Promise<P2PStats>;
+    /** Subscribe to P2P stats updates (returns cleanup function) */
+    onStatsUpdate(callback: (stats: P2PStats) => void): () => void;
+    /** Notify main process that dev panel is open */
+    openPanel(): void;
+    /** Notify main process that dev panel is closed */
+    closePanel(): void;
+  };
 
   // ---- Storage ----
 
