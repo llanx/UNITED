@@ -53,11 +53,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### P2P Distribution
 
-- [ ] **P2P-01**: All content is stored as content-addressed blocks (SHA-256 hashed, fixed-size chunks for media)
+- [x] **P2P-01**: All content is stored as content-addressed blocks (SHA-256 hashed, fixed-size chunks for media)
 - [x] **P2P-02**: New messages are propagated to channel peers via libp2p gossipsub protocol
 - [ ] **P2P-03**: Content is fetched through a 5-layer cache cascade: L0 in-memory → L1 local SQLite/block store → L2 hot peers (active connections) → L3 DHT/swarm discovery → L4 coordination server fallback
 - [ ] **P2P-04**: User can configure their local storage buffer size (N GB) for seeding server content to other peers
-- [ ] **P2P-05**: Content is managed in priority tiers: P1 own messages (never evict) → P2 hot 24h → P3 warm 2-7 day → P4 altruistic seeding, with 7-day default TTL and LRU eviction
+- [x] **P2P-05**: Content is managed in priority tiers: P1 own messages (never evict) → P2 hot 24h → P3 warm 2-7 day → P4 altruistic seeding, with 7-day default TTL and LRU eviction
 - [ ] **P2P-06**: Coordination server acts as a fallback super-seeder, maintaining an encrypted copy of content for availability when the peer swarm is thin
 - [ ] **P2P-07**: User can see seeding/contribution indicators showing how much they contribute to the swarm (upload/download stats, blocks seeded)
 - [ ] **P2P-08**: App prefetches content predictively: channel list hover begins pulling recent messages, scroll position at 70% prefetches next batch, app launch pre-fetches top active channels
@@ -69,7 +69,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SEC-01**: User creates an identity by generating an Ed25519 keypair protected by a passphrase (Argon2id-encrypted); a 24-word mnemonic backup is displayed at creation; no email or password is stored on any server
 - [x] **SEC-02**: User authenticates to servers via Ed25519 challenge-response signature; server issues JWT tokens (15min access + 7-day refresh) after successful verification
 - [x] **SEC-03**: All messages are signed by the author's Ed25519 private key; receiving peers verify signatures before displaying
-- [ ] **SEC-04**: All content written to the local block store is encrypted with AES-256-GCM using a key derived from the user's credentials via Argon2id
+- [x] **SEC-04**: All content written to the local block store is encrypted with AES-256-GCM using a key derived from the user's credentials via Argon2id
 - [x] **SEC-05**: DMs use per-conversation keys negotiated via X25519 key exchange; coordination server stores only encrypted blobs
 - [x] **SEC-06**: All peer-to-peer communication is encrypted in transit (TLS for WebSocket, DTLS for WebRTC)
 - [x] **SEC-07**: User can see encryption indicators in the UI confirming that DMs are end-to-end encrypted and channel messages are signed
@@ -198,13 +198,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DM-03 | Phase 5: Direct Messages | Complete |
 | SEC-05 | Phase 5: Direct Messages | Complete |
 | SEC-07 | Phase 5: Direct Messages | Complete |
-| P2P-01 | Phase 6: Content Distribution | Pending |
+| P2P-01 | Phase 6: Content Distribution | Complete |
 | P2P-03 | Phase 6: Content Distribution | Pending |
-| P2P-05 | Phase 6: Content Distribution | Pending |
+| P2P-05 | Phase 6: Content Distribution | Complete |
 | P2P-06 | Phase 6: Content Distribution | Pending |
 | P2P-09 | Phase 6: Content Distribution | Pending |
 | P2P-10 | Phase 6: Content Distribution | Pending |
-| SEC-04 | Phase 6: Content Distribution | Pending |
+| SEC-04 | Phase 6: Content Distribution | Complete |
 | APP-04 | Phase 6: Content Distribution | Pending |
 | MEDIA-01 | Phase 7: Media and Prefetching | Pending |
 | MEDIA-02 | Phase 7: Media and Prefetching | Pending |
