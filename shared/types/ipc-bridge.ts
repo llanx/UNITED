@@ -622,6 +622,8 @@ export interface UnitedAPI {
     getConfig(): Promise<BlockStoreConfig>;
     /** Update block store configuration. */
     setConfig(config: Partial<BlockStoreConfig>): Promise<void>;
+    /** Resolve a block via the 5-layer cache cascade (L0 memory -> L1 local -> L2 hot peers -> L3 peer directory -> L4 server fallback). Returns base64-encoded data or null. */
+    resolveBlock(hash: string): Promise<string | null>;
   };
 
   // ---- Storage ----

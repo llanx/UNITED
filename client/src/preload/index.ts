@@ -223,6 +223,8 @@ const api: UnitedAPI = {
       ipcRenderer.invoke(IPC.BLOCK_GET_CONFIG) as Promise<BlockStoreConfig>,
     setConfig: (config: Partial<BlockStoreConfig>) =>
       ipcRenderer.invoke(IPC.BLOCK_SET_CONFIG, config) as Promise<void>,
+    resolveBlock: (hash: string) =>
+      ipcRenderer.invoke(IPC.BLOCK_RESOLVE, hash) as Promise<string | null>,
   },
 
   // Device Provisioning (SEC-12)
