@@ -25,7 +25,12 @@ import MessageGroupComponent from './MessageGroup'
 import MessageComposer from './MessageComposer'
 import type { ChatMessage } from '@shared/ipc-bridge'
 
-export default function ChatView() {
+interface ChatViewProps {
+  memberListVisible?: boolean
+  onToggleMemberList?: () => void
+}
+
+export default function ChatView({ memberListVisible, onToggleMemberList }: ChatViewProps) {
   const activeChannelId = useStore((s) => s.activeChannelId)
   const categoriesWithChannels = useStore((s) => s.categoriesWithChannels)
 
@@ -162,7 +167,7 @@ export default function ChatView() {
   )
 
   return (
-    <div className="flex h-full flex-col bg-[var(--color-bg-primary)]">
+    <div className="flex h-full flex-1 flex-col bg-[var(--color-bg-primary)]">
       {/* Channel header */}
       <div className="flex h-12 shrink-0 items-center gap-2 border-b border-white/5 px-4">
         <span className="text-lg text-[var(--color-text-muted)]">#</span>
@@ -176,6 +181,37 @@ export default function ChatView() {
               {channelTopic}
             </span>
           </>
+        )}
+        {/* Spacer */}
+        <div className="flex-1" />
+        {/* Member list toggle */}
+        {onToggleMemberList && (
+          <button
+            onClick={onToggleMemberList}
+            className={`flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors ${
+              memberListVisible
+                ? 'bg-white/10 text-[var(--color-text-primary)]'
+                : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
+            }`}
+            title={memberListVisible ? 'Hide member list' : 'Show member list'}
+          >
+            {/* Simple people/group icon using SVG */}
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </button>
         )}
       </div>
 
