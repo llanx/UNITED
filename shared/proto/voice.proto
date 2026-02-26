@@ -1,0 +1,82 @@
+syntax = "proto3";
+package united.voice;
+
+// Voice channel join/leave
+message VoiceJoinRequest {
+  string channel_id = 1;
+}
+
+message VoiceJoinResponse {
+  repeated VoiceParticipant participants = 1;
+  repeated IceServer ice_servers = 2;
+}
+
+message VoiceLeaveRequest {
+  string channel_id = 1;
+}
+
+message VoiceLeaveEvent {
+  string channel_id = 1;
+  string user_id = 2;
+  string display_name = 3;
+}
+
+// Signaling relay (server forwards without inspection)
+message VoiceSdpOffer {
+  string target_user_id = 1;
+  string sdp = 2;
+  string channel_id = 3;
+  // Populated by server when relaying to target
+  string sender_user_id = 4;
+}
+
+message VoiceSdpAnswer {
+  string target_user_id = 1;
+  string sdp = 2;
+  string channel_id = 3;
+  // Populated by server when relaying to target
+  string sender_user_id = 4;
+}
+
+message VoiceIceCandidate {
+  string target_user_id = 1;
+  string candidate_json = 2;
+  string channel_id = 3;
+  // Populated by server when relaying to target
+  string sender_user_id = 4;
+}
+
+// State updates (broadcast via WS)
+message VoiceStateUpdate {
+  string channel_id = 1;
+  string user_id = 2;
+  bool muted = 3;
+  bool deafened = 4;
+}
+
+message VoiceSpeakingEvent {
+  string channel_id = 1;
+  string user_id = 2;
+  bool speaking = 3;
+}
+
+// Participant info
+message VoiceParticipant {
+  string user_id = 1;
+  string display_name = 2;
+  string pubkey = 3;
+  bool muted = 4;
+  bool deafened = 5;
+}
+
+message VoiceParticipantJoinedEvent {
+  string channel_id = 1;
+  VoiceParticipant participant = 2;
+}
+
+// ICE server config (STUN + TURN)
+message IceServer {
+  repeated string urls = 1;
+  string username = 2;
+  string credential = 3;
+}

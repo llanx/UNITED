@@ -18,4 +18,5 @@ pub mod proto;
 pub mod roles;
 pub mod routes;
 pub mod state;
+pub mod voice;
 pub mod ws;

@@ -13,6 +13,7 @@ import "chat.proto";
 import "presence.proto";
 import "dm.proto";
 import "blocks.proto";
+import "voice.proto";
 
 // WebSocket envelope: all WS messages are wrapped in this type
 // Both client->server and server->client use the same envelope format
@@ -33,6 +34,7 @@ import "blocks.proto";
 //   120-149: Real-Time Chat (Phase 4)
 //   150-159: Direct Messages (Phase 5)
 //   160-179: Content Distribution (Phase 6) — block events
+//   180-199: Voice Channels (Phase 8)
 
 message Envelope {
   // Client-generated request ID, echoed in response for correlation
@@ -140,6 +142,18 @@ message Envelope {
     united.blocks.BlockStored block_stored = 160;
     united.blocks.BlockRequest block_request = 161;
     united.blocks.BlockAvailable block_available = 162;
+
+    // --- Phase 8: Voice Channels (180-199) ---
+    united.voice.VoiceJoinRequest voice_join_request = 180;
+    united.voice.VoiceJoinResponse voice_join_response = 181;
+    united.voice.VoiceLeaveRequest voice_leave_request = 182;
+    united.voice.VoiceLeaveEvent voice_leave_event = 183;
+    united.voice.VoiceSdpOffer voice_sdp_offer = 184;
+    united.voice.VoiceSdpAnswer voice_sdp_answer = 185;
+    united.voice.VoiceIceCandidate voice_ice_candidate = 186;
+    united.voice.VoiceStateUpdate voice_state_update = 187;
+    united.voice.VoiceSpeakingEvent voice_speaking_event = 188;
+    united.voice.VoiceParticipantJoinedEvent voice_participant_joined_event = 189;
   }
 }
 
