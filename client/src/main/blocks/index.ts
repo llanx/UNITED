@@ -20,6 +20,7 @@ import {
   setConfig as storeSetConfig,
 } from './store'
 import { startEvictionSweep, stopEvictionSweep, checkTtlExpiry } from './tiers'
+import { resolveBlock, resolveBlockWithProgress } from './cascade'
 import type { BlockMeta, BlockStoreConfig } from './types'
 import type { ContentTier } from './types'
 
@@ -126,3 +127,23 @@ export function getConfig(): BlockStoreConfig {
 export function setConfig(config: Partial<BlockStoreConfig>): void {
   storeSetConfig(config)
 }
+
+// ============================================================
+// Content resolution (cascade)
+// ============================================================
+
+/**
+ * Retrieve a block by hash through the 5-layer cache cascade.
+ *
+ * This is THE canonical way to retrieve content. It transparently tries:
+ * L0 memory -> L1 local store -> L2 hot peers -> L3 peer directory -> L4 server
+ *
+ * @param hash - SHA-256 hex hash of the block
+ * @returns Block data as Buffer, or null if content is unavailable
+ */
+export async function getBlock(hash: string): Promise<Buffer | null> {
+  return resolveBlock(hash)
+}
+
+// Re-export cascade functions for advanced use
+export { resolveBlock, resolveBlockWithProgress }
