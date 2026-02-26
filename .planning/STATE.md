@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 5 of 8 (Direct Messages)
-Plan: 2 of 3 in current phase
-Status: Plan 05-01 re-executed (full scope: REST endpoints, offline delivery, background cleanup added)
-Last activity: 2026-02-26 — Plan 05-01 re-executed with full REST endpoint implementation
+Plan: 3 of 3 in current phase (COMPLETE)
+Status: Phase 5 complete -- all 3 plans executed (server, data layer, UI)
+Last activity: 2026-02-26 -- Plan 05-03 DM UI complete
 
-Progress: [██████░░░░] 58%
+Progress: [██████░░░░] 63%
 
 ## Performance Metrics
 
@@ -31,10 +31,10 @@ Progress: [██████░░░░] 58%
 | 02-server-management | 8/8 | 37 min | 5 min | 02-01: schema, permissions, proto, broadcast; 02-02 to 02-04: server endpoints; 02-05: device provisioning; 02-06: channel/role UI; 02-07: invite join flow; 02-08: SRVR-04 gap closure |
 | 03-p2p-networking | 4/4 | 46 min | 12 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence; 03-02: client libp2p node with gossipsub, peer discovery, IPC; 03-03: P2P dev panel with stats pipeline and floating overlay; 03-04: fix reconnect bug (gap closure) |
 | 04-real-time-chat | 6/6 | 65 min | 11 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding; 04-03: ChatView, MessageGroup, MessageComposer, MarkdownContent; 04-04: presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup; 04-05: emoji reactions, @mentions, unread badges, desktop notifications; 04-06: gap closure (presence pubkey, message ID consistency) |
-| 05-direct-messages | 2/3 | 18 min | 9 min | 05-01: DM protobuf schemas, migration 5, 8 REST endpoints (keys, conversations, messages, offline), WS targeted push, background cleanup; 05-02: DM crypto module, IPC handlers, Zustand store, hooks, preload bridge |
+| 05-direct-messages | 3/3 | 24 min | 8 min | 05-01: DM protobuf schemas, migration 5, 8 REST endpoints (keys, conversations, messages, offline), WS targeted push, background cleanup; 05-02: DM crypto module, IPC handlers, Zustand store, hooks, preload bridge; 05-03: DM UI (conversation list, chat view, composer, encryption indicators, server rail DM icon, profile popup Message button) |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -145,6 +145,10 @@ Recent decisions affecting current work:
 - [05-02]: DM message window cap of 200 (lower than channel 500) reflecting lower DM volume
 - [05-02]: Per-message decryption failure returns '[Unable to decrypt]' with decryptionFailed flag (graceful degradation)
 - [05-02]: Shared secret cache keyed by conversation_id with secure zeroing via sodium_memzero
+- [05-03]: DM view toggle orthogonal to activePanel -- dmView boolean swaps sidebar and main content independently
+- [05-03]: Sidebar swap handled at Main.tsx parent level for clean conditional rendering
+- [05-03]: DmComposer polls peer key status every 10s when key unavailable via setInterval
+- [05-03]: EncryptionIndicator component replaces inline SVG in MessageRow for consistent indicator pattern
 
 ### Pending Todos
 
@@ -166,5 +170,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 05-01-PLAN.md (full re-execution with REST endpoints)
-Resume file: .planning/phases/05-direct-messages/05-03-PLAN.md
+Stopped at: Completed 05-03-PLAN.md (DM UI complete, Phase 5 done)
+Resume file: Phase 6 planning needed
