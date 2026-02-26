@@ -16,6 +16,8 @@ import {
   decryptDmMessage,
   fetchPeerDmKey
 } from './dm-crypto'
+import { putBlock } from '../blocks/index'
+import { ContentTier } from '../blocks/types'
 import type {
   DmConversation,
   DecryptedDmMessage
@@ -252,6 +254,21 @@ export function registerDmHandlers(ipcMain: IpcMain): void {
       decryptServerMessage(msg, sharedSecret)
     )
 
+    // Persist successfully decrypted DMs as P1_NEVER_EVICT blocks (fire-and-forget)
+    for (const msg of decrypted) {
+      if (!msg.decryptionFailed) {
+        try {
+          putBlock(
+            Buffer.from(msg.content, 'utf-8'),
+            ContentTier.P1_NEVER_EVICT,
+            { mimeType: 'text/plain', filename: `dm-${msg.id}` }
+          )
+        } catch {
+          // Block store may not be initialized -- don't fail the DM flow
+        }
+      }
+    }
+
     return { messages: decrypted, hasMore: result.has_more }
   })
 
@@ -274,7 +291,21 @@ export function registerDmHandlers(ipcMain: IpcMain): void {
       )
 
       if (sharedSecret) {
-        grouped[convId].push(decryptServerMessage(msg, sharedSecret))
+        const decrypted = decryptServerMessage(msg, sharedSecret)
+        grouped[convId].push(decrypted)
+
+        // Persist successfully decrypted DMs as P1_NEVER_EVICT blocks (fire-and-forget)
+        if (!decrypted.decryptionFailed) {
+          try {
+            putBlock(
+              Buffer.from(decrypted.content, 'utf-8'),
+              ContentTier.P1_NEVER_EVICT,
+              { mimeType: 'text/plain', filename: `dm-${decrypted.id}` }
+            )
+          } catch {
+            // Block store may not be initialized -- don't fail the DM flow
+          }
+        }
       } else {
         grouped[convId].push({
           id: msg.id,

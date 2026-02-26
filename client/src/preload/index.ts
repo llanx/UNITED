@@ -4,7 +4,8 @@ import type {
   ChannelEvent, RoleEvent, P2PStats,
   ChatMessage, ChatHistoryResponse, ChatEvent,
   ReactionSummary, PresenceUpdate, TypingEvent, NotificationPrefs,
-  DmEvent
+  DmEvent,
+  BlockStorageUsage, BlockStoreConfig
 } from '@shared/ipc-bridge'
 import type { ConnectionStatus } from '@shared/ws-protocol'
 import { IPC } from '../main/ipc/channels'
@@ -204,6 +205,24 @@ const api: UnitedAPI = {
       ipcRenderer.on(IPC.PUSH_DM_KEY_ROTATED, listener)
       return () => { ipcRenderer.removeListener(IPC.PUSH_DM_KEY_ROTATED, listener) }
     },
+  },
+
+  // Block Store
+  blocks: {
+    putBlock: (dataBase64: string, tier: number, meta?: Partial<{ mimeType: string; width: number; height: number; filename: string }>) =>
+      ipcRenderer.invoke(IPC.BLOCK_PUT, dataBase64, tier, meta),
+    getBlock: (hash: string) =>
+      ipcRenderer.invoke(IPC.BLOCK_GET, hash) as Promise<string | null>,
+    hasBlock: (hash: string) =>
+      ipcRenderer.invoke(IPC.BLOCK_HAS, hash) as Promise<boolean>,
+    deleteBlock: (hash: string) =>
+      ipcRenderer.invoke(IPC.BLOCK_DELETE, hash) as Promise<void>,
+    getStorageUsage: () =>
+      ipcRenderer.invoke(IPC.BLOCK_STORAGE_USAGE) as Promise<BlockStorageUsage>,
+    getConfig: () =>
+      ipcRenderer.invoke(IPC.BLOCK_GET_CONFIG) as Promise<BlockStoreConfig>,
+    setConfig: (config: Partial<BlockStoreConfig>) =>
+      ipcRenderer.invoke(IPC.BLOCK_SET_CONFIG, config) as Promise<void>,
   },
 
   // Device Provisioning (SEC-12)

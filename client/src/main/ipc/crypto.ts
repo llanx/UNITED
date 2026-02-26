@@ -3,6 +3,8 @@ import sodium from 'sodium-native'
 import { createHash } from 'crypto'
 import { entropyToMnemonic, mnemonicToEntropy, validateMnemonic } from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english.js'
+import { initBlockStoreKey, clearBlockStoreKey } from '../blocks/crypto'
+import { getBlockStoreSalt, initBlockStore } from '../blocks/store'
 
 // ============================================================
 // Constants
@@ -41,6 +43,8 @@ export function clearSessionKeys(): void {
     sodium.sodium_memzero(sessionPublicKey)
     sessionPublicKey = null
   }
+  // Also clear block store key on lock/quit
+  clearBlockStoreKey()
 }
 
 // ============================================================
@@ -304,6 +308,17 @@ export function unlockIdentity(
   secretKey.copy(sessionSecretKey)
 
   const fingerprint = computeFingerprint(publicKey)
+
+  // Initialize block store key alongside session keys
+  try {
+    initBlockStore()
+    const blockStoreSalt = getBlockStoreSalt()
+    initBlockStoreKey(passphrase, blockStoreSalt)
+  } catch {
+    // Block store init may fail if DB migration hasn't run yet (first launch)
+    // This is non-fatal -- block store will be initialized on next successful unlock
+  }
+
   return { fingerprint, publicKey }
 }
 
