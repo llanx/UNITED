@@ -1,6 +1,6 @@
 # Phase 3: P2P Networking - Context
 
-**Gathered:** 2026-02-24
+**Gathered:** 2026-02-24 (updated 2026-02-25)
 **Status:** Ready for planning
 
 <domain>
@@ -44,10 +44,35 @@ Requirements: P2P-02, SEC-06, APP-02
 - No new peer discovery during downtime (server required for that), but established connections are unaffected
 - **Ordering reconciliation on server return**: Clients submit unconfirmed messages to server for sequence number assignment. Server assigns final ordering based on Lamport timestamps + arrival order. Clients reorder if needed (rare for short downtimes)
 
-### Claude's Recommendation
-- **NAT traversal strategy** — Research and planner to determine: TURN relay infrastructure, Circuit Relay v2, AutoNAT classification. Pitfalls research recommends budgeting for 20-30% of connections needing relay
+### Server's P2P Role
+- **Full mesh participant**: Server runs a rust-libp2p node alongside axum/tokio, subscribes to all gossipsub topics, acts as super-seeder ensuring message delivery even when peer mesh is thin
+- **Persists all messages**: Every gossipsub message is written to SQLite with server-assigned sequence numbers at write time. Server is the authoritative message store and history source
+- **Local-first client history**: Clients read from local SQLite cache instantly, gap-fill from server for missed messages. Instant channel opens, server backfills gaps via sequence number ranges
+- **Runtime topology** (server's tokio runtime for libp2p vs axum): Claude's discretion
+
+### NAT Traversal Infrastructure
+- **Circuit Relay v2 bundled with server**: Relay is a protocol handler on the server's existing libp2p node — not a separate service. Single binary, single deployment. Self-hosters get relay for free with zero additional configuration
+- **AutoNAT via server**: Server probes the client during initial connection to classify NAT type. Instant classification, no bootstrap chicken-and-egg problem, works even with few peers online
+- **Configurable relay limits**: Relay resource limits (bandwidth cap per relay, max concurrent relayed connections, timeout) exposed in `united.toml` with sensible defaults. Consistent with existing config philosophy (sensible defaults + optional overrides)
+- Rationale: ~20-30% of connections need relay. Bundled relay with admin-tunable limits serves self-hosted communities of any size without requiring additional infrastructure
+
+### Message Signing & Peer Authentication
+- **Ed25519 signature on every gossipsub message**: Cryptographic proof of authorship that survives gossipsub forwarding across mesh hops. Prevents message tampering or impersonation by intermediate peers
+- **UNITED identity keys in Noise handshake**: Ed25519 identity keypair used directly as the Noise static key. PeerId = hash of public key. Direct mutual authentication without server involvement. Works during server downtime
+- **Key rotation → PeerId change**: When a user rotates their identity key, their PeerId changes. Server directory maps UNITED identity to current PeerId. Peers look up connections by identity, not PeerId
+- **Member list verification**: After Noise handshake, peers verify the connecting key belongs to a registered server member (via cached member list). Only registered members can join the P2P mesh. Member list pushed via existing WebSocket events
+
+### Wire Format & Encoding
+- **Protobuf everywhere**: Same `.proto` schemas for WebSocket and gossipsub. One encoding system (prost on server, @bufbuild/protobuf on client), zero translation layer, unified types across all transports
+- **Rich message envelope**: Every gossipsub message wraps in: `sender_pubkey` (32 bytes) + `signature` (64 bytes) + `topic` + `message_type` enum + `timestamp` (sender wall clock, hint only) + `sequence_hint` (Lamport counter for offline ordering) + `payload_bytes`
+- **Channel UUID topics**: One gossipsub topic per channel (topic = channel UUID). Message type distinguished in envelope, not topic name. Fewer topics = healthier mesh, simpler management
+- **Topic namespace prefix** (server ID scoping for multi-server future): Claude's discretion
+
+### Claude's Discretion
 - **Gossipsub tuning parameters** — Research to determine exact values for: mesh degree (D=3-4 range), D_lo, D_hi, message batching window, per-topic bandwidth budgets. Pitfalls research warns against default D=6 for chat
 - **WebRTC DataChannel configuration** — Claude to determine: SCTP parameters, DTLS settings, ICE candidate gathering strategy
+- **Server runtime topology** — Whether libp2p and axum share a tokio runtime or run isolated
+- **Topic namespace prefix** — Whether to include server ID in gossipsub topic names for multi-server future-proofing
 
 </decisions>
 
@@ -57,6 +82,8 @@ Requirements: P2P-02, SEC-06, APP-02
 - Dev panel should feel like a real tool, not an afterthought — it's the primary way to verify Phase 3 works since there's no chat UI yet
 - The IPC data pipeline for P2P stats is the key architectural investment — raw dev panel UI is secondary
 - "An important purpose for the program is being able to host a large number of users, if there is a need for it" — no artificial limits on connections or peer count
+- Server as super-seeder is the key reliability guarantee — if the mesh is thin (2-3 peers), the server ensures no messages are dropped
+- "Boring engineering" for security: Ed25519 signatures on every message, Noise handshake with identity keys, member list verification — proven components, no novel crypto
 
 </specifics>
 
@@ -70,4 +97,4 @@ None — discussion stayed within phase scope
 ---
 
 *Phase: 03-p2p-networking*
-*Context gathered: 2026-02-24*
+*Context gathered: 2026-02-24, updated 2026-02-25*
