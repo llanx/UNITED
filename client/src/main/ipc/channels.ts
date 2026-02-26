@@ -73,6 +73,28 @@ export const IPC = {
   P2P_PANEL_OPEN: 'p2p:panel-open',
   P2P_PANEL_CLOSE: 'p2p:panel-close',
 
+  // Chat messages
+  CHAT_SEND: 'chat:send',
+  CHAT_FETCH_HISTORY: 'chat:fetch-history',
+  CHAT_EDIT: 'chat:edit',
+  CHAT_DELETE: 'chat:delete',
+
+  // Reactions
+  REACTIONS_ADD: 'reactions:add',
+  REACTIONS_REMOVE: 'reactions:remove',
+  REACTIONS_FETCH: 'reactions:fetch',
+
+  // Presence
+  PRESENCE_SET: 'presence:set',
+  PRESENCE_FETCH: 'presence:fetch',
+
+  // Last read / unread
+  LAST_READ_UPDATE: 'last-read:update',
+  LAST_READ_FETCH: 'last-read:fetch',
+
+  // Notifications
+  NOTIFICATIONS_SET_PREFS: 'notifications:set-prefs',
+
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',
   PUSH_AUTH_ERROR: 'auth:error',
@@ -82,4 +104,7 @@ export const IPC = {
   PUSH_DEEP_LINK: 'deep-link:invite',
   PUSH_P2P_STATS: 'p2p:stats',
   PUSH_P2P_MESSAGE: 'p2p:message',
+  PUSH_CHAT_EVENT: 'chat:event',
+  PUSH_TYPING_EVENT: 'typing:event',
+  PUSH_PRESENCE_EVENT: 'presence:event',
 } as const
