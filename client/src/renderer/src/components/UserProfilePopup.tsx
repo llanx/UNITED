@@ -6,8 +6,9 @@
  * Dismiss: click outside or press Escape.
  */
 
-import { useEffect, useRef, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useCallback, useMemo, useState } from 'react'
 import PresenceIndicator from './PresenceIndicator'
+import { useStore } from '../stores'
 import type { MemberResponse, RoleResponse } from '@shared/ipc-bridge'
 
 interface UserProfilePopupProps {
@@ -82,6 +83,38 @@ export default function UserProfilePopup({
   const handleCopyPubkey = useCallback(() => {
     navigator.clipboard.writeText(member.pubkey).catch(() => {})
   }, [member.pubkey])
+
+  // DM: "Message" button
+  const publicKey = useStore((s) => s.publicKey)
+  const createConversation = useStore((s) => s.createConversation)
+  const setDmView = useStore((s) => s.setDmView)
+  const setActiveDmConversation = useStore((s) => s.setActiveDmConversation)
+  const [startingDm, setStartingDm] = useState(false)
+
+  const currentPubkeyHex = useMemo(() => {
+    if (!publicKey) return null
+    return Array.from(publicKey)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+  }, [publicKey])
+
+  const isSelf = currentPubkeyHex === member.pubkey
+
+  const handleMessageClick = useCallback(async () => {
+    if (startingDm) return
+    setStartingDm(true)
+    try {
+      const conversation = await createConversation(member.pubkey)
+      setDmView(true)
+      setActiveDmConversation(conversation.id)
+      useStore.setState({ activeChannelId: null })
+      onClose()
+    } catch (err) {
+      console.error('Failed to start DM:', err)
+    } finally {
+      setStartingDm(false)
+    }
+  }, [member.pubkey, startingDm, createConversation, setDmView, setActiveDmConversation, onClose])
 
   return (
     <div
@@ -163,12 +196,25 @@ export default function UserProfilePopup({
         </div>
 
         {/* Actions */}
-        <button
-          onClick={handleCopyPubkey}
-          className="w-full rounded bg-white/5 px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:bg-white/10"
-        >
-          Copy Public Key
-        </button>
+        <div className="flex gap-2">
+          {!isSelf && (
+            <button
+              onClick={handleMessageClick}
+              disabled={startingDm}
+              className="flex-1 rounded bg-blue-500/80 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
+            >
+              {startingDm ? 'Opening...' : 'Message'}
+            </button>
+          )}
+          <button
+            onClick={handleCopyPubkey}
+            className={`rounded bg-white/5 px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:bg-white/10 ${
+              isSelf ? 'w-full' : ''
+            }`}
+          >
+            Copy Public Key
+          </button>
+        </div>
       </div>
     </div>
   )
