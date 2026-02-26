@@ -1,7 +1,9 @@
 use axum::extract::ws::Message;
+use libp2p::PeerId;
 use prost::Message as ProstMessage;
 use tokio::sync::mpsc;
 
+use crate::proto::p2p_proto;
 use crate::proto::ws::{
     envelope::Payload, ErrorResponse, Envelope, ServerInfoResponse,
 };
@@ -55,8 +57,13 @@ async fn dispatch_payload(
         Payload::ServerInfoRequest(_) => {
             handle_server_info_request(request_id, tx, state).await;
         }
-        // Future payload types will be dispatched here as they're implemented.
-        // For Phase 1, we support server info over WS as a proof of the dispatch pattern.
+        Payload::PeerDirectoryRequest(req) => {
+            handle_peer_directory_request(req, request_id, tx, state).await;
+        }
+        Payload::RegisterPeerIdRequest(req) => {
+            handle_register_peer_id(req, request_id, tx, state, user_id).await;
+        }
+        // Unhandled payload types
         _ => {
             tracing::debug!(
                 user_id = %user_id,
@@ -138,6 +145,96 @@ async fn handle_server_info_request(
         }
         None => {
             send_error(tx, request_id, 500, "Failed to retrieve server info");
+        }
+    }
+}
+
+/// Handle a PeerDirectoryRequest: query the peer directory for peers in the requested channels.
+async fn handle_peer_directory_request(
+    req: p2p_proto::PeerDirectoryRequest,
+    request_id: &str,
+    tx: &mpsc::UnboundedSender<Message>,
+    state: &AppState,
+) {
+    let peers = state.peer_directory.get_peers_for_channels(&req.channel_ids);
+
+    let peer_infos: Vec<p2p_proto::PeerInfo> = peers
+        .into_iter()
+        .map(|p| p2p_proto::PeerInfo {
+            united_id: p.united_id,
+            peer_id: p.peer_id,
+            multiaddrs: p.multiaddrs,
+            channels: p.channels,
+            nat_type: p.nat_type,
+        })
+        .collect();
+
+    let response = Envelope {
+        request_id: request_id.to_string(),
+        payload: Some(Payload::PeerDirectoryResponse(
+            p2p_proto::PeerDirectoryResponse {
+                peers: peer_infos,
+            },
+        )),
+    };
+    send_envelope(tx, &response);
+}
+
+/// Handle a RegisterPeerIdRequest: associate the authenticated user's fingerprint
+/// with their libp2p PeerId in the peer directory.
+async fn handle_register_peer_id(
+    req: p2p_proto::RegisterPeerIdRequest,
+    request_id: &str,
+    tx: &mpsc::UnboundedSender<Message>,
+    state: &AppState,
+    user_id: &str,
+) {
+    // Parse the PeerId string
+    let peer_id = match req.peer_id.parse::<PeerId>() {
+        Ok(pid) => pid,
+        Err(e) => {
+            tracing::warn!("Invalid PeerId from user {}: {}", user_id, e);
+            send_error(tx, request_id, 400, "Invalid PeerId format");
+            return;
+        }
+    };
+
+    // Look up the user's fingerprint from the database
+    let db = state.db.clone();
+    let uid = user_id.to_string();
+    let fingerprint = tokio::task::spawn_blocking(move || {
+        let conn = db.lock().ok()?;
+        conn.query_row(
+            "SELECT fingerprint FROM users WHERE id = ?1",
+            [&uid],
+            |row| row.get::<_, String>(0),
+        )
+        .ok()
+    })
+    .await
+    .ok()
+    .flatten();
+
+    match fingerprint {
+        Some(fp) => {
+            state.peer_directory.register_peer(&peer_id, &fp);
+            tracing::info!(
+                "Registered PeerId {} for user {} (fingerprint: {})",
+                peer_id,
+                user_id,
+                fp
+            );
+            let response = Envelope {
+                request_id: request_id.to_string(),
+                payload: Some(Payload::RegisterPeerIdResponse(
+                    p2p_proto::RegisterPeerIdResponse { success: true },
+                )),
+            };
+            send_envelope(tx, &response);
+        }
+        None => {
+            tracing::warn!("Could not find fingerprint for user {}", user_id);
+            send_error(tx, request_id, 404, "User fingerprint not found");
         }
     }
 }

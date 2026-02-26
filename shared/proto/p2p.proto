@@ -1,0 +1,48 @@
+syntax = "proto3";
+package united.p2p;
+
+// Gossipsub message envelope: wraps every message published to a gossipsub topic.
+// Contains cryptographic metadata for identity verification and ordering.
+message GossipEnvelope {
+    bytes sender_pubkey = 1;      // 32-byte Ed25519 public key
+    bytes signature = 2;          // 64-byte Ed25519 signature over fields 3-7
+    string topic = 3;             // server_fingerprint_prefix/channel_uuid
+    MessageType message_type = 4;
+    uint64 timestamp = 5;         // Sender wall clock millis (hint only)
+    uint64 sequence_hint = 6;     // Lamport counter for offline ordering
+    bytes payload = 7;            // Inner message (type-specific protobuf-encoded bytes)
+}
+
+enum MessageType {
+    MESSAGE_TYPE_UNSPECIFIED = 0;
+    MESSAGE_TYPE_CHAT = 1;
+    MESSAGE_TYPE_TYPING = 2;
+    MESSAGE_TYPE_PRESENCE = 3;
+    MESSAGE_TYPE_TEST = 99;
+}
+
+// Peer directory messages (sent over WS, not gossipsub)
+message PeerDirectoryRequest {
+    repeated string channel_ids = 1;  // Channel UUIDs to query peers for
+}
+
+message PeerDirectoryResponse {
+    repeated PeerInfo peers = 1;
+}
+
+message PeerInfo {
+    string united_id = 1;          // UNITED fingerprint (stable across key rotation)
+    string peer_id = 2;            // libp2p PeerId (changes on key rotation)
+    repeated string multiaddrs = 3; // Advertised multiaddresses
+    repeated string channels = 4;   // Channel UUIDs this peer is subscribed to
+    string nat_type = 5;           // "public", "private", "unknown"
+}
+
+// Register client's libp2p PeerId with the server (sent over WS after libp2p connect)
+message RegisterPeerIdRequest {
+    string peer_id = 1;            // Client's libp2p PeerId string
+}
+
+message RegisterPeerIdResponse {
+    bool success = 1;
+}

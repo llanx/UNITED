@@ -1,7 +1,9 @@
 use dashmap::DashMap;
 use std::sync::Arc;
+use tokio::sync::mpsc;
 
 use crate::db::DbPool;
+use crate::p2p::{PeerDirectory, SwarmCommand};
 use crate::ws::ConnectionRegistry;
 
 /// Challenge stored in memory with expiry
@@ -26,4 +28,12 @@ pub struct AppState {
     pub connections: ConnectionRegistry,
     /// Server config
     pub registration_mode: String,
+    /// Channel for sending commands to the libp2p Swarm event loop
+    pub swarm_cmd_tx: mpsc::UnboundedSender<SwarmCommand>,
+    /// Shared peer directory tracking online peers
+    pub peer_directory: Arc<PeerDirectory>,
+    /// Server's libp2p PeerId as a string
+    pub server_peer_id: String,
+    /// Configured libp2p port (for P2P info endpoint)
+    pub libp2p_port: u16,
 }

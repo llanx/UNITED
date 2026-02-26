@@ -78,12 +78,12 @@ Plans:
   2. Messages published to a gossipsub topic arrive at all subscribed peers within 100ms on a local network
   3. All peer-to-peer communication is encrypted in transit (TLS for WebSocket to server, DTLS for WebRTC DataChannels between peers)
   4. P2P connections persist when the user switches between channels — no reconnection or re-handshake occurs on navigation
-**Plans**: TBD
+**Plans**: 3 plans (1 complete)
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [x] 03-01: Server libp2p node — gossipsub, relay, peer directory, message persistence (Wave 1, server)
+- [ ] 03-02: Client libp2p node — WebSocket + WebRTC transports, gossipsub, discovery (Wave 2, client)
+- [ ] 03-03: Dev panel — P2P stats IPC pipeline, floating overlay with peer/topic debug info (Wave 3, client)
 
 ### Phase 4: Real-Time Chat
 **Goal**: Users can have real-time text conversations in channels with the full range of messaging features expected from a modern chat application
@@ -176,7 +176,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 |-------|----------------|--------|-----------|
 | 1. Foundation | 6/6 | Complete | 2026-02-24 |
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
-| 3. P2P Networking | 0/3 | Not started | - |
+| 3. P2P Networking | 1/3 | In progress | - |
 | 4. Real-Time Chat | 0/3 | Not started | - |
 | 5. Direct Messages | 0/2 | Not started | - |
 | 6. Content Distribution | 0/3 | Not started | - |
