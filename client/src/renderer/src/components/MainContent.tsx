@@ -5,6 +5,7 @@ import TotpEnrollment from './TotpEnrollment'
 import ChannelManagement from './ChannelManagement'
 import RoleManagement from './RoleManagement'
 import MemberList from './MemberList'
+import DevPanel from './DevPanel'
 import { useState, useEffect } from 'react'
 
 export default function MainContent() {
@@ -12,6 +13,20 @@ export default function MainContent() {
   const description = useStore((s) => s.description)
   const activePanel = useStore((s) => s.activePanel)
   const isOwner = useStore((s) => s.isOwner)
+  const devPanelOpen = useStore((s) => s.devPanelOpen)
+  const toggleDevPanel = useStore((s) => s.toggleDevPanel)
+
+  // Ctrl+Shift+D to toggle dev panel
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        e.preventDefault()
+        toggleDevPanel()
+      }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [toggleDevPanel])
 
   // Show TOTP enrollment once after first registration (dismissible)
   const [showTotp, setShowTotp] = useState(false)
@@ -41,80 +56,90 @@ export default function MainContent() {
     await window.united.storage.setCachedState('totp_dismissed', true)
   }
 
-  // Server Settings panel (admin only)
-  if (activePanel === 'settings' && isOwner) {
-    return <ServerSettings />
-  }
+  // Determine which panel content to render
+  const renderPanel = () => {
+    // Server Settings panel (admin only)
+    if (activePanel === 'settings' && isOwner) {
+      return <ServerSettings />
+    }
 
-  // Channel Management panel (admin only)
-  if (activePanel === 'channel-management' && isOwner) {
-    return <ChannelManagement />
-  }
+    // Channel Management panel (admin only)
+    if (activePanel === 'channel-management' && isOwner) {
+      return <ChannelManagement />
+    }
 
-  // Role Management panel (admin only)
-  if (activePanel === 'role-management' && isOwner) {
-    return <RoleManagement />
-  }
+    // Role Management panel (admin only)
+    if (activePanel === 'role-management' && isOwner) {
+      return <RoleManagement />
+    }
 
-  // Members panel
-  if (activePanel === 'members') {
+    // Members panel
+    if (activePanel === 'members') {
+      return (
+        <div className="flex flex-1 flex-col bg-[var(--color-bg-primary)]">
+          <div className="flex h-12 items-center justify-between border-b border-white/5 px-4">
+            <span className="text-sm font-semibold text-[var(--color-text-primary)]">
+              Members
+            </span>
+            <button
+              onClick={() => useStore.setState({ activePanel: 'chat' })}
+              className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+            >
+              Close
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="mx-auto max-w-lg">
+              <MemberList />
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // Default: Welcome / chat content
     return (
       <div className="flex flex-1 flex-col bg-[var(--color-bg-primary)]">
-        <div className="flex h-12 items-center justify-between border-b border-white/5 px-4">
+        {/* Channel header bar */}
+        <div className="flex h-12 items-center border-b border-white/5 px-4">
           <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-            Members
+            Welcome
           </span>
-          <button
-            onClick={() => useStore.setState({ activePanel: 'chat' })}
-            className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
-          >
-            Close
-          </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="mx-auto max-w-lg">
-            <MemberList />
-          </div>
+
+        {/* Content area — welcome message + TOTP enrollment */}
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8">
+          {name && <ServerIcon name={name} size={80} />}
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
+            {name ? `Welcome to ${name}` : 'Welcome to UNITED'}
+          </h1>
+          {description && (
+            <p className="max-w-md text-center text-sm text-[var(--color-text-muted)]">
+              {description}
+            </p>
+          )}
+          <p className="text-xs text-[var(--color-text-muted)]">
+            This is the beginning of your server.
+          </p>
+
+          {/* TOTP enrollment (shown once, dismissible) */}
+          {showTotp && !totpDismissed && (
+            <div className="mt-6 w-full max-w-sm">
+              <TotpEnrollment
+                onDismiss={handleTotpDismiss}
+                onComplete={handleTotpComplete}
+              />
+            </div>
+          )}
         </div>
       </div>
     )
   }
 
-  // Default: Welcome / chat content
   return (
-    <div className="flex flex-1 flex-col bg-[var(--color-bg-primary)]">
-      {/* Channel header bar */}
-      <div className="flex h-12 items-center border-b border-white/5 px-4">
-        <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-          Welcome
-        </span>
-      </div>
-
-      {/* Content area — welcome message + TOTP enrollment */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8">
-        {name && <ServerIcon name={name} size={80} />}
-        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
-          {name ? `Welcome to ${name}` : 'Welcome to UNITED'}
-        </h1>
-        {description && (
-          <p className="max-w-md text-center text-sm text-[var(--color-text-muted)]">
-            {description}
-          </p>
-        )}
-        <p className="text-xs text-[var(--color-text-muted)]">
-          This is the beginning of your server.
-        </p>
-
-        {/* TOTP enrollment (shown once, dismissible) */}
-        {showTotp && !totpDismissed && (
-          <div className="mt-6 w-full max-w-sm">
-            <TotpEnrollment
-              onDismiss={handleTotpDismiss}
-              onComplete={handleTotpComplete}
-            />
-          </div>
-        )}
-      </div>
-    </div>
+    <>
+      {renderPanel()}
+      {devPanelOpen && <DevPanel />}
+    </>
   )
 }

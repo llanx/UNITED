@@ -6,6 +6,7 @@ import { createChannelsSlice, type ChannelsSlice } from './channels'
 import { createSettingsSlice, type SettingsSlice } from './settings'
 import { createUiSlice, type UiSlice } from './ui'
 import { createRolesSlice, type RolesSlice } from './roles'
+import { createP2PSlice, type P2PSlice } from './p2p'
 
 export type RootStore =
   AuthSlice &
@@ -14,7 +15,8 @@ export type RootStore =
   ChannelsSlice &
   SettingsSlice &
   UiSlice &
-  RolesSlice
+  RolesSlice &
+  P2PSlice
 
 export const useStore = create<RootStore>()((...a) => ({
   ...createAuthSlice(...a),
@@ -24,6 +26,7 @@ export const useStore = create<RootStore>()((...a) => ({
   ...createSettingsSlice(...a),
   ...createUiSlice(...a),
   ...createRolesSlice(...a),
+  ...createP2PSlice(...a),
 }))
 
 /**

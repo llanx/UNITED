@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 
 ## Current Position
 
-Phase: 3 of 8 (P2P Networking)
-Plan: 2 of 3 in current phase
-Status: Plan 03-02 complete (Client libp2p node)
-Last activity: 2026-02-26 — Plan 03-02 complete (client P2P node with gossipsub, peer discovery, IPC)
+Phase: 3 of 8 (P2P Networking) -- PHASE COMPLETE
+Plan: 3 of 3 in current phase
+Status: Phase 03 complete (P2P Networking)
+Last activity: 2026-02-26 — Plan 03-03 complete (P2P dev panel with stats pipeline, Zustand store, floating overlay)
 
-Progress: [████░░░░░░] 32%
+Progress: [████░░░░░░] 35%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
-- Average duration (GSD-tracked): 16 min
-- Total execution time (GSD-tracked): 2.0 hours
+- Total plans completed: 16
+- Average duration (GSD-tracked): 15 min
+- Total execution time (GSD-tracked): 2.1 hours
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [████░░░░░░] 32%
 |-------|-------|-------|----------|-------|
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
 | 02-server-management | 8/8 | 37 min | 5 min | 02-01: schema, permissions, proto, broadcast; 02-02 to 02-04: server endpoints; 02-05: device provisioning; 02-06: channel/role UI; 02-07: invite join flow; 02-08: SRVR-04 gap closure |
-| 03-p2p-networking | 2/3 | 40 min | 20 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence; 03-02: client libp2p node with gossipsub, peer discovery, IPC |
+| 03-p2p-networking | 3/3 | 45 min | 15 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence; 03-02: client libp2p node with gossipsub, peer discovery, IPC; 03-03: P2P dev panel with stats pipeline and floating overlay |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -96,6 +96,9 @@ Recent decisions affecting current work:
 - [03-02]: Auto-start P2P mesh on WS 'connected' event (no separate initialization step)
 - [03-02]: Channel lifecycle hooks (setChannelIds, onChannelCreated, onChannelDeleted) wire REST CRUD to gossipsub topics
 - [03-02]: 2-second stats push interval gated on dev panel open state
+- [03-03]: Stats pipeline extracted into dedicated stats.ts module (clean separation from IPC handlers)
+- [03-03]: DevPanel uses inline styles (dev tool, not polished UI) with drag support via document-level listeners
+- [03-03]: MainContent refactored to renderPanel() + fragment so DevPanel overlay renders in all views
 
 ### Pending Todos
 
@@ -117,5 +120,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 03-02-PLAN.md (Client libp2p node)
-Resume file: .planning/phases/03-p2p-networking/03-02-SUMMARY.md
+Stopped at: Completed 03-03-PLAN.md (P2P dev panel) — Phase 03 complete
+Resume file: .planning/phases/03-p2p-networking/03-03-SUMMARY.md
