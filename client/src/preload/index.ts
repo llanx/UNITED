@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { UnitedAPI, ServerInfo, ServerSettings, StorageAPI, ChannelEvent, RoleEvent } from '@shared/ipc-bridge'
+import type { UnitedAPI, ServerInfo, ServerSettings, StorageAPI, ChannelEvent, RoleEvent, P2PStats } from '@shared/ipc-bridge'
 import type { ConnectionStatus } from '@shared/ws-protocol'
 import { IPC } from '../main/ipc/channels'
 
@@ -104,6 +104,26 @@ const api: UnitedAPI = {
       ipcRenderer.invoke(IPC.INVITE_VALIDATE, serverUrl, inviteCode),
     joinViaInvite: (serverUrl: string, inviteCode: string) =>
       ipcRenderer.invoke(IPC.INVITE_JOIN, serverUrl, inviteCode),
+  },
+
+  // P2P
+  p2p: {
+    startMesh: () => ipcRenderer.invoke(IPC.P2P_START_MESH),
+    stopMesh: () => ipcRenderer.invoke(IPC.P2P_STOP_MESH),
+    sendTestMessage: (topic: string, text: string) =>
+      ipcRenderer.invoke(IPC.P2P_SEND_TEST_MESSAGE, topic, text),
+    pingPeer: (peerId: string) =>
+      ipcRenderer.invoke(IPC.P2P_PING_PEER, peerId),
+    forceReconnect: () => ipcRenderer.invoke(IPC.P2P_FORCE_RECONNECT),
+    getStats: () => ipcRenderer.invoke(IPC.P2P_GET_STATS),
+    onStatsUpdate: (callback: (stats: P2PStats) => void) => {
+      const listener = (_event: Electron.IpcRendererEvent, stats: P2PStats) =>
+        callback(stats)
+      ipcRenderer.on(IPC.PUSH_P2P_STATS, listener)
+      return () => { ipcRenderer.removeListener(IPC.PUSH_P2P_STATS, listener) }
+    },
+    openPanel: () => { ipcRenderer.invoke(IPC.P2P_PANEL_OPEN) },
+    closePanel: () => { ipcRenderer.invoke(IPC.P2P_PANEL_CLOSE) },
   },
 
   // Device Provisioning (SEC-12)

@@ -25,6 +25,8 @@ import type {
   ChallengeResponseBody,
   VerifyResponseBody
 } from '@shared/api'
+import { setChannelIds, onChannelCreated, onChannelDeleted } from './p2p'
+import { startP2PNode, getP2PNode, stopP2PNode } from '../p2p/node'
 
 // ============================================================
 // HTTP helpers (main process only — CSP blocks renderer HTTP)
@@ -134,6 +136,16 @@ export function registerConnectionHandlers(ipcMain: IpcMain): void {
   wsClient.on('status', (status: ConnectionStatus) => {
     for (const win of BrowserWindow.getAllWindows()) {
       win.webContents.send(IPC.PUSH_CONNECTION_STATUS, status)
+    }
+
+    // Auto-start P2P mesh when WS connects (if not already running)
+    if (status === 'connected' && !getP2PNode()) {
+      const url = getServerUrl()
+      if (url) {
+        startP2PNode(url).catch(err => {
+          console.error('[P2P] Auto-start failed:', err)
+        })
+      }
     }
   })
 

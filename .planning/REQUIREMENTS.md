@@ -54,7 +54,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### P2P Distribution
 
 - [ ] **P2P-01**: All content is stored as content-addressed blocks (SHA-256 hashed, fixed-size chunks for media)
-- [ ] **P2P-02**: New messages are propagated to channel peers via libp2p gossipsub protocol
+- [x] **P2P-02**: New messages are propagated to channel peers via libp2p gossipsub protocol
 - [ ] **P2P-03**: Content is fetched through a 5-layer cache cascade: L0 in-memory → L1 local SQLite/block store → L2 hot peers (active connections) → L3 DHT/swarm discovery → L4 coordination server fallback
 - [ ] **P2P-04**: User can configure their local storage buffer size (N GB) for seeding server content to other peers
 - [ ] **P2P-05**: Content is managed in priority tiers: P1 own messages (never evict) → P2 hot 24h → P3 warm 2-7 day → P4 altruistic seeding, with 7-day default TTL and LRU eviction
@@ -71,7 +71,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **SEC-03**: All messages are signed by the author's Ed25519 private key; receiving peers verify signatures before displaying
 - [ ] **SEC-04**: All content written to the local block store is encrypted with AES-256-GCM using a key derived from the user's credentials via Argon2id
 - [ ] **SEC-05**: DMs use per-conversation keys negotiated via X25519 key exchange; coordination server stores only encrypted blobs
-- [ ] **SEC-06**: All peer-to-peer communication is encrypted in transit (TLS for WebSocket, DTLS for WebRTC)
+- [x] **SEC-06**: All peer-to-peer communication is encrypted in transit (TLS for WebSocket, DTLS for WebRTC)
 - [ ] **SEC-07**: User can see encryption indicators in the UI confirming that DMs are end-to-end encrypted and channel messages are signed
 - [ ] **SEC-08**: Electron renderer uses strict CSP, content sanitization, contextIsolation enabled, nodeIntegration disabled
 - [x] **SEC-09**: User's encrypted identity blob is stored on every server they join, enabling recovery from any server with the correct passphrase
@@ -82,7 +82,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Client Application
 
 - [ ] **APP-01**: App shell loads once from local cache; channel switches are instant DOM swaps via pushState (no full page reload)
-- [ ] **APP-02**: All P2P connections persist across channel navigation
+- [x] **APP-02**: All P2P connections persist across channel navigation
 - [ ] **APP-03**: All subscribed channels receive gossip simultaneously regardless of which channel is currently viewed
 - [ ] **APP-04**: All media attachments declare dimensions upfront; fixed layout with zero reflow during content loading
 - [ ] **APP-05**: User profiles display name, avatar, and custom status text
@@ -178,9 +178,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SRVR-06 | Phase 2: Server Management | Complete |
 | SRVR-08 | Phase 2: Server Management | Complete |
 | SRVR-09 | Phase 2: Server Management | Complete |
-| P2P-02 | Phase 3: P2P Networking | Pending |
-| SEC-06 | Phase 3: P2P Networking | Pending |
-| APP-02 | Phase 3: P2P Networking | Pending |
+| P2P-02 | Phase 3: P2P Networking | Complete |
+| SEC-06 | Phase 3: P2P Networking | Complete |
+| APP-02 | Phase 3: P2P Networking | Complete |
 | MSG-01 | Phase 4: Real-Time Chat | Pending |
 | MSG-02 | Phase 4: Real-Time Chat | Pending |
 | MSG-03 | Phase 4: Real-Time Chat | Pending |
