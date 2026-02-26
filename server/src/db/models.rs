@@ -127,3 +127,20 @@ pub struct Invite {
     pub expires_at: Option<String>,
     pub created_at: String,
 }
+
+// --- Phase 3: P2P Messages ---
+
+/// Persisted gossipsub message with server-assigned sequence number
+#[derive(Debug, Clone)]
+pub struct Message {
+    pub id: i64,
+    pub channel_id: String,
+    pub sender_pubkey: String,
+    pub message_type: i32,
+    pub payload: Option<Vec<u8>>,
+    pub timestamp: i64,
+    pub sequence_hint: i64,
+    pub server_sequence: i64,
+    pub signature: Vec<u8>,
+    pub created_at: String,
+}

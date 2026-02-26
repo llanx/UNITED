@@ -154,8 +154,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
     }
 
-    // Spawn event consumer task to handle gossipsub messages
-    let _evt_db = db.clone();
+    // Spawn event consumer task to handle gossipsub messages.
+    // Uses spawn_blocking for DB writes to avoid starving the swarm loop.
+    let evt_db = db.clone();
     tokio::spawn(async move {
         let mut evt_rx = swarm_evt_rx;
         while let Some(event) = evt_rx.recv().await {
@@ -171,8 +172,37 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         topic,
                         data.len()
                     );
-                    // Message persistence will be implemented in Task 2
-                    // via p2p::messages::handle_gossip_message()
+                    // Decode, verify, and persist the message
+                    let db_clone = evt_db.clone();
+                    tokio::task::spawn_blocking(move || {
+                        match p2p::messages::decode_and_verify_gossip_envelope(&data) {
+                            Ok(envelope) => {
+                                match p2p::messages::handle_gossip_message(&db_clone, &envelope) {
+                                    Ok(seq) => {
+                                        tracing::debug!(
+                                            "Persisted gossipsub message from {} on {}, seq={}",
+                                            source,
+                                            topic,
+                                            seq
+                                        );
+                                    }
+                                    Err(e) => {
+                                        tracing::warn!(
+                                            "Failed to persist gossipsub message: {}",
+                                            e
+                                        );
+                                    }
+                                }
+                            }
+                            Err(e) => {
+                                tracing::warn!(
+                                    "Failed to verify gossipsub message from {}: {}",
+                                    source,
+                                    e
+                                );
+                            }
+                        }
+                    });
                 }
                 p2p::SwarmEvent::PeerConnected(peer_id) => {
                     tracing::info!("P2P peer connected: {}", peer_id);

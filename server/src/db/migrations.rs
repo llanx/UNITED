@@ -140,5 +140,25 @@ CREATE TABLE invites (
 );
 ",
         ),
+        M::up(
+            "-- Migration 3: P2P Messages (Phase 3)
+
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    channel_id TEXT NOT NULL,
+    sender_pubkey TEXT NOT NULL,
+    message_type INTEGER NOT NULL DEFAULT 0,
+    payload BLOB,
+    timestamp INTEGER NOT NULL,
+    sequence_hint INTEGER NOT NULL DEFAULT 0,
+    server_sequence INTEGER NOT NULL,
+    signature BLOB NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_messages_channel_seq ON messages(channel_id, server_sequence);
+CREATE INDEX IF NOT EXISTS idx_messages_channel_time ON messages(channel_id, created_at);
+",
+        ),
     ])
 }

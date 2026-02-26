@@ -8,11 +8,19 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::auth::middleware::Claims;
+use crate::p2p::SwarmCommand;
 use crate::proto::channels as proto_channels;
 use crate::proto::ws::{envelope::Payload, Envelope};
 use crate::roles::permissions::{require_permission, Permissions};
 use crate::state::AppState;
 use crate::ws::broadcast::broadcast_to_all;
+
+/// Build a gossipsub topic string for a channel.
+/// Format: `{server_peer_id_prefix}/{channel_id}`
+fn gossipsub_topic(server_peer_id: &str, channel_id: &str) -> String {
+    let prefix = &server_peer_id[..std::cmp::min(16, server_peer_id.len())];
+    format!("{}/{}", prefix, channel_id)
+}
 
 use super::ordering::next_position;
 
@@ -254,6 +262,10 @@ pub async fn create_channel(
     };
     broadcast_to_all(&state.connections, &event);
 
+    // Subscribe the server's gossipsub to the new channel topic
+    let topic = gossipsub_topic(&state.server_peer_id, &channel.id);
+    let _ = state.swarm_cmd_tx.send(SwarmCommand::SubscribeTopic(topic));
+
     Ok((StatusCode::CREATED, Json(channel)))
 }
 
@@ -391,6 +403,10 @@ pub async fn delete_channel(
         )),
     };
     broadcast_to_all(&state.connections, &event);
+
+    // Unsubscribe the server's gossipsub from the deleted channel topic
+    let topic = gossipsub_topic(&state.server_peer_id, &channel_id);
+    let _ = state.swarm_cmd_tx.send(SwarmCommand::UnsubscribeTopic(topic));
 
     Ok(StatusCode::OK)
 }

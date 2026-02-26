@@ -15,6 +15,24 @@ use crate::roles::{assignment as role_assignment, crud as role_crud};
 use crate::state::AppState;
 use crate::ws::handler as ws_handler;
 
+/// GET /api/p2p/info — Public endpoint returning the server's P2P connection info.
+/// Required by clients to construct the server's libp2p multiaddr for dialing.
+async fn p2p_info(
+    axum::extract::State(state): axum::extract::State<AppState>,
+) -> Json<serde_json::Value> {
+    Json(serde_json::json!({
+        "peer_id": state.server_peer_id,
+        "multiaddr": format!(
+            "/ip4/0.0.0.0/tcp/{}/ws/p2p/{}",
+            state.libp2p_port,
+            state.server_peer_id
+        ),
+        "libp2p_port": state.libp2p_port,
+    }))
+}
+
+use axum::Json;
+
 /// Inject the JWT secret into request extensions so the Claims extractor can find it.
 async fn inject_jwt_secret(
     axum::extract::State(state): axum::extract::State<AppState>,
@@ -110,7 +128,8 @@ pub fn build_router(state: AppState) -> Router {
 
     // Public routes (no auth required, no rate limiting)
     let public_routes = Router::new()
-        .route("/api/server/info", axum::routing::get(settings::get_server_info));
+        .route("/api/server/info", axum::routing::get(settings::get_server_info))
+        .route("/api/p2p/info", axum::routing::get(p2p_info));
 
     // Authenticated routes (JWT required — Claims extractor validates token)
     let authenticated_routes = Router::new()

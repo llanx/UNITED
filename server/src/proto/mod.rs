@@ -7,6 +7,7 @@
 //   united.roles      -> proto::united::roles
 //   united.moderation -> proto::united::moderation
 //   united.invite     -> proto::united::invite
+//   united.p2p        -> proto::united::p2p
 //   united.ws         -> proto::united::ws
 
 pub mod united {
@@ -38,6 +39,10 @@ pub mod united {
         include!(concat!(env!("OUT_DIR"), "/united.invite.rs"));
     }
 
+    pub mod p2p {
+        include!(concat!(env!("OUT_DIR"), "/united.p2p.rs"));
+    }
+
     pub mod ws {
         include!(concat!(env!("OUT_DIR"), "/united.ws.rs"));
     }
@@ -49,6 +54,7 @@ pub use united::channels;
 pub use united::identity;
 pub use united::invite;
 pub use united::moderation;
+pub use united::p2p as p2p_proto;
 pub use united::roles;
 pub use united::server;
 pub use united::ws;
