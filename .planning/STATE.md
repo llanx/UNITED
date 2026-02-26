@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 3 of 8 (P2P Networking)
-Plan: 1 of 3 in current phase
-Status: Plan 03-01 complete (Server libp2p node)
-Last activity: 2026-02-26 — Plan 03-01 complete (server P2P node with gossipsub)
+Plan: 2 of 3 in current phase
+Status: Plan 03-02 complete (Client libp2p node)
+Last activity: 2026-02-26 — Plan 03-02 complete (client P2P node with gossipsub, peer discovery, IPC)
 
-Progress: [████░░░░░░] 30%
+Progress: [████░░░░░░] 32%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration (GSD-tracked): 16 min
-- Total execution time (GSD-tracked): 1.7 hours
+- Total execution time (GSD-tracked): 2.0 hours
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [████░░░░░░] 30%
 |-------|-------|-------|----------|-------|
 | 01-foundation | 6/6 | — | — | Server track (01-01 to 01-03) GSD-tracked. Client track (01-04 to 01-06) executed manually by benzybones, reconciled retroactively. |
 | 02-server-management | 8/8 | 37 min | 5 min | 02-01: schema, permissions, proto, broadcast; 02-02 to 02-04: server endpoints; 02-05: device provisioning; 02-06: channel/role UI; 02-07: invite join flow; 02-08: SRVR-04 gap closure |
-| 03-p2p-networking | 1/3 | 23 min | 23 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence |
+| 03-p2p-networking | 2/3 | 40 min | 20 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence; 03-02: client libp2p node with gossipsub, peer discovery, IPC |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -90,6 +90,12 @@ Recent decisions affecting current work:
 - [03-01]: Separate port for libp2p WS (default 1985) from axum HTTP (1984)
 - [03-01]: GossipEnvelope has dual signing: gossipsub mesh-level + UNITED inner Ed25519 signature
 - [03-01]: Conservative peer scoring thresholds (-100/-200/-300) to avoid premature eviction
+- [03-02]: Identity bridge uses generateKeyPairFromSeed('Ed25519', 32-byte seed) from @libp2p/crypto/keys
+- [03-02]: Gossipsub globalSignaturePolicy: StrictNoSign (UNITED GossipEnvelope has its own Ed25519 signatures)
+- [03-02]: P2P IPC namespace pattern: window.united.p2p.{startMesh, stopMesh, sendTestMessage, pingPeer, ...}
+- [03-02]: Auto-start P2P mesh on WS 'connected' event (no separate initialization step)
+- [03-02]: Channel lifecycle hooks (setChannelIds, onChannelCreated, onChannelDeleted) wire REST CRUD to gossipsub topics
+- [03-02]: 2-second stats push interval gated on dev panel open state
 
 ### Pending Todos
 
@@ -111,5 +117,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 03-01-PLAN.md (Server libp2p node)
-Resume file: .planning/phases/03-p2p-networking/03-01-SUMMARY.md
+Stopped at: Completed 03-02-PLAN.md (Client libp2p node)
+Resume file: .planning/phases/03-p2p-networking/03-02-SUMMARY.md
