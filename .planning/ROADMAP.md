@@ -190,4 +190,4 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
 | 6. Content Distribution | 4/4 | Complete   | 2026-02-26 |
 | 7. Media and Prefetching | 2/3 | Complete    | 2026-02-26 |
-| 8. Voice Channels | 0/3 | Not started | - |
+| 8. Voice Channels | 2/3 | In Progress|  |

@@ -35,9 +35,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Voice
 
 - [x] **VOICE-01**: User can join voice channels and communicate with other users via WebRTC peer-to-peer audio (2-8 simultaneous participants)
-- [ ] **VOICE-02**: User can mute their microphone and deafen all incoming audio
-- [ ] **VOICE-03**: User can see a visual indicator showing which user is currently speaking
-- [ ] **VOICE-04**: User can use push-to-talk as an alternative to voice activity detection
+- [x] **VOICE-02**: User can mute their microphone and deafen all incoming audio
+- [x] **VOICE-03**: User can see a visual indicator showing which user is currently speaking
+- [x] **VOICE-04**: User can use push-to-talk as an alternative to voice activity detection
 
 ### Server Management
 
@@ -214,9 +214,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | P2P-07 | Phase 7: Media and Prefetching | Complete |
 | P2P-08 | Phase 7: Media and Prefetching | Complete |
 | VOICE-01 | Phase 8: Voice Channels | Complete |
-| VOICE-02 | Phase 8: Voice Channels | Pending |
-| VOICE-03 | Phase 8: Voice Channels | Pending |
-| VOICE-04 | Phase 8: Voice Channels | Pending |
+| VOICE-02 | Phase 8: Voice Channels | Complete |
+| VOICE-03 | Phase 8: Voice Channels | Complete |
+| VOICE-04 | Phase 8: Voice Channels | Complete |
 
 **Coverage:**
 - v1 requirements: 56 total
