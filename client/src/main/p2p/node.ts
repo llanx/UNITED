@@ -21,6 +21,7 @@ import type { Ed25519PrivateKey, PubSub } from '@libp2p/interface'
 
 import { unitedKeysToLibp2p, getIdentityKeySeed } from './identity'
 import { clearTopicStats } from './gossipsub'
+import { registerBlockProtocol } from '../blocks/protocol'
 
 // ============================================================
 // Module-level state
@@ -146,6 +147,9 @@ export async function startP2PNode(serverUrl: string): Promise<string> {
   // 5. Create and start node
   p2pNode = await createUnitedP2PNode(privateKey, serverMultiaddrStr)
   console.log(`[P2P] Node started`)
+
+  // 5b. Register block exchange protocol handler
+  registerBlockProtocol(p2pNode)
 
   // 6. Dial the server to establish initial connection
   try {
