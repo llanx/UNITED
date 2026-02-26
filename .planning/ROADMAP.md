@@ -167,11 +167,12 @@ Plans:
   2. User can mute their microphone and deafen all incoming audio with immediate effect
   3. User can see a visual indicator showing which participant is currently speaking
   4. User can use push-to-talk as an alternative to voice activity detection
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 08-01: TBD
-- [ ] 08-02: TBD
+- [ ] 08-01: Server voice signaling infrastructure — protobuf schemas, voice state, WS signaling relay, TURN credentials, migration 8 (Wave 1)
+- [ ] 08-02: Client voice engine — WebRTC VoiceManager, AudioPipeline, PTT via uiohook-napi, Zustand VoiceSlice, IPC bridge (Wave 2, depends on 08-01)
+- [ ] 08-03: Voice UI and deployment — VoiceBar, sidebar participants with speaking indicators, VoiceSettings, docker-compose with coturn (Wave 3, depends on 08-02)
 
 ## Progress
 
@@ -189,4 +190,4 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
 | 6. Content Distribution | 4/4 | Complete   | 2026-02-26 |
 | 7. Media and Prefetching | 2/3 | Complete    | 2026-02-26 |
-| 8. Voice Channels | 0/2 | Not started | - |
+| 8. Voice Channels | 0/3 | Not started | - |
