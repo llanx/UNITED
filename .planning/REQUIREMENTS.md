@@ -11,7 +11,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **MSG-01**: User can send and receive text messages in channels with real-time delivery via gossip propagation (<100ms to connected peers)
 - [x] **MSG-02**: User can view message history by scrolling back, fetching older messages from peers or server fallback
-- [ ] **MSG-03**: User can format messages with markdown (bold, italic, code blocks, lists, quotes)
+- [x] **MSG-03**: User can format messages with markdown (bold, italic, code blocks, lists, quotes)
 - [x] **MSG-04**: User can react to messages with standard Unicode emoji
 - [x] **MSG-05**: User can see typing indicators when another user is composing a message in the current channel
 - [x] **MSG-06**: User can see online/offline/away status for other users
@@ -183,7 +183,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | APP-02 | Phase 3: P2P Networking | Complete |
 | MSG-01 | Phase 4: Real-Time Chat | Complete |
 | MSG-02 | Phase 4: Real-Time Chat | Complete |
-| MSG-03 | Phase 4: Real-Time Chat | Pending |
+| MSG-03 | Phase 4: Real-Time Chat | Complete |
 | MSG-04 | Phase 4: Real-Time Chat | Complete |
 | MSG-05 | Phase 4: Real-Time Chat | Complete |
 | MSG-06 | Phase 4: Real-Time Chat | Complete |
