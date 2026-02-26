@@ -21,8 +21,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Direct Messages
 
-- [ ] **DM-01**: User can send and receive end-to-end encrypted direct messages (X25519 key exchange, only participants hold decryption keys)
-- [ ] **DM-02**: User can receive DMs while offline via encrypted blobs stored on the coordination server for later delivery
+- [x] **DM-01**: User can send and receive end-to-end encrypted direct messages (X25519 key exchange, only participants hold decryption keys)
+- [x] **DM-02**: User can receive DMs while offline via encrypted blobs stored on the coordination server for later delivery
 - [ ] **DM-03**: User can see DM conversations listed separately from channel messages
 
 ### Media
@@ -70,7 +70,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SEC-02**: User authenticates to servers via Ed25519 challenge-response signature; server issues JWT tokens (15min access + 7-day refresh) after successful verification
 - [x] **SEC-03**: All messages are signed by the author's Ed25519 private key; receiving peers verify signatures before displaying
 - [ ] **SEC-04**: All content written to the local block store is encrypted with AES-256-GCM using a key derived from the user's credentials via Argon2id
-- [ ] **SEC-05**: DMs use per-conversation keys negotiated via X25519 key exchange; coordination server stores only encrypted blobs
+- [x] **SEC-05**: DMs use per-conversation keys negotiated via X25519 key exchange; coordination server stores only encrypted blobs
 - [x] **SEC-06**: All peer-to-peer communication is encrypted in transit (TLS for WebSocket, DTLS for WebRTC)
 - [ ] **SEC-07**: User can see encryption indicators in the UI confirming that DMs are end-to-end encrypted and channel messages are signed
 - [ ] **SEC-08**: Electron renderer uses strict CSP, content sanitization, contextIsolation enabled, nodeIntegration disabled
@@ -193,10 +193,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEC-03 | Phase 4: Real-Time Chat | Complete |
 | APP-03 | Phase 4: Real-Time Chat | Complete |
 | APP-05 | Phase 4: Real-Time Chat | Complete |
-| DM-01 | Phase 5: Direct Messages | Pending |
-| DM-02 | Phase 5: Direct Messages | Pending |
+| DM-01 | Phase 5: Direct Messages | Complete |
+| DM-02 | Phase 5: Direct Messages | Complete |
 | DM-03 | Phase 5: Direct Messages | Pending |
-| SEC-05 | Phase 5: Direct Messages | Pending |
+| SEC-05 | Phase 5: Direct Messages | Complete |
 | SEC-07 | Phase 5: Direct Messages | Pending |
 | P2P-01 | Phase 6: Content Distribution | Pending |
 | P2P-03 | Phase 6: Content Distribution | Pending |

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 4 complete. Ready for Phase 5: DM System.
+**Current focus:** Phase 5 in progress: Direct Messages (DM System).
 
 ## Current Position
 
-Phase: 4 of 8 (Real-Time Chat) -- COMPLETE
-Plan: 6 of 6 in current phase (all plans complete, including gap closure)
-Status: Phase 04 complete (all 6 plans executed, including 04-06 gap closure)
-Last activity: 2026-02-26 — Plan 04-06 complete (gap closure: presence pubkey lookup, message ID consistency)
+Phase: 5 of 8 (Direct Messages)
+Plan: 2 of 3 in current phase
+Status: Plan 05-02 complete (client DM data layer: crypto, IPC, store, hooks, preload bridge)
+Last activity: 2026-02-26 — Plan 05-02 complete (DM data layer)
 
-Progress: [██████░░░░] 52%
+Progress: [██████░░░░] 58%
 
 ## Performance Metrics
 
@@ -31,9 +31,10 @@ Progress: [██████░░░░] 52%
 | 02-server-management | 8/8 | 37 min | 5 min | 02-01: schema, permissions, proto, broadcast; 02-02 to 02-04: server endpoints; 02-05: device provisioning; 02-06: channel/role UI; 02-07: invite join flow; 02-08: SRVR-04 gap closure |
 | 03-p2p-networking | 4/4 | 46 min | 12 min | 03-01: server libp2p node with gossipsub, relay, peer directory, message persistence; 03-02: client libp2p node with gossipsub, peer discovery, IPC; 03-03: P2P dev panel with stats pipeline and floating overlay; 03-04: fix reconnect bug (gap closure) |
 | 04-real-time-chat | 6/6 | 65 min | 11 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding; 04-03: ChatView, MessageGroup, MessageComposer, MarkdownContent; 04-04: presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup; 04-05: emoji reactions, @mentions, unread badges, desktop notifications; 04-06: gap closure (presence pubkey, message ID consistency) |
+| 05-direct-messages | 2/3 | 8 min | 8 min | 05-01: DM protobuf schemas, server DB migration (completed by prior executor); 05-02: DM crypto module, IPC handlers, Zustand store, hooks, preload bridge |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-02 (8 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -133,6 +134,11 @@ Recent decisions affecting current work:
 - [04-06]: MemberResponse includes pubkey field via lower(hex(public_key)) — bridges REST member data to pubkey-keyed presence store
 - [04-06]: Message IDs use last_insert_rowid() instead of UUIDv7 — consistent integer IDs across create, broadcast, and history
 - [04-06]: UserProfilePopup displays pubkey instead of UUID — UNITED identity-first
+- [05-02]: DM WS events use JSON format (not protobuf) for simplicity alongside existing protobuf chat events
+- [05-02]: Desktop notifications for DMs show sender name only, never message content (E2E privacy)
+- [05-02]: DM message window cap of 200 (lower than channel 500) reflecting lower DM volume
+- [05-02]: Per-message decryption failure returns '[Unable to decrypt]' with decryptionFailed flag (graceful degradation)
+- [05-02]: Shared secret cache keyed by conversation_id with secure zeroing via sodium_memzero
 
 ### Pending Todos
 
@@ -153,6 +159,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-25
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-content-distribution/06-CONTEXT.md
+Last session: 2026-02-26
+Stopped at: Completed 05-02-PLAN.md
+Resume file: .planning/phases/05-direct-messages/05-03-PLAN.md
