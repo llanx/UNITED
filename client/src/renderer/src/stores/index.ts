@@ -12,6 +12,7 @@ import { createPresenceSlice, type PresenceSlice } from './presence'
 import { createNotificationsSlice, type NotificationsSlice } from './notifications'
 import { createDmSlice, type DmSlice } from './dm'
 import { createBlocksSlice, type BlocksSlice } from './blocks'
+import { createNetworkSlice, type NetworkSlice } from './network'
 
 export type RootStore =
   AuthSlice &
@@ -26,7 +27,8 @@ export type RootStore =
   PresenceSlice &
   NotificationsSlice &
   DmSlice &
-  BlocksSlice
+  BlocksSlice &
+  NetworkSlice
 
 export const useStore = create<RootStore>()((...a) => ({
   ...createAuthSlice(...a),
@@ -42,6 +44,7 @@ export const useStore = create<RootStore>()((...a) => ({
   ...createNotificationsSlice(...a),
   ...createDmSlice(...a),
   ...createBlocksSlice(...a),
+  ...createNetworkSlice(...a),
 }))
 
 /**

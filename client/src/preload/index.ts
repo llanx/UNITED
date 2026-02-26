@@ -6,6 +6,7 @@ import type {
   ReactionSummary, PresenceUpdate, TypingEvent, NotificationPrefs,
   DmEvent,
   BlockStorageUsage, BlockStoreConfig,
+  NetworkStats,
   FileAttachment, UploadProgress
 } from '@shared/ipc-bridge'
 import type { ConnectionStatus } from '@shared/ws-protocol'
@@ -217,6 +218,17 @@ const api: UnitedAPI = {
       const listener = (_event: Electron.IpcRendererEvent, data: UploadProgress) => cb(data)
       ipcRenderer.on(IPC.PUSH_UPLOAD_PROGRESS, listener)
       return () => { ipcRenderer.removeListener(IPC.PUSH_UPLOAD_PROGRESS, listener) }
+    },
+  },
+
+  // Network Stats
+  stats: {
+    getNetworkStats: () => ipcRenderer.invoke(IPC.STATS_GET_NETWORK),
+    getStorageUsage: () => ipcRenderer.invoke(IPC.STATS_GET_STORAGE),
+    onNetworkStats: (cb: (stats: NetworkStats) => void) => {
+      const listener = (_event: Electron.IpcRendererEvent, data: NetworkStats) => cb(data)
+      ipcRenderer.on(IPC.PUSH_NETWORK_STATS, listener)
+      return () => { ipcRenderer.removeListener(IPC.PUSH_NETWORK_STATS, listener) }
     },
   },
 

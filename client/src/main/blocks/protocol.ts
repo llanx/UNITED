@@ -25,6 +25,69 @@ import { getLocalBlock } from './store'
 export const BLOCK_PROTOCOL = '/united/block/1.0.0'
 
 // ============================================================
+// Network stats tracking
+// ============================================================
+
+/** Cumulative bytes uploaded (served to peers) */
+let bytesUploaded = 0
+/** Cumulative bytes downloaded (received from peers) */
+let bytesDownloaded = 0
+/** Total blocks served to peers */
+let blocksSeeded = 0
+
+/** Rolling window entries for speed calculation */
+const recentUploads: Array<{ time: number; size: number }> = []
+const recentDownloads: Array<{ time: number; size: number }> = []
+
+/** Rolling window duration in ms */
+const SPEED_WINDOW_MS = 10_000
+
+export interface NetworkStatsSnapshot {
+  bytesUploaded: number
+  bytesDownloaded: number
+  blocksSeeded: number
+  uploadSpeed: number
+  downloadSpeed: number
+}
+
+/**
+ * Get current network stats snapshot.
+ * Upload/download speed is calculated from a rolling 10-second window.
+ */
+export function getNetworkStats(): NetworkStatsSnapshot {
+  const now = Date.now()
+  const cutoff = now - SPEED_WINDOW_MS
+
+  // Prune old entries
+  while (recentUploads.length > 0 && recentUploads[0].time < cutoff) {
+    recentUploads.shift()
+  }
+  while (recentDownloads.length > 0 && recentDownloads[0].time < cutoff) {
+    recentDownloads.shift()
+  }
+
+  const uploadBytes = recentUploads.reduce((sum, e) => sum + e.size, 0)
+  const downloadBytes = recentDownloads.reduce((sum, e) => sum + e.size, 0)
+
+  return {
+    bytesUploaded,
+    bytesDownloaded,
+    blocksSeeded,
+    uploadSpeed: uploadBytes / (SPEED_WINDOW_MS / 1000),
+    downloadSpeed: downloadBytes / (SPEED_WINDOW_MS / 1000),
+  }
+}
+
+/** Reset all network stats (for testing). */
+export function resetNetworkStats(): void {
+  bytesUploaded = 0
+  bytesDownloaded = 0
+  blocksSeeded = 0
+  recentUploads.length = 0
+  recentDownloads.length = 0
+}
+
+// ============================================================
 // Protocol handler (serving blocks to peers)
 // ============================================================
 
@@ -50,8 +113,11 @@ export function registerBlockProtocol(node: Libp2p): void {
       const data = getLocalBlock(hash)
 
       if (data) {
-        // Found: write block data
+        // Found: write block data and track stats
         await lp.write(new Uint8Array(data))
+        bytesUploaded += data.length
+        blocksSeeded++
+        recentUploads.push({ time: Date.now(), size: data.length })
       } else {
         // Not found: write zero-length response
         await lp.write(new Uint8Array(0))
@@ -124,6 +190,10 @@ export async function fetchBlockFromPeer(
         `Block hash mismatch from peer ${peerId.toString()}: expected ${hash}, got ${computedHash}`
       )
     }
+
+    // Track download stats
+    bytesDownloaded += data.length
+    recentDownloads.push({ time: Date.now(), size: data.length })
 
     // Close the stream
     await stream.close()
