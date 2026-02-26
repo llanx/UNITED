@@ -26,6 +26,14 @@ import {
   setupWsP2PListener,
   clearReconnectionState
 } from '../p2p/discovery'
+import {
+  startStatsPush,
+  stopStatsPush,
+  buildP2PStats,
+  onPanelOpen,
+  onPanelClose,
+  isPanelOpen
+} from '../p2p/stats'
 import { MessageType } from '@shared/generated/p2p_pb'
 import type { P2PStats, PeerInfo, GossipMessage } from '../p2p/types'
 
@@ -33,8 +41,6 @@ import type { P2PStats, PeerInfo, GossipMessage } from '../p2p/types'
 // State tracking
 // ============================================================
 
-let devPanelOpen = false
-let statsInterval: ReturnType<typeof setInterval> | null = null
 let serverFingerprint: string | null = null
 let currentChannelIds: string[] = []
 
@@ -44,61 +50,6 @@ let currentChannelIds: string[] = []
  */
 export function initP2PListener(): void {
   setupWsP2PListener()
-}
-
-// ============================================================
-// Stats pushing
-// ============================================================
-
-function buildP2PStats(): P2PStats {
-  const node = getP2PNode()
-  if (!node) {
-    return {
-      peers: [],
-      topics: [],
-      natType: 'unknown',
-      isConnected: false,
-      serverPeerId: ''
-    }
-  }
-
-  const connections = node.getConnections()
-  const peers: PeerInfo[] = connections.map(conn => ({
-    unitedId: '', // Would need directory lookup
-    peerId: conn.remotePeer.toString(),
-    multiaddrs: [conn.remoteAddr.toString()],
-    channels: [],
-    natType: 'unknown' as const,
-    connectionType: conn.remoteAddr.toString().includes('/p2p-circuit/')
-      ? 'relayed' as const
-      : 'direct' as const
-  }))
-
-  return {
-    peers,
-    topics: getTopicStats(),
-    natType: 'unknown', // Would need AutoNAT
-    isConnected: connections.length > 0,
-    serverPeerId: getServerPeerId() || ''
-  }
-}
-
-function startStatsPush(): void {
-  if (statsInterval) return
-  statsInterval = setInterval(() => {
-    if (!devPanelOpen) return
-    const stats = buildP2PStats()
-    for (const win of BrowserWindow.getAllWindows()) {
-      win.webContents.send(IPC.PUSH_P2P_STATS, stats)
-    }
-  }, 2000)
-}
-
-function stopStatsPush(): void {
-  if (statsInterval) {
-    clearInterval(statsInterval)
-    statsInterval = null
-  }
 }
 
 // ============================================================
@@ -159,7 +110,7 @@ export function registerP2PHandlers(ipcMain: IpcMain): void {
     setupReconnection(node, currentChannelIds)
 
     // Start stats push if dev panel is open
-    if (devPanelOpen) startStatsPush()
+    if (isPanelOpen()) startStatsPush()
 
     return { peerId }
   })
@@ -233,12 +184,12 @@ export function registerP2PHandlers(ipcMain: IpcMain): void {
 
   // Dev panel open/close tracking
   ipcMain.handle(IPC.P2P_PANEL_OPEN, async (): Promise<void> => {
-    devPanelOpen = true
+    onPanelOpen()
     startStatsPush()
   })
 
   ipcMain.handle(IPC.P2P_PANEL_CLOSE, async (): Promise<void> => {
-    devPanelOpen = false
+    onPanelClose()
     stopStatsPush()
   })
 }
