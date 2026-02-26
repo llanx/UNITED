@@ -24,7 +24,7 @@ import { groupMessages, type MessageGroupData } from './MessageGroup'
 import MessageGroupComponent from './MessageGroup'
 import MessageComposer from './MessageComposer'
 import { extractMentionIds } from './MarkdownContent'
-import type { ChatMessage, ChatEvent } from '@shared/ipc-bridge'
+import type { ChatMessage, ChatEvent, FileAttachment } from '@shared/ipc-bridge'
 
 interface ChatViewProps {
   memberListVisible?: boolean
@@ -270,8 +270,99 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
     [groups, virtualizer]
   )
 
+  // ============================================================
+  // Drag-and-drop zone (wraps entire chat view for larger drop target)
+  // ============================================================
+
+  const [isDragging, setIsDragging] = useState(false)
+  const [droppedFiles, setDroppedFiles] = useState<FileAttachment[] | undefined>(undefined)
+  const dragCounterRef = useRef(0)
+
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounterRef.current++
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDragging(true)
+    }
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounterRef.current--
+    if (dragCounterRef.current === 0) {
+      setIsDragging(false)
+    }
+  }, [])
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounterRef.current = 0
+    setIsDragging(false)
+
+    const fileList = e.dataTransfer.files
+    if (!fileList.length) return
+
+    const newFiles: FileAttachment[] = []
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i]
+      const filePath = (file as File & { path?: string }).path || ''
+      newFiles.push({
+        path: filePath,
+        name: file.name,
+        mimeType: file.type || 'application/octet-stream',
+      })
+    }
+
+    setDroppedFiles(newFiles)
+  }, [])
+
+  const handleDroppedFilesConsumed = useCallback(() => {
+    setDroppedFiles(undefined)
+  }, [])
+
   return (
-    <div className="flex h-full flex-1 flex-col bg-[var(--color-bg-primary)]">
+    <div
+      className="flex h-full flex-1 flex-col bg-[var(--color-bg-primary)]"
+      style={{ position: 'relative' }}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      {/* Full-view drag overlay */}
+      {isDragging && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(88, 101, 242, 0.12)',
+            border: '2px dashed var(--color-accent, #5865f2)',
+            borderRadius: 8,
+            pointerEvents: 'none',
+          }}
+        >
+          <span
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: 'var(--color-accent, #5865f2)',
+            }}
+          >
+            Drop files to attach
+          </span>
+        </div>
+      )}
       {/* Channel header */}
       <div className="flex h-12 shrink-0 items-center gap-2 border-b border-white/5 px-4">
         <span className="text-lg text-[var(--color-text-muted)]">#</span>
@@ -411,6 +502,8 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
         replyTo={replyTo}
         onCancelReply={handleCancelReply}
         onMessageSent={handleMessageSent}
+        droppedFiles={droppedFiles}
+        onDroppedFilesConsumed={handleDroppedFilesConsumed}
       />
     </div>
   )
