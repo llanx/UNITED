@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-last_updated: "2026-02-26T21:37:00.000Z"
+last_updated: "2026-02-26T21:38:41.000Z"
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 36
-  completed_plans: 35
+  completed_plans: 36
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 7: Media and Prefetching (in progress).
+**Current focus:** Phase 7: Media and Prefetching (complete). Ready for Phase 8.
 
 ## Current Position
 
 Phase: 7 of 8 (Media and Prefetching)
-Plan: 2 of 3 in current phase
-Status: Plan 07-02 complete
-Last activity: 2026-02-26 -- Completed 07-02-PLAN.md (media rendering UI)
+Plan: 3 of 3 in current phase
+Status: Phase 7 complete
+Last activity: 2026-02-26 -- Completed 07-03-PLAN.md (stats dashboard and prefetching)
 
-Progress: [█████████░] 90%
+Progress: [█████████░] 95%
 
 ## Performance Metrics
 
@@ -46,10 +46,10 @@ Progress: [█████████░] 90%
 | 04-real-time-chat | 6/6 | 65 min | 11 min | 04-01: protobuf schemas, migration 4, REST endpoints, WS broadcast; 04-02: IPC handlers, Zustand stores, hooks, WS event forwarding; 04-03: ChatView, MessageGroup, MessageComposer, MarkdownContent; 04-04: presence tracking, MemberListSidebar, PresenceIndicator, UserProfilePopup; 04-05: emoji reactions, @mentions, unread badges, desktop notifications; 04-06: gap closure (presence pubkey, message ID consistency) |
 | 05-direct-messages | 4/4 | 27 min | 7 min | 05-01: DM protobuf schemas, migration 5, 8 REST endpoints (keys, conversations, messages, offline), WS targeted push, background cleanup; 05-02: DM crypto module, IPC handlers, Zustand store, hooks, preload bridge; 05-03: DM UI (conversation list, chat view, composer, encryption indicators, server rail DM icon, profile popup Message button); 05-04: gap closure (DM WS protobuf decoding fix) |
 | 06-content-distribution | 5/5 | 32 min | 6 min | 06-01: server block store, REST endpoints, WS events; 06-02: client block store, encryption, IPC; 06-03: block protocol, 5-layer cache cascade; 06-04: inline content UI, storage settings; 06-05: resolveBlock bridge wiring (gap closure) |
-| 07-media-and-prefetching | 2/3 | 17 min | 9 min | 07-01: protobuf extensions, migration 7, upload size enforcement, media IPC with blurhash + video thumbnails; 07-02: inline media components, composer file attachment, adaptive image grid, lightbox |
+| 07-media-and-prefetching | 3/3 | 25 min | 8 min | 07-01: protobuf extensions, migration 7, upload size enforcement, media IPC with blurhash + video thumbnails; 07-02: inline media components, composer file attachment, adaptive image grid, lightbox; 07-03: network stats dashboard, status bar indicator, channel hover/scroll/launch prefetch |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min), 06-03 (6 min), 06-04 (5 min), 06-05 (1 min), 07-01 (11 min), 07-02 (6 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min), 06-03 (6 min), 06-04 (5 min), 06-05 (1 min), 07-01 (11 min), 07-02 (6 min), 07-03 (8 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -61,6 +61,7 @@ Progress: [█████████░] 90%
 | Phase 06 P05 | 1min | 1 tasks | 3 files |
 | Phase 07 P01 | 11min | 2 tasks | 25 files |
 | Phase 07 P02 | 6min | 2 tasks | 12 files |
+| Phase 07 P03 | 8min | 2 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -203,6 +204,13 @@ Recent decisions affecting current work:
 - [07-02]: Dual placeholder strategy: micro-thumbnail inline, blurhash in lightbox
 - [07-02]: Drag-and-drop zone wraps entire ChatView for larger drop target, files passed via props
 - [07-02]: Grid cells use micro-thumbnails with blur for compact preview; full-res deferred to lightbox
+- [07-03]: Rolling 10s window for upload/download speed calculation (prune old entries on read)
+- [07-03]: 5s push interval for stats from main to renderer (gated on window.isDestroyed check)
+- [07-03]: Status bar off by default, persisted to localStorage (per CONTEXT.md)
+- [07-03]: prefetchedChannels Set prevents redundant fetches within session
+- [07-03]: App launch prefetch reads last-viewed channel from localStorage
+- [07-03]: 70% scroll prefetch uses 2s time-based debounce (not scroll-event count)
+- [07-03]: Module-level flag prevents double execution of app launch prefetch in React Strict Mode
 
 ### Pending Todos
 
@@ -224,5 +232,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 07-02-PLAN.md (media rendering UI)
-Resume file: .planning/phases/07-media-and-prefetching/07-03-PLAN.md
+Stopped at: Completed 07-03-PLAN.md (stats dashboard and prefetching) -- Phase 7 complete
+Resume file: .planning/phases/08-voice-video/08-01-PLAN.md

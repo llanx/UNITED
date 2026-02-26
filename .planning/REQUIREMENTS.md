@@ -59,8 +59,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **P2P-04**: User can configure their local storage buffer size (N GB) for seeding server content to other peers
 - [x] **P2P-05**: Content is managed in priority tiers: P1 own messages (never evict) → P2 hot 24h → P3 warm 2-7 day → P4 altruistic seeding, with 7-day default TTL and LRU eviction
 - [x] **P2P-06**: Coordination server acts as a fallback super-seeder, maintaining an encrypted copy of content for availability when the peer swarm is thin
-- [ ] **P2P-07**: User can see seeding/contribution indicators showing how much they contribute to the swarm (upload/download stats, blocks seeded)
-- [ ] **P2P-08**: App prefetches content predictively: channel list hover begins pulling recent messages, scroll position at 70% prefetches next batch, app launch pre-fetches top active channels
+- [x] **P2P-07**: User can see seeding/contribution indicators showing how much they contribute to the swarm (upload/download stats, blocks seeded)
+- [x] **P2P-08**: App prefetches content predictively: channel list hover begins pulling recent messages, scroll position at 70% prefetches next batch, app launch pre-fetches top active channels
 - [x] **P2P-09**: Requests are sent to multiple peers in parallel (first-responder-wins) for low-latency content fetching
 - [x] **P2P-10**: Message text + thumbnails (<50KB) are inlined with gossip messages for instant rendering; full-res media is deferred and pulled on demand
 
@@ -211,8 +211,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MEDIA-03 | Phase 7: Media and Prefetching | Complete |
 | MEDIA-04 | Phase 7: Media and Prefetching | Complete |
 | P2P-04 | Phase 7: Media and Prefetching | Complete |
-| P2P-07 | Phase 7: Media and Prefetching | Pending |
-| P2P-08 | Phase 7: Media and Prefetching | Pending |
+| P2P-07 | Phase 7: Media and Prefetching | Complete |
+| P2P-08 | Phase 7: Media and Prefetching | Complete |
 | VOICE-01 | Phase 8: Voice Channels | Pending |
 | VOICE-02 | Phase 8: Voice Channels | Pending |
 | VOICE-03 | Phase 8: Voice Channels | Pending |
