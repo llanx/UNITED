@@ -4,6 +4,7 @@ mod channels;
 mod chat;
 mod config;
 mod db;
+mod dm;
 mod identity;
 mod invite;
 mod moderation;
@@ -245,6 +246,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         libp2p_port: p2p_config.libp2p_port,
         presence: Arc::new(DashMap::new()),
     };
+
+    // Spawn DM offline queue cleanup task (runs hourly, purges entries older than 30 days)
+    dm::offline::spawn_offline_cleanup(app_state.db.clone());
 
     // Build router
     let app = routes::build_router(app_state);

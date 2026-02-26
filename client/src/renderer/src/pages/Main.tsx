@@ -1,5 +1,6 @@
 import ServerRail from '../components/ServerRail'
 import ChannelSidebar from '../components/ChannelSidebar'
+import DmConversationList from '../components/DmConversationList'
 import MainContent from '../components/MainContent'
 import WelcomeOverlay from '../components/WelcomeOverlay'
 import ModerationNotice from '../components/ModerationNotice'
@@ -12,11 +13,12 @@ export default function Main() {
 
   const moderationNotice = useStore((s) => s.moderationNotice)
   const serverName = useStore((s) => s.name)
+  const dmView = useStore((s) => s.dmView)
 
   return (
     <div className="flex h-screen w-screen">
       <ServerRail />
-      <ChannelSidebar />
+      {dmView ? <DmConversationList /> : <ChannelSidebar />}
       <MainContent />
 
       {/* Welcome overlay shown on first visit when admin has enabled it */}

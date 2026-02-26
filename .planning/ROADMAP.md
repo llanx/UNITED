@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Server Management** - Channel/category CRUD, roles and permissions, moderation, and invite-based onboarding
 - [x] **Phase 3: P2P Networking** - libp2p mesh with gossipsub, NAT traversal, encrypted transport, and persistent peer connections
 - [x] **Phase 4: Real-Time Chat** - Complete text messaging pipeline with signing, formatting, reactions, presence, and notifications
-- [ ] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators
+- [x] **Phase 5: Direct Messages** - End-to-end encrypted DMs with offline delivery and encryption indicators (completed 2026-02-26)
 - [ ] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback
 - [ ] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching
 - [ ] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
@@ -115,11 +115,13 @@ Plans:
   2. User can receive DMs sent while they were offline, delivered via encrypted blobs stored on the coordination server
   3. User can see DM conversations listed separately from channel messages in a dedicated DM section
   4. User can see encryption indicators in the UI confirming that DMs are end-to-end encrypted and channel messages are signed
-**Plans**: TBD
+**Plans**: 4
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [x] 05-01: Server DM infrastructure — protobuf schemas, migration 5, REST endpoints, offline delivery, targeted WS push
+- [x] 05-02: Client DM data layer — crypto module, IPC handlers, Zustand store, hooks, preload bridge
+- [x] 05-03: DM UI — conversation list, chat view, encryption indicators
+- [ ] 05-04: Gap closure — fix WS DM push events (regenerate protobuf types, rewrite dm-events.ts to use fromBinary)
 
 ### Phase 6: Content Distribution
 **Goal**: Content is stored, replicated, and retrieved through a peer-to-peer block pipeline that makes the server optional for availability while keeping all local data encrypted at rest
@@ -182,7 +184,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
 | 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
-| 5. Direct Messages | 0/2 | Not started | - |
+| 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
 | 6. Content Distribution | 0/3 | Not started | - |
 | 7. Media and Prefetching | 0/3 | Not started | - |
 | 8. Voice Channels | 0/2 | Not started | - |

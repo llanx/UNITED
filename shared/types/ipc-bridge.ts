@@ -228,6 +228,42 @@ export interface NotificationPrefs {
 }
 
 // ============================================================
+// DM types
+// ============================================================
+
+export interface DmConversation {
+  id: string;
+  participantAPubkey: string;
+  participantBPubkey: string;
+  participantADisplayName: string;
+  participantBDisplayName: string;
+  createdAt: number;       // Unix millis
+  lastMessageAt: number;   // Unix millis
+}
+
+export interface DecryptedDmMessage {
+  id: string;
+  conversationId: string;
+  senderPubkey: string;
+  senderDisplayName: string;
+  content: string;         // Decrypted plaintext
+  timestamp: number;       // Unix millis
+  serverSequence: number;
+  decryptionFailed?: boolean;  // True if message couldn't be decrypted
+}
+
+export interface DmEvent {
+  type: 'new' | 'conversation-created' | 'key-rotated';
+  message?: DecryptedDmMessage;
+  conversation?: DmConversation;
+  userPubkey?: string;      // For key-rotated events
+}
+
+export interface DmKeyStatus {
+  available: boolean;
+}
+
+// ============================================================
 // P2P types
 // ============================================================
 
@@ -524,6 +560,32 @@ export interface UnitedAPI {
     closePanel(): void;
   };
 
+  // ---- Direct Messages ----
+
+  /** DM conversation and messaging operations (E2E encrypted) */
+  dm: {
+    /** Publish X25519 public key to server for DM key exchange */
+    publishKey(): Promise<string>;
+    /** List all DM conversations */
+    listConversations(): Promise<DmConversation[]>;
+    /** Create a new DM conversation with a recipient */
+    createConversation(recipientPubkey: string): Promise<DmConversation>;
+    /** Send an encrypted DM message */
+    sendMessage(conversationId: string, recipientPubkey: string, content: string): Promise<DecryptedDmMessage | { error: string; message: string }>;
+    /** Fetch and decrypt DM message history */
+    fetchHistory(conversationId: string, recipientPubkey: string, beforeSeq?: number, limit?: number): Promise<{ messages: DecryptedDmMessage[]; hasMore: boolean }>;
+    /** Fetch and decrypt offline DM messages */
+    fetchOffline(): Promise<Record<string, DecryptedDmMessage[]>>;
+    /** Delete a DM message from local storage only */
+    deleteLocal(conversationId: string, messageId: string): Promise<void>;
+    /** Check if a peer has published an X25519 key */
+    getPeerKeyStatus(peerPubkey: string): Promise<DmKeyStatus>;
+    /** Subscribe to DM push events (returns cleanup function) */
+    onDmEvent(callback: (event: DmEvent) => void): () => void;
+    /** Subscribe to DM key rotation events (returns cleanup function) */
+    onKeyRotated(callback: (userPubkey: string) => void): () => void;
+  };
+
   // ---- Storage ----
 
   /** Local SQLite storage access for cache hydration */
@@ -586,6 +648,18 @@ export interface UnitedAPI {
    * @returns Cleanup function to unsubscribe
    */
   onPresenceEvent(callback: (event: PresenceUpdate) => void): () => void;
+
+  /**
+   * Subscribe to DM events (new message, conversation created, key rotated).
+   * @returns Cleanup function to unsubscribe
+   */
+  onDmEvent(callback: (event: DmEvent) => void): () => void;
+
+  /**
+   * Subscribe to DM key rotation events.
+   * @returns Cleanup function to unsubscribe
+   */
+  onDmKeyRotated(callback: (userPubkey: string) => void): () => void;
 }
 
 // ============================================================

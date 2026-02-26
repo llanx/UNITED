@@ -8,6 +8,7 @@ use crate::auth::challenge;
 use crate::auth::middleware::JwtSecret;
 use crate::auth::totp;
 use crate::chat;
+use crate::dm;
 use crate::identity::{blob, registration, rotation};
 use crate::channels::crud as channel_crud;
 use crate::invite::{generate as invite_gen, landing as invite_landing};
@@ -253,6 +254,26 @@ pub fn build_router(state: AppState) -> Router {
             axum::routing::delete(chat::reactions::remove_reaction),
         );
 
+    // Phase 5: DM routes (key exchange, conversations, messages, offline delivery)
+    let dm_routes = Router::new()
+        .route("/api/dm/keys", axum::routing::post(dm::keys::publish_dm_key))
+        .route("/api/dm/keys/{pubkey}", axum::routing::get(dm::keys::get_dm_key))
+        .route(
+            "/api/dm/conversations",
+            axum::routing::post(dm::conversations::create_conversation)
+                .get(dm::conversations::list_conversations),
+        )
+        .route(
+            "/api/dm/messages",
+            axum::routing::post(dm::messages::send_dm_message),
+        )
+        .route(
+            "/api/dm/messages/{conversation_id}",
+            axum::routing::get(dm::messages::get_dm_messages),
+        )
+        .route("/api/dm/offline", axum::routing::get(dm::offline::get_offline_messages))
+        .route("/api/dm/offline/ack", axum::routing::post(dm::offline::ack_offline_messages));
+
     Router::new()
         .merge(auth_routes)
         .merge(public_identity_routes)
@@ -266,6 +287,7 @@ pub fn build_router(state: AppState) -> Router {
         .merge(invite_landing_routes)
         .merge(chat_routes)
         .merge(presence_routes)
+        .merge(dm_routes)
         .merge(ws_routes)
         .merge(health)
         .layer(middleware::from_fn_with_state(

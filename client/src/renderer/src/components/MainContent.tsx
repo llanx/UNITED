@@ -8,6 +8,7 @@ import MemberList from './MemberList'
 import MemberListSidebar from './MemberListSidebar'
 import DevPanel from './DevPanel'
 import ChatView from './ChatView'
+import DmChatView from './DmChatView'
 import { useState, useEffect } from 'react'
 
 export default function MainContent() {
@@ -18,6 +19,10 @@ export default function MainContent() {
   const isOwner = useStore((s) => s.isOwner)
   const devPanelOpen = useStore((s) => s.devPanelOpen)
   const toggleDevPanel = useStore((s) => s.toggleDevPanel)
+
+  // DM state
+  const dmView = useStore((s) => s.dmView)
+  const activeDmConversationId = useStore((s) => s.activeDmConversationId)
 
   // Member list sidebar visibility (default: visible when channel selected)
   const [memberListVisible, setMemberListVisible] = useState(true)
@@ -64,6 +69,38 @@ export default function MainContent() {
 
   // Determine which panel content to render
   const renderPanel = () => {
+    // DM View: full-width DM chat or empty state
+    if (dmView) {
+      if (activeDmConversationId) {
+        return <DmChatView />
+      }
+
+      // No conversation selected: DM welcome state
+      return (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-[var(--color-bg-primary)] p-8">
+          <svg
+            width="64"
+            height="64"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-[var(--color-text-muted)]"
+          >
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+          </svg>
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+            Direct Messages
+          </h2>
+          <p className="max-w-sm text-center text-sm text-[var(--color-text-muted)]">
+            Select a conversation or click a user&apos;s name to start a new DM.
+          </p>
+        </div>
+      )
+    }
+
     // Server Settings panel (admin only)
     if (activePanel === 'settings' && isOwner) {
       return <ServerSettings />
@@ -126,7 +163,7 @@ export default function MainContent() {
           </span>
         </div>
 
-        {/* Content area — welcome message + TOTP enrollment */}
+        {/* Content area -- welcome message + TOTP enrollment */}
         <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8">
           {name && <ServerIcon name={name} size={80} />}
           <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">

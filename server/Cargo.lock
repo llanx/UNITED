@@ -4600,6 +4600,7 @@ dependencies = [
  "argon2",
  "axum",
  "base32",
+ "base64",
  "bitflags 2.11.0",
  "chrono",
  "clap",

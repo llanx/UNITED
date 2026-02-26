@@ -11,6 +11,7 @@ import "invite.proto";
 import "p2p.proto";
 import "chat.proto";
 import "presence.proto";
+import "dm.proto";
 
 // WebSocket envelope: all WS messages are wrapped in this type
 // Both client->server and server->client use the same envelope format
@@ -29,6 +30,7 @@ import "presence.proto";
 //   100-109: Overflow from Phase 2
 //   110-119: P2P networking (Phase 3)
 //   120-149: Real-Time Chat (Phase 4)
+//   150-169: Direct Messages (Phase 5)
 
 message Envelope {
   // Client-generated request ID, echoed in response for correlation
@@ -121,6 +123,16 @@ message Envelope {
     united.presence.TypingEvent typing_event = 126;
     united.chat.FetchHistoryRequest fetch_history_request = 130;
     united.chat.FetchHistoryResponse fetch_history_response = 131;
+
+    // --- Phase 5: Direct Messages (150-169) ---
+    united.dm.DmMessageEvent dm_message_event = 150;
+    united.dm.DmConversationCreatedEvent dm_conversation_created_event = 151;
+    united.dm.DmKeyRotatedEvent dm_key_rotated_event = 152;
+    united.dm.DmHistoryRequest dm_history_request = 153;
+    united.dm.DmHistoryResponse dm_history_response = 154;
+    united.dm.DmConversationListRequest dm_conversation_list_request = 155;
+    united.dm.DmConversationListResponse dm_conversation_list_response = 156;
+    united.dm.DmOfflineMessagesResponse dm_offline_messages_response = 157;
   }
 }
 

@@ -10,6 +10,7 @@ import { createP2PSlice, type P2PSlice } from './p2p'
 import { createMessagesSlice, type MessagesSlice } from './messages'
 import { createPresenceSlice, type PresenceSlice } from './presence'
 import { createNotificationsSlice, type NotificationsSlice } from './notifications'
+import { createDmSlice, type DmSlice } from './dm'
 
 export type RootStore =
   AuthSlice &
@@ -22,7 +23,8 @@ export type RootStore =
   P2PSlice &
   MessagesSlice &
   PresenceSlice &
-  NotificationsSlice
+  NotificationsSlice &
+  DmSlice
 
 export const useStore = create<RootStore>()((...a) => ({
   ...createAuthSlice(...a),
@@ -36,6 +38,7 @@ export const useStore = create<RootStore>()((...a) => ({
   ...createMessagesSlice(...a),
   ...createPresenceSlice(...a),
   ...createNotificationsSlice(...a),
+  ...createDmSlice(...a),
 }))
 
 /**
@@ -63,9 +66,10 @@ export async function hydrate(): Promise<void> {
       displayName: activeServer.displayName,
     })
 
-    const [activeChannelId, welcomeDismissed] = await Promise.all([
+    const [activeChannelId, welcomeDismissed, dmBannerDismissed] = await Promise.all([
       storage.getCachedState<string>('active_channel_id'),
       storage.getCachedState<Record<string, boolean>>('welcome_dismissed'),
+      storage.getCachedState<boolean>('dm_banner_dismissed'),
     ])
 
     if (activeChannelId) {
@@ -74,6 +78,10 @@ export async function hydrate(): Promise<void> {
 
     if (welcomeDismissed) {
       useStore.setState({ welcomeDismissed })
+    }
+
+    if (dmBannerDismissed) {
+      useStore.setState({ dmEncryptionBannerDismissed: true })
     }
   }
 }

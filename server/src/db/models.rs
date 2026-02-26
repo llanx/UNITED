@@ -171,3 +171,49 @@ pub struct LastRead {
     pub last_sequence: i64,
     pub updated_at: String,
 }
+
+// --- Phase 5: Direct Messages ---
+
+/// X25519 public key for DM key exchange
+#[derive(Debug, Clone)]
+pub struct DmPublicKey {
+    pub ed25519_pubkey: String,
+    pub x25519_pubkey: Vec<u8>,
+    pub published_at: String,
+    pub updated_at: String,
+}
+
+/// DM conversation between two users (one-to-one only in v1)
+#[derive(Debug, Clone)]
+pub struct DmConversation {
+    pub id: String,
+    pub participant_a: String,
+    pub participant_b: String,
+    pub created_at: String,
+    pub last_message_at: Option<String>,
+}
+
+/// Encrypted DM message (server stores as opaque blob)
+#[derive(Debug, Clone)]
+pub struct DmMessage {
+    pub id: String,
+    pub conversation_id: String,
+    pub sender_pubkey: String,
+    pub encrypted_payload: Vec<u8>,
+    pub nonce: Vec<u8>,
+    pub ephemeral_pubkey: Option<Vec<u8>>,
+    pub timestamp: i64,
+    pub server_sequence: i64,
+    pub sender_display_name: Option<String>,
+    pub created_at: String,
+}
+
+/// Offline delivery queue entry
+#[derive(Debug, Clone)]
+pub struct DmOfflineQueueEntry {
+    pub id: i64,
+    pub recipient_pubkey: String,
+    pub dm_message_id: String,
+    pub queued_at: String,
+    pub delivered: bool,
+}
