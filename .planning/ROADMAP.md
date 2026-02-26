@@ -95,12 +95,14 @@ Plans:
   3. User can format messages with markdown, react with emoji, and @mention users or roles — and recipients see these rendered correctly
   4. User can see who is online/offline/away, see typing indicators in the current channel, and see unread indicators on channels with new messages
   5. User receives desktop notifications for @mentions and can see other users' profiles (name, avatar, status) in the message list
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
-- [ ] 04-03: TBD
+- [ ] 04-01: Server chat infrastructure — proto schemas, DB migration, REST endpoints, WS broadcast (Wave 1, server)
+- [ ] 04-02: Client data layer — npm deps, IPC handlers, Zustand stores, WS event forwarding (Wave 1, client)
+- [ ] 04-03: Core chat UI — virtualized message list, markdown rendering, composer, hover toolbar (Wave 2, full-stack)
+- [ ] 04-04: Presence and member list — server presence tracking, member sidebar, profile popups (Wave 2, full-stack)
+- [ ] 04-05: Rich features — emoji reactions, @mention autocomplete, unread badges, desktop notifications (Wave 3, client)
 
 ### Phase 5: Direct Messages
 **Goal**: Users can have private one-on-one conversations where only the participants can read the messages, even if the coordination server is compromised
@@ -177,7 +179,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 1. Foundation | 6/6 | Complete | 2026-02-24 |
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
 | 3. P2P Networking | 1/3 | In progress | - |
-| 4. Real-Time Chat | 0/3 | Not started | - |
+| 4. Real-Time Chat | 0/5 | Not started | - |
 | 5. Direct Messages | 0/2 | Not started | - |
 | 6. Content Distribution | 0/3 | Not started | - |
 | 7. Media and Prefetching | 0/3 | Not started | - |
