@@ -8,6 +8,7 @@ import "channels.proto";
 import "roles.proto";
 import "moderation.proto";
 import "invite.proto";
+import "p2p.proto";
 
 // WebSocket envelope: all WS messages are wrapped in this type
 // Both client->server and server->client use the same envelope format
@@ -23,6 +24,8 @@ import "invite.proto";
 //   70-79: Moderation - kick/ban (Phase 2)
 //   80-89: Invites and join (Phase 2)
 //   99:    Errors
+//   100-109: Overflow from Phase 2
+//   110-119: P2P networking (Phase 3)
 
 message Envelope {
   // Client-generated request ID, echoed in response for correlation
@@ -98,6 +101,12 @@ message Envelope {
 
     // Errors
     ErrorResponse error = 99;
+
+    // --- Phase 3: P2P networking (110-119) ---
+    united.p2p.PeerDirectoryRequest peer_directory_request = 110;
+    united.p2p.PeerDirectoryResponse peer_directory_response = 111;
+    united.p2p.RegisterPeerIdRequest register_peer_id_request = 112;
+    united.p2p.RegisterPeerIdResponse register_peer_id_response = 113;
   }
 }
 

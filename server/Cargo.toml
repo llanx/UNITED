@@ -33,6 +33,11 @@ bitflags = "2"
 dashmap = "6"
 sha2 = "0.10"
 hex = "0.4"
+libp2p = { version = "0.56", features = [
+    "gossipsub", "relay", "autonat", "noise", "identify",
+    "dcutr", "websocket", "tokio", "yamux", "tcp", "dns", "ping",
+    "macros"
+] }
 base32 = "0.5"
 hostname = "0.4"
 futures-util = "0.3"

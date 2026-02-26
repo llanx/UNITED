@@ -9,6 +9,7 @@ fn main() -> Result<()> {
         "../shared/proto/roles.proto",
         "../shared/proto/moderation.proto",
         "../shared/proto/invite.proto",
+        "../shared/proto/p2p.proto",
         "../shared/proto/ws.proto",
     ];
 

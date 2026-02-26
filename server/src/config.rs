@@ -5,6 +5,8 @@ use figment::{
 };
 use serde::{Deserialize, Serialize};
 
+use crate::p2p::config::P2pConfig;
+
 /// UNITED coordination server
 #[derive(Parser, Serialize, Deserialize, Clone, Debug)]
 #[command(name = "united-server", version, about = "UNITED coordination server")]
@@ -36,6 +38,15 @@ pub struct Config {
     /// Registration mode: "open" or "invite-only"
     #[arg(long, env = "UNITED_REGISTRATION_MODE", default_value = "open")]
     pub registration_mode: String,
+
+    /// P2P networking configuration (loaded from [p2p] section in TOML)
+    #[arg(skip)]
+    #[serde(default = "default_p2p_config")]
+    pub p2p: Option<P2pConfig>,
+}
+
+fn default_p2p_config() -> Option<P2pConfig> {
+    Some(P2pConfig::default())
 }
 
 impl Default for Config {
@@ -48,6 +59,7 @@ impl Default for Config {
             generate_config: false,
             data_dir: "./data".to_string(),
             registration_mode: "open".to_string(),
+            p2p: Some(P2pConfig::default()),
         }
     }
 }
@@ -91,6 +103,24 @@ pub fn generate_config_template() -> String {
 # Default: open (anyone can register)
 # Admin can change at runtime via API
 # registration_mode = "open"
+
+# ---- P2P Networking ----
+# [p2p]
+
+# libp2p WebSocket listener port (separate from HTTP port)
+# libp2p_port = 1985
+
+# Gossipsub mesh parameters (tuned for chat workloads)
+# gossipsub_mesh_n = 4          # D: mesh degree (peers per topic)
+# gossipsub_mesh_n_low = 3      # D_lo: triggers mesh repair below this
+# gossipsub_mesh_n_high = 8     # D_hi: prunes mesh above this
+# gossipsub_max_transmit_size = 65536  # Max message size in bytes (64 KiB)
+
+# Circuit Relay v2 limits (tuned for chat — defaults are too restrictive)
+# relay_max_circuits = 64                # Max concurrent relay circuits
+# relay_max_circuits_per_peer = 8        # Max circuits per peer
+# relay_max_circuit_duration_secs = 1800 # 30 minutes per circuit
+# relay_max_circuit_bytes = 10485760     # 10 MB per circuit
 "#
     .to_string()
 }

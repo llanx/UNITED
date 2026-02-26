@@ -34,6 +34,7 @@ async fn start_test_server() -> (String, String, SocketAddr) {
 
     let connections = united_server::ws::new_connection_registry();
 
+    let (swarm_cmd_tx, _swarm_cmd_rx) = tokio::sync::mpsc::unbounded_channel();
     let state = united_server::state::AppState {
         db,
         challenges: Arc::new(dashmap::DashMap::new()),
@@ -41,6 +42,10 @@ async fn start_test_server() -> (String, String, SocketAddr) {
         encryption_key,
         connections,
         registration_mode: "open".to_string(),
+        swarm_cmd_tx,
+        peer_directory: Arc::new(united_server::p2p::PeerDirectory::new()),
+        server_peer_id: "test-peer-id".to_string(),
+        libp2p_port: 0,
     };
 
     let app = united_server::routes::build_router(state);
