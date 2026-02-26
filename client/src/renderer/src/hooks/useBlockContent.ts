@@ -91,7 +91,7 @@ export function useBlockContent(hash: string | null): UseBlockContentResult {
 
     // Resolve block via IPC
     let cancelled = false
-    window.united.blocks.getBlock(hash).then((result) => {
+    window.united.blocks.resolveBlock(hash).then((result) => {
       if (cancelled || activeHashRef.current !== hash) return
 
       if (result) {
@@ -100,7 +100,7 @@ export function useBlockContent(hash: string | null): UseBlockContentResult {
         setStatus('loaded')
         setProgress('cache') // Reset progress on success
       } else {
-        // Block not found locally -- wait for timeout transitions
+        // Block not found via cascade -- wait for timeout transitions
         // The unavailable timeout will eventually set error state
       }
     }).catch(() => {
