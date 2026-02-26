@@ -115,12 +115,13 @@ Plans:
   2. User can receive DMs sent while they were offline, delivered via encrypted blobs stored on the coordination server
   3. User can see DM conversations listed separately from channel messages in a dedicated DM section
   4. User can see encryption indicators in the UI confirming that DMs are end-to-end encrypted and channel messages are signed
-**Plans**: 3
+**Plans**: 4
 
 Plans:
 - [x] 05-01: Server DM infrastructure — protobuf schemas, migration 5, REST endpoints, offline delivery, targeted WS push
 - [x] 05-02: Client DM data layer — crypto module, IPC handlers, Zustand store, hooks, preload bridge
-- [ ] 05-03: DM UI — conversation list, chat view, encryption indicators
+- [x] 05-03: DM UI — conversation list, chat view, encryption indicators
+- [ ] 05-04: Gap closure — fix WS DM push events (regenerate protobuf types, rewrite dm-events.ts to use fromBinary)
 
 ### Phase 6: Content Distribution
 **Goal**: Content is stored, replicated, and retrieved through a peer-to-peer block pipeline that makes the server optional for availability while keeping all local data encrypted at rest
@@ -183,7 +184,7 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
 | 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
-| 5. Direct Messages | 2/3 | In Progress | - |
+| 5. Direct Messages | 3/4 | In Progress | - |
 | 6. Content Distribution | 0/3 | Not started | - |
 | 7. Media and Prefetching | 0/3 | Not started | - |
 | 8. Voice Channels | 0/2 | Not started | - |
