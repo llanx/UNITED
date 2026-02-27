@@ -218,7 +218,8 @@ pub fn build_router(state: AppState) -> Router {
     let invite_routes = Router::new()
         .route("/api/invites", axum::routing::post(invite_gen::create_invite))
         .route("/api/invites", axum::routing::get(invite_gen::list_invites))
-        .route("/api/invites/{code}", axum::routing::delete(invite_gen::delete_invite));
+        .route("/api/invites/{code}", axum::routing::get(invite_gen::get_invite)
+            .delete(invite_gen::delete_invite));
     // Public invite landing page (no auth required)
     let invite_landing_routes = Router::new()
         .route("/invite/{code}", axum::routing::get(invite_landing::invite_landing_page));
