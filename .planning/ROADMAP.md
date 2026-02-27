@@ -23,6 +23,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 9: Milestone Gap Closure** - Fix integration breaks (invite validation, voice identity), verify Electron security (SEC-08), and clean up traceability
 - [x] **Phase 10: Fix Media Attachment Wiring** - Parse block_refs in REST history and WS live paths so media attachments render in messages
 - [x] **Phase 11: Phase 1 Formal Verification** - Create missing Phase 1 VERIFICATION.md for 6 orphaned requirements (SEC-01, SEC-02, SEC-09, SEC-10, SEC-11, SRVR-07)
+- [ ] **Phase 12: Wire Client Connection Lifecycle** - Wire WS connection into auth flows (returning + new user) and mount usePresence() so all real-time features activate at startup
 
 ## Phase Details
 
@@ -224,12 +225,26 @@ Plans:
 Plans:
 - [x] 11-01-PLAN.md — Audit Phase 1 implementations and create VERIFICATION.md (Wave 1, docs)
 
+### Phase 12: Wire Client Connection Lifecycle
+**Goal:** All real-time features (chat, DMs, voice, presence, P2P mesh) activate automatically after user authentication — both returning-user and new-user flows connect WS at startup
+**Depends on**: Phase 1
+**Requirements:** MSG-01 (fix), MSG-04 (fix), MSG-05 (fix), MSG-06 (fix), MSG-09 (fix), DM-01 (fix), VOICE-01 (fix), VOICE-02 (fix), VOICE-03 (fix), P2P-02 (fix), APP-03 (fix), SEC-02 (fix)
+**Gap Closure:** Closes integration and flow gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. Returning user unlocks identity and the app automatically authenticates to the server via challenge-response and connects WebSocket
+  2. New user registers via invite and the app automatically connects WebSocket after receiving JWT
+  3. Presence updates from the server are received and displayed in the member list sidebar
+  4. All WS-dependent features (chat delivery, DM push, voice signaling, typing indicators, P2P auto-start) function at runtime
+
+Plans:
+- [ ] 12-01-PLAN.md — Wire auth + WS into both user flows, mount usePresence(), clean up dead code (Wave 1, client)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12
 
-Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phases 9-11 are gap closure from milestone audits.
+Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phases 9-12 are gap closure from milestone audits.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -244,3 +259,4 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phases 9-11 are gap closu
 | 9. Milestone Gap Closure | 4/4 | Complete | 2026-02-27 |
 | 10. Fix Media Attachment Wiring | 1/1 | Complete    | 2026-02-27 |
 | 11. Phase 1 Formal Verification | 1/1 | Complete    | 2026-02-27 |
+| 12. Wire Client Connection Lifecycle | 0/1 | Planned | — |
