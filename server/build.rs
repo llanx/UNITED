@@ -14,6 +14,7 @@ fn main() -> Result<()> {
         "../shared/proto/presence.proto",
         "../shared/proto/dm.proto",
         "../shared/proto/blocks.proto",
+        "../shared/proto/voice.proto",
         "../shared/proto/ws.proto",
     ];
 

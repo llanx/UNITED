@@ -1,0 +1,47 @@
+# UNITED Docker Compose — Coordination Server + TURN Relay
+#
+# Setup:
+#   1. Copy turnserver.conf and set a random `static-auth-secret`
+#   2. Set the same secret in united.toml under [turn] shared_secret
+#   3. Set [turn] host to your server's public IP or domain
+#   4. Set [turn] enabled = true
+#   5. Run: docker-compose up
+#
+# The coturn sidecar provides STUN/TURN for voice channel NAT traversal.
+# ~20-30% of WebRTC connections require TURN relay to work.
+
+version: '3.8'
+
+services:
+  united-server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "1984:1984"   # HTTP + WebSocket
+      - "1985:1985"   # libp2p WebSocket
+    volumes:
+      - united-data:/data
+      - ./united.toml:/etc/united/united.toml:ro
+    environment:
+      - UNITED_DATA_DIR=/data
+      - UNITED_PORT=1984
+      - UNITED_CONFIG=/etc/united/united.toml
+    restart: unless-stopped
+    depends_on:
+      - coturn
+
+  coturn:
+    image: coturn/coturn:4.8
+    ports:
+      - "3478:3478/udp"    # STUN/TURN UDP
+      - "3478:3478/tcp"    # STUN/TURN TCP
+      - "5349:5349/tcp"    # TURN TLS
+      - "49152-49252:49152-49252/udp"  # Relay ports
+    volumes:
+      - ./turnserver.conf:/etc/turnserver.conf:ro
+    command: ["-c", "/etc/turnserver.conf"]
+    restart: unless-stopped
+
+volumes:
+  united-data:

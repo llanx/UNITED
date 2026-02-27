@@ -16,6 +16,7 @@ use crate::invite::{generate as invite_gen, landing as invite_landing};
 use crate::moderation::{ban, kick};
 use crate::roles::{assignment as role_assignment, crud as role_crud};
 use crate::state::AppState;
+use crate::voice;
 use crate::ws::handler as ws_handler;
 
 /// GET /api/p2p/info — Public endpoint returning the server's P2P connection info.
@@ -290,6 +291,13 @@ pub fn build_router(state: AppState) -> Router {
         )
         .route("/api/blocks/{hash}", axum::routing::get(block_routes::get_block_route));
 
+    // Phase 8: Voice channel participant endpoint (REST for state hydration on reconnect)
+    let voice_routes = Router::new()
+        .route(
+            "/api/voice/{channel_id}/participants",
+            axum::routing::get(get_voice_participants),
+        );
+
     Router::new()
         .merge(auth_routes)
         .merge(public_identity_routes)
@@ -305,6 +313,7 @@ pub fn build_router(state: AppState) -> Router {
         .merge(presence_routes)
         .merge(dm_routes)
         .merge(block_storage_routes)
+        .merge(voice_routes)
         .merge(ws_routes)
         .merge(health)
         .layer(middleware::from_fn_with_state(
@@ -312,6 +321,28 @@ pub fn build_router(state: AppState) -> Router {
             inject_jwt_secret,
         ))
         .with_state(state)
+}
+
+/// GET /api/voice/{channel_id}/participants — Return current voice channel participants.
+/// Simple read from in-memory voice state. Useful for UI state hydration on reconnect.
+async fn get_voice_participants(
+    axum::extract::State(state): axum::extract::State<AppState>,
+    axum::extract::Path(channel_id): axum::extract::Path<String>,
+) -> Json<Vec<serde_json::Value>> {
+    let participants = state.voice_state.get_participants(&channel_id);
+    let result: Vec<serde_json::Value> = participants
+        .into_iter()
+        .map(|p| {
+            serde_json::json!({
+                "user_id": p.user_id,
+                "display_name": p.display_name,
+                "pubkey": p.pubkey,
+                "muted": p.muted,
+                "deafened": p.deafened,
+            })
+        })
+        .collect();
+    Json(result)
 }
 
 /// Basic health check endpoint

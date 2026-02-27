@@ -10,8 +10,10 @@ import DevPanel from './DevPanel'
 import ChatView from './ChatView'
 import DmChatView from './DmChatView'
 import NetworkStatsPanel from './NetworkStats'
+import VoiceSettings from './VoiceSettings'
 import StatusBarIndicator from './StatusBarIndicator'
 import { useNetworkStats } from '../hooks/useNetworkStats'
+import { useVoice } from '../hooks/useVoice'
 import { useState, useEffect } from 'react'
 
 export default function MainContent() {
@@ -25,6 +27,9 @@ export default function MainContent() {
 
   // Subscribe to network stats push events
   useNetworkStats()
+
+  // Initialize voice channel lifecycle (persists across navigation)
+  useVoice()
 
   // DM state
   const dmView = useStore((s) => s.dmView)
@@ -120,6 +125,11 @@ export default function MainContent() {
     // Role Management panel (admin only)
     if (activePanel === 'role-management' && isOwner) {
       return <RoleManagement />
+    }
+
+    // Voice Settings panel
+    if (activePanel === 'voice-settings') {
+      return <VoiceSettings />
     }
 
     // Network Stats panel

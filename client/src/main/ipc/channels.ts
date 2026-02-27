@@ -126,6 +126,19 @@ export const IPC = {
   STATS_GET_NETWORK: 'stats:get-network',
   STATS_GET_STORAGE: 'stats:get-storage',
 
+  // Voice
+  VOICE_JOIN: 'voice:join',
+  VOICE_LEAVE: 'voice:leave',
+  VOICE_SEND_SDP_OFFER: 'voice:send-sdp-offer',
+  VOICE_SEND_SDP_ANSWER: 'voice:send-sdp-answer',
+  VOICE_SEND_ICE_CANDIDATE: 'voice:send-ice-candidate',
+  VOICE_SEND_STATE_UPDATE: 'voice:send-state-update',
+  VOICE_SEND_SPEAKING: 'voice:send-speaking',
+  VOICE_SET_PTT_KEY: 'voice:set-ptt-key',
+  VOICE_GET_PTT_KEY: 'voice:get-ptt-key',
+  VOICE_CHECK_MIC_PERMISSION: 'voice:check-mic-permission',
+  VOICE_SET_MODE: 'voice:set-mode',
+
   // Push events (main -> renderer)
   PUSH_CONNECTION_STATUS: 'connection:status',
   PUSH_AUTH_ERROR: 'auth:error',
@@ -142,4 +155,6 @@ export const IPC = {
   PUSH_DM_KEY_ROTATED: 'dm:key-rotated',
   PUSH_UPLOAD_PROGRESS: 'media:upload-progress',
   PUSH_NETWORK_STATS: 'stats:network-push',
+  PUSH_VOICE_EVENT: 'voice:event',
+  PUSH_PTT_STATE: 'voice:ptt-state',
 } as const

@@ -4,6 +4,7 @@ import { useChannels } from '../hooks/useChannels'
 import { useRoles } from '../hooks/useRoles'
 import ConnectionDot from './ConnectionDot'
 import ChannelList from './ChannelList'
+import VoiceBar from './VoiceBar'
 import SkeletonShimmer from './SkeletonShimmer'
 
 export default function ChannelSidebar() {
@@ -238,6 +239,21 @@ export default function ChannelSidebar() {
               </svg>
               Members
             </button>
+            <button
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[var(--color-text-muted)] transition-colors hover:bg-white/5 hover:text-[var(--color-text-primary)]"
+              onClick={() => {
+                useStore.setState({ activePanel: 'voice-settings' })
+                setDropdownOpen(false)
+              }}
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M19 10v2a7 7 0 01-14 0v-2" />
+              </svg>
+              Voice Settings
+            </button>
           </div>
         )}
       </div>
@@ -406,6 +422,9 @@ export default function ChannelSidebar() {
           />
         )}
       </div>
+
+      {/* Voice bar (shown when connected to voice channel) */}
+      <VoiceBar />
 
       {/* Footer with connection status and display name */}
       <div className="flex h-[52px] items-center justify-between border-t border-white/5 px-3">

@@ -11,6 +11,7 @@
 //   united.chat       -> proto::united::chat
 //   united.presence   -> proto::united::presence
 //   united.dm         -> proto::united::dm
+//   united.voice      -> proto::united::voice
 //   united.ws         -> proto::united::ws
 
 pub mod united {
@@ -62,6 +63,10 @@ pub mod united {
         include!(concat!(env!("OUT_DIR"), "/united.blocks.rs"));
     }
 
+    pub mod voice {
+        include!(concat!(env!("OUT_DIR"), "/united.voice.rs"));
+    }
+
     pub mod ws {
         include!(concat!(env!("OUT_DIR"), "/united.ws.rs"));
     }
@@ -78,6 +83,7 @@ pub use united::p2p as p2p_proto;
 pub use united::presence;
 pub use united::blocks;
 pub use united::dm;
+pub use united::voice as voice_proto;
 pub use united::roles;
 pub use united::server;
 pub use united::ws;

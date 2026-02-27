@@ -3,6 +3,19 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
+last_updated: "2026-02-26T23:38:38.333Z"
+progress:
+  total_phases: 8
+  completed_phases: 8
+  total_plans: 39
+  completed_plans: 39
+---
+
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: unknown
 last_updated: "2026-02-26T21:47:57.372Z"
 progress:
   total_phases: 7
@@ -31,23 +44,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 7: Media and Prefetching (complete). Ready for Phase 8.
+**Current focus:** Phase 8: Voice Channels (in progress).
 
 ## Current Position
 
-Phase: 7 of 8 (Media and Prefetching)
+Phase: 8 of 8 (Voice Channels)
 Plan: 3 of 3 in current phase
-Status: Phase 7 complete
-Last activity: 2026-02-26 -- Completed 07-03-PLAN.md (stats dashboard and prefetching)
+Status: Phase 8 complete -- all plans executed
+Last activity: 2026-02-26 -- Completed 08-03-PLAN.md (voice UI and Docker)
 
-Progress: [█████████░] 95%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 30
+- Total plans completed: 32
 - Average duration (GSD-tracked): 10 min
-- Total execution time (GSD-tracked): 3.77 hours
+- Total execution time (GSD-tracked): 4.00 hours
 
 **By Phase:**
 
@@ -60,9 +73,10 @@ Progress: [█████████░] 95%
 | 05-direct-messages | 4/4 | 27 min | 7 min | 05-01: DM protobuf schemas, migration 5, 8 REST endpoints (keys, conversations, messages, offline), WS targeted push, background cleanup; 05-02: DM crypto module, IPC handlers, Zustand store, hooks, preload bridge; 05-03: DM UI (conversation list, chat view, composer, encryption indicators, server rail DM icon, profile popup Message button); 05-04: gap closure (DM WS protobuf decoding fix) |
 | 06-content-distribution | 5/5 | 32 min | 6 min | 06-01: server block store, REST endpoints, WS events; 06-02: client block store, encryption, IPC; 06-03: block protocol, 5-layer cache cascade; 06-04: inline content UI, storage settings; 06-05: resolveBlock bridge wiring (gap closure) |
 | 07-media-and-prefetching | 3/3 | 25 min | 8 min | 07-01: protobuf extensions, migration 7, upload size enforcement, media IPC with blurhash + video thumbnails; 07-02: inline media components, composer file attachment, adaptive image grid, lightbox; 07-03: network stats dashboard, status bar indicator, channel hover/scroll/launch prefetch |
+| 08-voice-channels | 3/3 | 22 min | 7 min | 08-01: voice protobuf schemas, server voice module (state, signaling, TURN), migration 8, WS dispatch, REST endpoint; 08-02: client voice engine (WebRTC, Web Audio, PTT, Zustand, IPC); 08-03: voice UI (VoiceBar, VoiceParticipant, VoiceSettings), sidebar integration, docker-compose with coturn |
 
 **Recent Trend:**
-- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min), 06-03 (6 min), 06-04 (5 min), 06-05 (1 min), 07-01 (11 min), 07-02 (6 min), 07-03 (8 min)
+- GSD-tracked plans: 01-01 (19 min), 01-02 (16 min), 01-03 (45 min), 02-01 (5 min), 02-05 (6 min), 02-06 (7 min), 02-07 (9 min), 02-08 (5 min), 03-01 (23 min), 03-02 (17 min), 03-03 (5 min), 03-04 (1 min), 04-01 (11 min), 04-02 (13 min), 04-03 (6 min), 04-04 (20 min), 04-05 (11 min), 04-06 (4 min), 05-01 (10 min), 05-02 (8 min), 05-03 (6 min), 05-04 (3 min), 06-01 (12 min), 06-02 (8 min), 06-03 (6 min), 06-04 (5 min), 06-05 (1 min), 07-01 (11 min), 07-02 (6 min), 07-03 (8 min), 08-01 (8 min), 08-02 (8 min), 08-03 (6 min)
 - Client plans (01-04, 01-05, 01-06): executed outside GSD by benzybones
 
 *Updated after each plan completion*
@@ -75,6 +89,9 @@ Progress: [█████████░] 95%
 | Phase 07 P01 | 11min | 2 tasks | 25 files |
 | Phase 07 P02 | 6min | 2 tasks | 12 files |
 | Phase 07 P03 | 8min | 2 tasks | 17 files |
+| Phase 08 P01 | 8min | 2 tasks | 17 files |
+| Phase 08 P02 | 8min | 2 tasks | 14 files |
+| Phase 08 P03 | 6min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -224,6 +241,27 @@ Recent decisions affecting current work:
 - [07-03]: App launch prefetch reads last-viewed channel from localStorage
 - [07-03]: 70% scroll prefetch uses 2s time-based debounce (not scroll-event count)
 - [07-03]: Module-level flag prevents double execution of app launch prefetch in React Strict Mode
+- [08-01]: Voice state uses DashMap (consistent with challenges, presence patterns)
+- [08-01]: TURN credentials use HMAC-SHA1 with timestamp:username (standard coturn shared secret mechanism)
+- [08-01]: Auto-disconnect from previous voice channel on join (per CONTEXT.md)
+- [08-01]: Server removes user from voice immediately on WS close (15s timeout is client-side)
+- [08-01]: SDP/ICE relay adds sender_user_id field so target knows who sent it
+- [08-01]: WS Envelope voice fields allocated at 180-189 (Phase 8 range 180-199)
+- [08-01]: max_participants nullable INTEGER on channels (NULL for text, app-enforced default 8 for voice)
+- [08-02]: Lexicographic user_id comparison for WebRTC offer/answer role prevents duplicate connections
+- [08-02]: ICE candidates queued per peer until setRemoteDescription succeeds (Pitfall 3 race condition)
+- [08-02]: Opus max bitrate 40kbps via sender.setParameters after connection established
+- [08-02]: Default PTT key: backtick/grave (UiohookKey.Backquote) -- common PTT default
+- [08-02]: Voice settings persisted to localStorage (mode, sensitivity, devices, volumes)
+- [08-02]: Deafen implies mute; unmuting also undeafens (per CONTEXT.md)
+- [08-02]: Voice WS messages encoded as protobuf binary via create() + toBinary() in main process IPC
+- [08-03]: Voice channel click calls joinVoiceChannel without changing activeChannelId (text and voice independent)
+- [08-03]: VoiceBar positioned between channel list and footer in ChannelSidebar (Discord-style persistent bar)
+- [08-03]: Speaking glow: CSS box-shadow 0 0 0 2px #43b581, 0 0 8px #43b581 with 150ms transition
+- [08-03]: Per-user volume via right-click context menu with 0-200% range slider
+- [08-03]: Voice Settings accessible to all users (not admin-gated) via server dropdown menu
+- [08-03]: coturn relay port range 49152-49252 (narrow for Docker port mapping)
+- [08-03]: docker-compose.yml ships united-server and coturn as sidecar services
 
 ### Pending Todos
 
@@ -245,5 +283,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 07-03-PLAN.md (stats dashboard and prefetching) -- Phase 7 complete
-Resume file: .planning/phases/08-voice-video/08-01-PLAN.md
+Stopped at: Completed 08-03-PLAN.md (voice UI and Docker) -- Phase 8 complete, all 8 phases done
+Resume file: N/A -- v1 milestone complete
