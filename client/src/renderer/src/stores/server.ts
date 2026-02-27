@@ -8,6 +8,7 @@ export interface ModerationNotice {
 
 export interface ServerSlice {
   serverId: string | null
+  localUserId: string | null
   name: string | null
   description: string | null
   registrationMode: string | null
@@ -28,6 +29,7 @@ export interface ServerSlice {
 
 export const createServerSlice: StateCreator<RootStore, [], [], ServerSlice> = (set, get) => ({
   serverId: null,
+  localUserId: null,
   name: null,
   description: null,
   registrationMode: null,

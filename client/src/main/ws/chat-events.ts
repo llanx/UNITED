@@ -42,7 +42,21 @@ export function setupChatEventListener(): void {
               reply_to_id: msg.replyToId ?? null,
               reply_to_preview: null,
               edited_at: null,
-              reactions: []
+              reactions: [],
+              block_refs: msg.blockRefs.length > 0
+                ? msg.blockRefs.map(br => ({
+                    hash: br.hash,
+                    size: Number(br.size),
+                    mimeType: br.mimeType,
+                    width: br.width,
+                    height: br.height,
+                    microThumbnail: br.microThumbnail.length > 0
+                      ? Buffer.from(br.microThumbnail).toString('base64')
+                      : undefined,
+                    blurhash: br.blurhash || undefined,
+                    filename: br.filename,
+                  }))
+                : undefined,
             }
           }
 

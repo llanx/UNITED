@@ -8,8 +8,10 @@ use axum::{
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
+use base64::Engine as _;
 use crate::auth::middleware::Claims;
 use crate::chat::broadcast;
+use crate::proto::blocks as proto_blocks;
 use crate::proto::chat as proto_chat;
 use crate::state::AppState;
 
@@ -184,7 +186,7 @@ pub async fn create_message(
             edited: false,
             mention_user_ids,
             mention_role_ids,
-            block_refs: vec![], // Block refs are carried as JSON in REST responses, not as proto in WS
+            block_refs: parse_block_refs_json(&block_refs_json),
         };
 
         let response = MessageResponse {
@@ -545,4 +547,39 @@ fn parse_role_mentions(content: &str) -> Vec<String> {
         }
     }
     mentions
+}
+
+/// Parse block_refs_json (camelCase JSON from TypeScript BlockRefData[]) into
+/// protobuf BlockRef structs for WS broadcast. Returns empty vec on None or
+/// malformed JSON (graceful degradation).
+fn parse_block_refs_json(json: &Option<String>) -> Vec<proto_blocks::BlockRef> {
+    let Some(json_str) = json else { return vec![] };
+    let Ok(values) = serde_json::from_str::<Vec<serde_json::Value>>(json_str) else {
+        return vec![];
+    };
+    values
+        .iter()
+        .filter_map(|r| {
+            Some(proto_blocks::BlockRef {
+                hash: r.get("hash")?.as_str()?.to_string(),
+                size: r.get("size")?.as_u64().unwrap_or(0),
+                mime_type: r.get("mimeType")?.as_str()?.to_string(),
+                width: r.get("width")?.as_u64().unwrap_or(0) as u32,
+                height: r.get("height")?.as_u64().unwrap_or(0) as u32,
+                micro_thumbnail: r
+                    .get("microThumbnail")
+                    .and_then(|v| v.as_str())
+                    .and_then(|s| {
+                        base64::engine::general_purpose::STANDARD.decode(s).ok()
+                    })
+                    .unwrap_or_default(),
+                filename: r.get("filename")?.as_str()?.to_string(),
+                blurhash: r
+                    .get("blurhash")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+            })
+        })
+        .collect()
 }

@@ -68,6 +68,7 @@ export async function hydrate(): Promise<void> {
   if (activeServer) {
     useStore.setState({
       serverId: activeServer.id,
+      localUserId: activeServer.user_id ?? null,
       serverUrl: activeServer.url,
       name: activeServer.name,
       description: activeServer.description,

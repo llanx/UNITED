@@ -20,6 +20,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback (completed 2026-02-26)
 - [x] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching (completed 2026-02-26)
 - [x] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
+- [x] **Phase 9: Milestone Gap Closure** - Fix integration breaks (invite validation, voice identity), verify Electron security (SEC-08), and clean up traceability
+- [x] **Phase 10: Fix Media Attachment Wiring** - Parse block_refs in REST history and WS live paths so media attachments render in messages
+- [x] **Phase 11: Phase 1 Formal Verification** - Create missing Phase 1 VERIFICATION.md for 6 orphaned requirements (SEC-01, SEC-02, SEC-09, SEC-10, SEC-11, SRVR-07)
+- [ ] **Phase 12: Wire Client Connection Lifecycle** - Wire WS connection into auth flows (returning + new user) and mount usePresence() so all real-time features activate at startup
 
 ## Phase Details
 
@@ -121,7 +125,7 @@ Plans:
 - [x] 05-01: Server DM infrastructure — protobuf schemas, migration 5, REST endpoints, offline delivery, targeted WS push
 - [x] 05-02: Client DM data layer — crypto module, IPC handlers, Zustand store, hooks, preload bridge
 - [x] 05-03: DM UI — conversation list, chat view, encryption indicators
-- [ ] 05-04: Gap closure — fix WS DM push events (regenerate protobuf types, rewrite dm-events.ts to use fromBinary)
+- [x] 05-04: Gap closure — fix WS DM push events (regenerate protobuf types, rewrite dm-events.ts to use fromBinary)
 
 ### Phase 6: Content Distribution
 **Goal**: Content is stored, replicated, and retrieved through a peer-to-peer block pipeline that makes the server optional for availability while keeping all local data encrypted at rest
@@ -136,11 +140,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Server block store: protobuf schemas, migration 6, HKDF crypto, REST endpoints, retention purge
-- [ ] 06-02-PLAN.md — Client block store: types, crypto, file store, L0 cache, tiers, eviction, IPC bridge
-- [ ] 06-03-PLAN.md — Block exchange protocol and 5-layer cache cascade with parallel peer fetch
-- [ ] 06-04-PLAN.md — Gossip inline/deferred content, micro-thumbnails, content loading UI, storage settings
-- [ ] 06-05-PLAN.md — Gap closure: wire resolveBlock cascade to renderer via preload bridge
+- [x] 06-01-PLAN.md — Server block store: protobuf schemas, migration 6, HKDF crypto, REST endpoints, retention purge
+- [x] 06-02-PLAN.md — Client block store: types, crypto, file store, L0 cache, tiers, eviction, IPC bridge
+- [x] 06-03-PLAN.md — Block exchange protocol and 5-layer cache cascade with parallel peer fetch
+- [x] 06-04-PLAN.md — Gossip inline/deferred content, micro-thumbnails, content loading UI, storage settings
+- [x] 06-05-PLAN.md — Gap closure: wire resolveBlock cascade to renderer via preload bridge
 
 ### Phase 7: Media and Prefetching
 **Goal**: Users can share and view rich media seamlessly, with the P2P distribution invisible behind fast loading and predictive prefetching
@@ -154,9 +158,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Upload infrastructure: protobuf extensions, server migration, blurhash encoding, video thumbnails, blocking send with progress (Wave 1)
-- [ ] 07-02-PLAN.md — Media rendering UI: inline images/videos, adaptive grid, lightbox, composer attachments, drag-drop/paste (Wave 2, depends on 07-01)
-- [ ] 07-03-PLAN.md — Seeding stats dashboard and predictive prefetching: channel hover, scroll position, app launch (Wave 2, depends on 07-01)
+- [x] 07-01-PLAN.md — Upload infrastructure: protobuf extensions, server migration, blurhash encoding, video thumbnails, blocking send with progress (Wave 1)
+- [x] 07-02-PLAN.md — Media rendering UI: inline images/videos, adaptive grid, lightbox, composer attachments, drag-drop/paste (Wave 2, depends on 07-01)
+- [x] 07-03-PLAN.md — Seeding stats dashboard and predictive prefetching: channel hover, scroll position, app launch (Wave 2, depends on 07-01)
 
 ### Phase 8: Voice Channels
 **Goal**: Users can join voice channels and talk to each other with peer-to-peer audio that feels as responsive as centralized alternatives
@@ -174,12 +178,73 @@ Plans:
 - [x] 08-02: Client voice engine — WebRTC VoiceManager, AudioPipeline, PTT via uiohook-napi, Zustand VoiceSlice, IPC bridge (Wave 2, depends on 08-01)
 - [x] 08-03: Voice UI and deployment — VoiceBar, sidebar participants with speaking indicators, VoiceSettings, docker-compose with coturn (Wave 3, depends on 08-02)
 
+### Phase 9: Milestone Gap Closure
+**Goal**: Close all gaps identified by the v1.0 milestone audit — fix integration breaks, verify Electron security hardening, and update stale traceability
+**Depends on**: Phase 8
+**Requirements**: SEC-08, APP-01, SRVR-09 (fix), VOICE-01 (fix), VOICE-03 (fix)
+**Gap Closure:** Closes gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. User can enter an invite code, see it validated as valid, and join the server successfully (invite route fixed)
+  2. Voice channel correctly identifies the local user — self-participant is excluded from WebRTC peer connections and speaking detection shows the right user
+  3. Electron renderer runs with strict CSP enforced, contextIsolation enabled, and nodeIntegration disabled (verified, not just assumed)
+  4. Channel switches are instant DOM swaps with no full page reload (verified as architectural truth of React SPA)
+  5. REQUIREMENTS.md traceability table has no stale entries — SEC-12 reflects Phase 2 Complete
+**Plans**: 4 plans (1 wave, all independent)
+
+Plans:
+- [x] 09-01-PLAN.md — Fix invite validation: add GET /api/invites/{code} server handler (Wave 1, full-stack)
+- [x] 09-02-PLAN.md — Fix voice localUserId: add localUserId to store, use user DB UUID in useVoice.ts (Wave 1, client)
+- [x] 09-03-PLAN.md — Verify SEC-08: audit Electron security config, add comment, mark REQUIREMENTS.md complete (Wave 1, client + docs)
+- [x] 09-04-PLAN.md — Verify APP-01: confirm SPA behavior, mark REQUIREMENTS.md complete (Wave 1, docs)
+
+### Phase 10: Fix Media Attachment Wiring
+**Goal:** Media attachments render correctly in channel messages — both from history (REST) and live delivery (WebSocket)
+**Depends on**: Phase 7
+**Requirements:** MEDIA-01 (fix), MEDIA-02 (fix), MEDIA-03 (fix), MEDIA-04 (fix)
+**Gap Closure:** Closes integration and flow gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. Messages loaded from REST history have `block_refs` populated as a typed `BlockRefData[]` array (not a raw JSON string)
+  2. Messages received via WebSocket live delivery have `block_refs` populated from the protobuf `repeated BlockRef` field
+  3. InlineImage, InlineVideo, ImageGrid, and AttachmentCard components render media when `block_refs` data is present
+
+**Plans:** 1/1 plans complete
+
+Plans:
+- [x] 10-01-PLAN.md — Fix block_refs wiring: server WS broadcast, client REST history, and client WS event handler (Wave 1, full-stack)
+
+### Phase 11: Phase 1 Formal Verification
+**Goal:** Create Phase 1 VERIFICATION.md to formally verify 6 orphaned requirements that have implementations but no phase-level verification evidence
+**Depends on**: Phase 1
+**Requirements:** SEC-01, SEC-02, SEC-09, SEC-10, SEC-11, SRVR-07
+**Gap Closure:** Closes orphaned requirement gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. Phase 1 VERIFICATION.md exists with evidence for all 6 requirements
+  2. Each requirement has code-level evidence (file paths, line numbers) confirming implementation
+  3. All 56 v1 requirements have formal verification evidence in at least one VERIFICATION.md
+
+Plans:
+- [x] 11-01-PLAN.md — Audit Phase 1 implementations and create VERIFICATION.md (Wave 1, docs)
+
+### Phase 12: Wire Client Connection Lifecycle
+**Goal:** All real-time features (chat, DMs, voice, presence, P2P mesh) activate automatically after user authentication — both returning-user and new-user flows connect WS at startup
+**Depends on**: Phase 1
+**Requirements:** MSG-01 (fix), MSG-04 (fix), MSG-05 (fix), MSG-06 (fix), MSG-09 (fix), DM-01 (fix), VOICE-01 (fix), VOICE-02 (fix), VOICE-03 (fix), P2P-02 (fix), APP-03 (fix), SEC-02 (fix)
+**Gap Closure:** Closes integration and flow gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. Returning user unlocks identity and the app automatically authenticates to the server via challenge-response and connects WebSocket
+  2. New user registers via invite and the app automatically connects WebSocket after receiving JWT
+  3. Presence updates from the server are received and displayed in the member list sidebar
+  4. All WS-dependent features (chat delivery, DM push, voice signaling, typing indicators, P2P auto-start) function at runtime
+
+Plans:
+- [ ] 12-01-PLAN.md — Wire auth + WS into both user flows, mount usePresence(), clean up dead code (Wave 1, client)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12
 
-Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in parallel with Phases 5-7 if desired, but is sequenced last because voice is architecturally independent and benefits from a stable platform.
+Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phases 9-12 are gap closure from milestone audits.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -187,7 +252,11 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
 | 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
-| 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
-| 6. Content Distribution | 4/4 | Complete   | 2026-02-26 |
-| 7. Media and Prefetching | 2/3 | Complete    | 2026-02-26 |
+| 5. Direct Messages | 4/4 | Complete | 2026-02-26 |
+| 6. Content Distribution | 5/5 | Complete | 2026-02-26 |
+| 7. Media and Prefetching | 3/3 | Complete | 2026-02-26 |
 | 8. Voice Channels | 3/3 | Complete | 2026-02-26 |
+| 9. Milestone Gap Closure | 4/4 | Complete | 2026-02-27 |
+| 10. Fix Media Attachment Wiring | 1/1 | Complete    | 2026-02-27 |
+| 11. Phase 1 Formal Verification | 1/1 | Complete    | 2026-02-27 |
+| 12. Wire Client Connection Lifecycle | 0/1 | Planned | — |

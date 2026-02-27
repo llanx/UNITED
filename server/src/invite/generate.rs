@@ -139,6 +139,72 @@ pub async fn list_invites(
     Ok(Json(InviteListResponse { invites }))
 }
 
+/// GET /api/invites/{code} — Validate an invite code (public, no auth required).
+/// Returns invite metadata for valid codes, 404 for not found, 410 for expired/exhausted.
+pub async fn get_invite(
+    State(state): State<AppState>,
+    Path(code): Path<String>,
+) -> Result<Json<serde_json::Value>, (StatusCode, String)> {
+    let db = state.db.clone();
+
+    let result = tokio::task::spawn_blocking(move || {
+        let conn = db
+            .lock()
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "DB lock".to_string()))?;
+
+        let invite = conn
+            .query_row(
+                "SELECT code, expires_at, max_uses, use_count FROM invites WHERE code = ?1",
+                [&code],
+                |row| {
+                    Ok((
+                        row.get::<_, String>(0)?,
+                        row.get::<_, Option<String>>(1)?,
+                        row.get::<_, Option<i64>>(2)?,
+                        row.get::<_, i64>(3)?,
+                    ))
+                },
+            )
+            .map_err(|_| (StatusCode::NOT_FOUND, "Invite not found".to_string()))?;
+
+        let (_code, expires_at, max_uses, use_count) = invite;
+
+        // Check expiry
+        if let Some(ref exp) = expires_at {
+            if !exp.is_empty() {
+                let now = Utc::now().to_rfc3339();
+                if *exp < now {
+                    return Err((StatusCode::GONE, "Invite expired".to_string()));
+                }
+            }
+        }
+
+        // Check exhaustion
+        let max = max_uses.unwrap_or(0);
+        if max > 0 && use_count >= max {
+            return Err((StatusCode::GONE, "Invite exhausted".to_string()));
+        }
+
+        // Fetch server name
+        let server_name: String = conn
+            .query_row(
+                "SELECT value FROM settings WHERE key = 'server_name'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap_or_default();
+
+        Ok(serde_json::json!({
+            "valid": true,
+            "server_name": server_name
+        }))
+    })
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Task join: {}", e)))??;
+
+    Ok(Json(result))
+}
+
 /// DELETE /api/invites/{code} — Delete an invite (requires ADMIN).
 pub async fn delete_invite(
     State(state): State<AppState>,
