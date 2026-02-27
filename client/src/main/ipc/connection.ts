@@ -168,6 +168,14 @@ export function registerConnectionHandlers(ipcMain: IpcMain): void {
     }
   })
 
+  // Connect WebSocket using stored tokens
+  ipcMain.handle(IPC.CONNECT_WS, async (): Promise<void> => {
+    const url = getServerUrl()
+    const token = getAccessToken()
+    if (!url || !token) throw new Error('Not connected or not authenticated')
+    connectWebSocket(url, token)
+  })
+
   // Connect to server: fetch info, optionally authenticate
   ipcMain.handle(IPC.AUTH_CONNECT, async (_event, url: string): Promise<ConnectResult> => {
     // Normalize URL (remove trailing slash)

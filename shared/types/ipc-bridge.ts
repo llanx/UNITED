@@ -468,6 +468,12 @@ export interface UnitedAPI {
   connectToServer(url: string): Promise<ConnectResult>;
 
   /**
+   * Establish WebSocket connection using stored JWT tokens.
+   * Must be called after register() or challenge-response auth completes.
+   */
+  connectWs(): Promise<void>;
+
+  /**
    * Register identity on the connected server.
    * Sends public key + display name + encrypted blob.
    * @param displayName - Server-local display name (unique per server)

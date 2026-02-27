@@ -45,6 +45,9 @@ const api: UnitedAPI = {
   connectToServer: (url: string) =>
     ipcRenderer.invoke(IPC.AUTH_CONNECT, url),
 
+  connectWs: () =>
+    ipcRenderer.invoke(IPC.CONNECT_WS),
+
   register: (displayName: string, setupToken?: string) =>
     ipcRenderer.invoke(IPC.AUTH_REGISTER, displayName, setupToken),
 
