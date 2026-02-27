@@ -236,8 +236,11 @@ Plans:
   3. Presence updates from the server are received and displayed in the member list sidebar
   4. All WS-dependent features (chat delivery, DM push, voice signaling, typing indicators, P2P auto-start) function at runtime
 
+**Plans:** 2 plans
+
 Plans:
-- [ ] 12-01-PLAN.md — Wire auth + WS into both user flows, mount usePresence(), clean up dead code (Wave 1, client)
+- [ ] 12-01-PLAN.md — Wire challenge-response auth into returning-user flow, add IPC handlers for auth + WS connect, tweak backoff (Wave 1, client)
+- [ ] 12-02-PLAN.md — Mount usePresence, trigger WS on /app mount, connection banner, disable composers, remove dead code (Wave 2, client)
 
 ## Progress
 
@@ -259,4 +262,4 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phases 9-12 are gap closu
 | 9. Milestone Gap Closure | 4/4 | Complete | 2026-02-27 |
 | 10. Fix Media Attachment Wiring | 1/1 | Complete    | 2026-02-27 |
 | 11. Phase 1 Formal Verification | 1/1 | Complete    | 2026-02-27 |
-| 12. Wire Client Connection Lifecycle | 0/1 | Planned | — |
+| 12. Wire Client Connection Lifecycle | 0/2 | Planned | — |
