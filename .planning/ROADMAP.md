@@ -21,6 +21,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching (completed 2026-02-26)
 - [x] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
 - [x] **Phase 9: Milestone Gap Closure** - Fix integration breaks (invite validation, voice identity), verify Electron security (SEC-08), and clean up traceability
+- [ ] **Phase 10: Fix Media Attachment Wiring** - Parse block_refs in REST history and WS live paths so media attachments render in messages
+- [ ] **Phase 11: Phase 1 Formal Verification** - Create missing Phase 1 VERIFICATION.md for 6 orphaned requirements (SEC-01, SEC-02, SEC-09, SEC-10, SEC-11, SRVR-07)
 
 ## Phase Details
 
@@ -194,12 +196,38 @@ Plans:
 - [x] 09-03-PLAN.md — Verify SEC-08: audit Electron security config, add comment, mark REQUIREMENTS.md complete (Wave 1, client + docs)
 - [x] 09-04-PLAN.md — Verify APP-01: confirm SPA behavior, mark REQUIREMENTS.md complete (Wave 1, docs)
 
+### Phase 10: Fix Media Attachment Wiring
+**Goal:** Media attachments render correctly in channel messages — both from history (REST) and live delivery (WebSocket)
+**Depends on**: Phase 7
+**Requirements:** MEDIA-01 (fix), MEDIA-02 (fix), MEDIA-03 (fix), MEDIA-04 (fix)
+**Gap Closure:** Closes integration and flow gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. Messages loaded from REST history have `block_refs` populated as a typed `BlockRefData[]` array (not a raw JSON string)
+  2. Messages received via WebSocket live delivery have `block_refs` populated from the protobuf `repeated BlockRef` field
+  3. InlineImage, InlineVideo, ImageGrid, and AttachmentCard components render media when `block_refs` data is present
+
+Plans:
+- [ ] 10-01-PLAN.md — Fix block_refs parsing in REST history IPC handler and WS chat-events handler (Wave 1, client)
+
+### Phase 11: Phase 1 Formal Verification
+**Goal:** Create Phase 1 VERIFICATION.md to formally verify 6 orphaned requirements that have implementations but no phase-level verification evidence
+**Depends on**: Phase 1
+**Requirements:** SEC-01, SEC-02, SEC-09, SEC-10, SEC-11, SRVR-07
+**Gap Closure:** Closes orphaned requirement gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. Phase 1 VERIFICATION.md exists with evidence for all 6 requirements
+  2. Each requirement has code-level evidence (file paths, line numbers) confirming implementation
+  3. All 56 v1 requirements have formal verification evidence in at least one VERIFICATION.md
+
+Plans:
+- [ ] 11-01-PLAN.md — Audit Phase 1 implementations and create VERIFICATION.md (Wave 1, docs)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11
 
-Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phase 9 is gap closure from milestone audit.
+Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phases 9-11 are gap closure from milestone audits.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -212,3 +240,5 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phase 9 is gap closure fr
 | 7. Media and Prefetching | 3/3 | Complete | 2026-02-26 |
 | 8. Voice Channels | 3/3 | Complete | 2026-02-26 |
 | 9. Milestone Gap Closure | 4/4 | Complete | 2026-02-27 |
+| 10. Fix Media Attachment Wiring | 0/1 | Pending | — |
+| 11. Phase 1 Formal Verification | 0/1 | Pending | — |
