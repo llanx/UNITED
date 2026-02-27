@@ -13,6 +13,7 @@ export const IPC = {
   AUTH_CONNECT: 'auth:connect',
   AUTH_REGISTER: 'auth:register',
   AUTH_SIGN_CHALLENGE: 'auth:sign-challenge',
+  CONNECT_WS: 'connection:connect-ws',
 
   // TOTP
   TOTP_ENROLL: 'totp:enroll',

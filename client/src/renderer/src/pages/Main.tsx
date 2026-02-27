@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import ServerRail from '../components/ServerRail'
 import ChannelSidebar from '../components/ChannelSidebar'
 import DmConversationList from '../components/DmConversationList'
@@ -10,6 +11,13 @@ import { useStore } from '../stores'
 export default function Main() {
   // Initialize connection status listener and auth error handling
   useConnection()
+
+  // Establish WebSocket connection when Main mounts
+  useEffect(() => {
+    window.united.connectWs().catch((err) => {
+      console.error('[WS] Connection failed:', err)
+    })
+  }, [])
 
   const moderationNotice = useStore((s) => s.moderationNotice)
   const serverName = useStore((s) => s.name)
