@@ -44,14 +44,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 8: Voice Channels (in progress).
+**Current focus:** Phase 9: Milestone Gap Closure (in progress).
 
 ## Current Position
 
-Phase: 8 of 8 (Voice Channels)
-Plan: 3 of 3 in current phase
-Status: Phase 8 complete -- all plans executed
-Last activity: 2026-02-26 -- Completed 08-03-PLAN.md (voice UI and Docker)
+Phase: 9 of 9 (Milestone Gap Closure)
+Plan: 2 of 4 in current phase
+Status: Executing gap closure plans
+Last activity: 2026-02-27 -- Completed 09-02-PLAN.md (voice localUserId bug fix)
 
 Progress: [██████████] 100%
 
@@ -92,6 +92,9 @@ Progress: [██████████] 100%
 | Phase 08 P01 | 8min | 2 tasks | 17 files |
 | Phase 08 P02 | 8min | 2 tasks | 14 files |
 | Phase 08 P03 | 6min | 2 tasks | 10 files |
+| Phase 09 P01 | 1 | 2 tasks | 2 files |
+| Phase 09 P03 | 2 | 2 tasks | 2 files |
+| Phase 09 P02 | 1 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -262,6 +265,10 @@ Recent decisions affecting current work:
 - [08-03]: Voice Settings accessible to all users (not admin-gated) via server dropdown menu
 - [08-03]: coturn relay port range 49152-49252 (narrow for Docker port mapping)
 - [08-03]: docker-compose.yml ships united-server and coturn as sidecar services
+- [Phase 09]: get_invite uses no Claims extractor -- public endpoint for unauthenticated joiners
+- [Phase 09]: 410 GONE for expired/exhausted invites (distinct from 404 NOT FOUND)
+- [Phase 09]: localUserId hydrated from activeServer.user_id for correct voice identity (not serverId)
+- [Phase 09]: Existing CSP directives are correct and complete -- SEC-08 closed with documentation only
 
 ### Pending Todos
 
@@ -282,6 +289,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-26
-Stopped at: Completed 08-03-PLAN.md (voice UI and Docker) -- Phase 8 complete, all 8 phases done
-Resume file: N/A -- v1 milestone complete
+Last session: 2026-02-27
+Stopped at: Completed 09-02-PLAN.md (voice localUserId bug fix)
+Resume file: .planning/phases/09-milestone-gap-closure/09-03-PLAN.md
