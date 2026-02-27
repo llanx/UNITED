@@ -49,6 +49,8 @@ async fn start_test_server() -> (String, String, SocketAddr) {
         block_retention_days: None,
         block_cleanup_interval_secs: None,
         max_upload_size_mb: None,
+        voice_state: Arc::new(united_server::voice::state::VoiceState::new()),
+        turn_config: None,
     };
 
     let app = united_server::routes::build_router(state);
