@@ -206,7 +206,7 @@ Plans:
   2. Messages received via WebSocket live delivery have `block_refs` populated from the protobuf `repeated BlockRef` field
   3. InlineImage, InlineVideo, ImageGrid, and AttachmentCard components render media when `block_refs` data is present
 
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 - [x] 10-01-PLAN.md — Fix block_refs wiring: server WS broadcast, client REST history, and client WS event handler (Wave 1, full-stack)
@@ -242,5 +242,5 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phases 9-11 are gap closu
 | 7. Media and Prefetching | 3/3 | Complete | 2026-02-26 |
 | 8. Voice Channels | 3/3 | Complete | 2026-02-26 |
 | 9. Milestone Gap Closure | 4/4 | Complete | 2026-02-27 |
-| 10. Fix Media Attachment Wiring | 1/1 | Complete | 2026-02-27 |
+| 10. Fix Media Attachment Wiring | 1/1 | Complete    | 2026-02-27 |
 | 11. Phase 1 Formal Verification | 0/1 | Pending | — |
