@@ -20,9 +20,29 @@ export default function Welcome() {
       const result = await window.united.unlockIdentity(passphrase)
       useStore.getState().setUnlocked(result.fingerprint, result.publicKey)
 
-      // Check for active server — if exists, go to main; otherwise join server
+      // Check for active server — if exists, authenticate and go to main
       const activeServer = await window.united.storage.getActiveServer()
       if (activeServer) {
+        // Challenge-response auth to get JWT before navigation (CONTEXT.md decision)
+        try {
+          await window.united.authenticateToServer(activeServer.url)
+        } catch (authErr) {
+          // Auth failed — show error but stay on Welcome screen
+          setError(authErr instanceof Error ? authErr.message : 'Server authentication failed')
+          setUnlocking(false)
+          return
+        }
+
+        // Populate Zustand store with server context so Main.tsx has data on mount
+        useStore.setState({
+          serverId: activeServer.id,
+          serverUrl: activeServer.url,
+          name: activeServer.name,
+          description: activeServer.description,
+          registrationMode: activeServer.registrationMode,
+          displayName: activeServer.displayName,
+        })
+
         navigate('/app')
       } else {
         navigate('/join-server')

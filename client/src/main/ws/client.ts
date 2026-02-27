@@ -131,7 +131,16 @@ export class WsClient extends EventEmitter {
     }
 
     this.setStatus('reconnecting')
-    const delay = calculateReconnectDelay(this.attempt, this.config)
+
+    // Immediate first retry (0ms), then exponential backoff
+    // Schedule: immediate -> 1s -> 2s -> 4s -> 8s -> 16s -> 30s cap
+    if (this.attempt === 0) {
+      this.attempt++
+      setTimeout(() => this.doConnect(), 0)
+      return
+    }
+
+    const delay = calculateReconnectDelay(this.attempt - 1, this.config)
     this.attempt++
     this.reconnectTimer = setTimeout(() => this.doConnect(), delay)
   }

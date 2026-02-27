@@ -10,6 +10,7 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { useStore } from '../stores'
 import { useDmKeyStatus } from '../hooks/useDm'
 import EncryptionIndicator from './EncryptionIndicator'
 
@@ -34,6 +35,10 @@ export default function DmComposer({
   const [content, setContent] = useState('')
   const [sending, setSending] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Connection status awareness — disable input when WS is disconnected
+  const status = useStore((s) => s.status)
+  const isDisconnected = status !== 'connected'
 
   const { keyAvailable, loading: keyLoading } = useDmKeyStatus(recipientPubkey)
 
@@ -94,7 +99,7 @@ export default function DmComposer({
 
   const handleSend = useCallback(async () => {
     const trimmed = content.trim()
-    if (!trimmed || sending || !keyAvailable) return
+    if (!trimmed || sending || !keyAvailable || isDisconnected) return
 
     setSending(true)
     try {
@@ -110,7 +115,7 @@ export default function DmComposer({
     } finally {
       setSending(false)
     }
-  }, [content, sending, keyAvailable, onSend, onMessageSent])
+  }, [content, sending, keyAvailable, isDisconnected, onSend, onMessageSent])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -122,7 +127,7 @@ export default function DmComposer({
     [handleSend]
   )
 
-  const isDisabled = !keyAvailable || keyLoading
+  const isDisabled = !keyAvailable || keyLoading || isDisconnected
 
   return (
     <div className="relative shrink-0 border-t border-white/5 px-4 py-3">
@@ -138,9 +143,11 @@ export default function DmComposer({
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={
-            isDisabled
-              ? `Waiting for encryption keys from ${recipientDisplayName}`
-              : `Message ${recipientDisplayName}`
+            isDisconnected
+              ? 'Reconnecting...'
+              : isDisabled
+                ? `Waiting for encryption keys from ${recipientDisplayName}`
+                : `Message ${recipientDisplayName}`
           }
           className={`w-full resize-none rounded-lg border border-white/10 bg-[var(--color-bg-tertiary)] py-3 pl-8 pr-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-white/20 ${
             isDisabled ? 'cursor-not-allowed opacity-50' : ''

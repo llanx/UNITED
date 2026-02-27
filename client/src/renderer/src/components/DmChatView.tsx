@@ -24,6 +24,7 @@ import { useStore } from '../stores'
 import { useDm } from '../hooks/useDm'
 import DmMessageRow from './DmMessageRow'
 import DmComposer from './DmComposer'
+import ConnectionBanner from './ConnectionBanner'
 import EncryptionBanner from './EncryptionBanner'
 import EncryptionIndicator from './EncryptionIndicator'
 import KeyRotationNotice from './KeyRotationNotice'
@@ -405,6 +406,9 @@ export default function DmChatView() {
           </button>
         )}
       </div>
+
+      {/* Connection status banner (shown when WS disconnected >500ms) */}
+      <ConnectionBanner />
 
       {/* Message composer */}
       <DmComposer

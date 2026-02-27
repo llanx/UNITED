@@ -45,7 +45,7 @@ export function setServerUrl(url: string): void {
   currentServerUrl = url
 }
 
-function storeTokens(accessToken: string, refreshToken: string): void {
+export function storeTokens(accessToken: string, refreshToken: string): void {
   currentAccessToken = accessToken
   currentRefreshToken = refreshToken
 }
