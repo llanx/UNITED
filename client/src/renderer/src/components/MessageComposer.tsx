@@ -15,6 +15,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { ChatMessage, FileAttachment, UploadProgress as UploadProgressType } from '@shared/ipc-bridge'
+import { useStore } from '../stores'
 import MentionAutocomplete, { type MentionItem } from './MentionAutocomplete'
 import FilePreview from './FilePreview'
 import UploadProgress from './UploadProgress'
@@ -49,6 +50,10 @@ export default function MessageComposer({
   const [content, setContent] = useState('')
   const [sending, setSending] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Connection status awareness — disable input when WS is disconnected
+  const status = useStore((s) => s.status)
+  const isDisconnected = status !== 'connected'
 
   // File attachment state
   const [stagedFiles, setStagedFiles] = useState<FileAttachment[]>([])
@@ -118,8 +123,8 @@ export default function MessageComposer({
     const hasFiles = stagedFiles.length > 0
     const hasText = trimmed.length > 0
 
-    // Need either text or files to send
-    if ((!hasText && !hasFiles) || sending || uploading) return
+    // Need either text or files to send; block when disconnected
+    if ((!hasText && !hasFiles) || sending || uploading || isDisconnected) return
 
     setSending(true)
     setMentionActive(false)
@@ -166,7 +171,7 @@ export default function MessageComposer({
     } finally {
       setSending(false)
     }
-  }, [content, channelId, replyTo, sending, uploading, stagedFiles, onCancelReply, onMessageSent])
+  }, [content, channelId, replyTo, sending, uploading, isDisconnected, stagedFiles, onCancelReply, onMessageSent])
 
   // ============================================================
   // File attachment handlers
@@ -371,7 +376,7 @@ export default function MessageComposer({
     [handleSend, replyTo, onCancelReply, mentionActive]
   )
 
-  const isDisabled = sending || uploading
+  const isDisabled = sending || uploading || isDisconnected
 
   return (
     <div
@@ -485,8 +490,8 @@ export default function MessageComposer({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          placeholder={`Message #${channelName}`}
-          className="w-full resize-none rounded-lg border border-white/10 bg-[var(--color-bg-tertiary)] p-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-white/20"
+          placeholder={isDisconnected ? 'Reconnecting...' : `Message #${channelName}`}
+          className={`w-full resize-none rounded-lg border border-white/10 bg-[var(--color-bg-tertiary)] p-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-white/20${isDisconnected ? ' opacity-50 cursor-not-allowed' : ''}`}
           style={{
             minHeight: `${MIN_HEIGHT}px`,
             maxHeight: `${MAX_HEIGHT}px`,
