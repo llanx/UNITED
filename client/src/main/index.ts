@@ -61,7 +61,9 @@ function handleDeepLink(url: string): void {
   }
 }
 
-// CSP must match the meta tag in renderer/index.html
+// SEC-08: Strict CSP enforcement for Electron renderer security.
+// Directives verified: no unsafe-eval, no unsafe-inline scripts, no external origins.
+// contextIsolation + nodeIntegration:false + sandbox enforced in webPreferences below.
 const CSP = [
   "default-src 'self'",
   "script-src 'self'",
