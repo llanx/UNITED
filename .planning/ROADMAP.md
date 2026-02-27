@@ -206,8 +206,10 @@ Plans:
   2. Messages received via WebSocket live delivery have `block_refs` populated from the protobuf `repeated BlockRef` field
   3. InlineImage, InlineVideo, ImageGrid, and AttachmentCard components render media when `block_refs` data is present
 
+**Plans:** 1 plan
+
 Plans:
-- [ ] 10-01-PLAN.md — Fix block_refs parsing in REST history IPC handler and WS chat-events handler (Wave 1, client)
+- [ ] 10-01-PLAN.md — Fix block_refs wiring: server WS broadcast, client REST history, and client WS event handler (Wave 1, full-stack)
 
 ### Phase 11: Phase 1 Formal Verification
 **Goal:** Create Phase 1 VERIFICATION.md to formally verify 6 orphaned requirements that have implementations but no phase-level verification evidence
