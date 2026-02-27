@@ -9,19 +9,19 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Text Messaging
 
-- [ ] **MSG-01**: User can send and receive text messages in channels with real-time delivery via gossip propagation (<100ms to connected peers)
+- [x] **MSG-01**: User can send and receive text messages in channels with real-time delivery via gossip propagation (<100ms to connected peers)
 - [x] **MSG-02**: User can view message history by scrolling back, fetching older messages from peers or server fallback
 - [x] **MSG-03**: User can format messages with markdown (bold, italic, code blocks, lists, quotes)
-- [ ] **MSG-04**: User can react to messages with standard Unicode emoji
-- [ ] **MSG-05**: User can see typing indicators when another user is composing a message in the current channel
-- [ ] **MSG-06**: User can see online/offline/away status for other users
+- [x] **MSG-04**: User can react to messages with standard Unicode emoji
+- [x] **MSG-05**: User can see typing indicators when another user is composing a message in the current channel
+- [x] **MSG-06**: User can see online/offline/away status for other users
 - [x] **MSG-07**: User can see unread indicators showing which channels have new messages since last visit
 - [x] **MSG-08**: User can @mention specific users or roles to trigger notifications
-- [ ] **MSG-09**: User receives desktop notifications for mentions and DM messages
+- [x] **MSG-09**: User receives desktop notifications for mentions and DM messages
 
 ### Direct Messages
 
-- [ ] **DM-01**: User can send and receive end-to-end encrypted direct messages (X25519 key exchange, only participants hold decryption keys)
+- [x] **DM-01**: User can send and receive end-to-end encrypted direct messages (X25519 key exchange, only participants hold decryption keys)
 - [x] **DM-02**: User can receive DMs while offline via encrypted blobs stored on the coordination server for later delivery
 - [x] **DM-03**: User can see DM conversations listed separately from channel messages
 
@@ -34,9 +34,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Voice
 
-- [ ] **VOICE-01**: User can join voice channels and communicate with other users via WebRTC peer-to-peer audio (2-8 simultaneous participants)
-- [ ] **VOICE-02**: User can mute their microphone and deafen all incoming audio
-- [ ] **VOICE-03**: User can see a visual indicator showing which user is currently speaking
+- [x] **VOICE-01**: User can join voice channels and communicate with other users via WebRTC peer-to-peer audio (2-8 simultaneous participants)
+- [x] **VOICE-02**: User can mute their microphone and deafen all incoming audio
+- [x] **VOICE-03**: User can see a visual indicator showing which user is currently speaking
 - [x] **VOICE-04**: User can use push-to-talk as an alternative to voice activity detection
 
 ### Server Management
@@ -54,7 +54,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### P2P Distribution
 
 - [x] **P2P-01**: All content is stored as content-addressed blocks (SHA-256 hashed, fixed-size chunks for media)
-- [ ] **P2P-02**: New messages are propagated to channel peers via libp2p gossipsub protocol
+- [x] **P2P-02**: New messages are propagated to channel peers via libp2p gossipsub protocol
 - [x] **P2P-03**: Content is fetched through a 5-layer cache cascade: L0 in-memory → L1 local SQLite/block store → L2 hot peers (active connections) → L3 DHT/swarm discovery → L4 coordination server fallback
 - [x] **P2P-04**: User can configure their local storage buffer size (N GB) for seeding server content to other peers
 - [x] **P2P-05**: Content is managed in priority tiers: P1 own messages (never evict) → P2 hot 24h → P3 warm 2-7 day → P4 altruistic seeding, with 7-day default TTL and LRU eviction
@@ -83,7 +83,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **APP-01**: App shell loads once from local cache; channel switches are instant DOM swaps via pushState (no full page reload)
 - [x] **APP-02**: All P2P connections persist across channel navigation
-- [ ] **APP-03**: All subscribed channels receive gossip simultaneously regardless of which channel is currently viewed
+- [x] **APP-03**: All subscribed channels receive gossip simultaneously regardless of which channel is currently viewed
 - [x] **APP-04**: All media attachments declare dimensions upfront; fixed layout with zero reflow during content loading
 - [x] **APP-05**: User profiles display name, avatar, and custom status text
 
@@ -178,22 +178,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SRVR-06 | Phase 2: Server Management | Complete |
 | SRVR-08 | Phase 2: Server Management | Complete |
 | SRVR-09 | Phase 2: Server Management | Complete |
-| P2P-02 | Phase 12: Wire Client Connection Lifecycle | Pending |
+| P2P-02 | Phase 12: Wire Client Connection Lifecycle | Complete |
 | SEC-06 | Phase 3: P2P Networking | Complete |
 | APP-02 | Phase 3: P2P Networking | Complete |
-| MSG-01 | Phase 12: Wire Client Connection Lifecycle | Pending |
+| MSG-01 | Phase 12: Wire Client Connection Lifecycle | Complete |
 | MSG-02 | Phase 4: Real-Time Chat | Complete |
 | MSG-03 | Phase 4: Real-Time Chat | Complete |
-| MSG-04 | Phase 12: Wire Client Connection Lifecycle | Pending |
-| MSG-05 | Phase 12: Wire Client Connection Lifecycle | Pending |
-| MSG-06 | Phase 12: Wire Client Connection Lifecycle | Pending |
+| MSG-04 | Phase 12: Wire Client Connection Lifecycle | Complete |
+| MSG-05 | Phase 12: Wire Client Connection Lifecycle | Complete |
+| MSG-06 | Phase 12: Wire Client Connection Lifecycle | Complete |
 | MSG-07 | Phase 4: Real-Time Chat | Complete |
 | MSG-08 | Phase 4: Real-Time Chat | Complete |
-| MSG-09 | Phase 12: Wire Client Connection Lifecycle | Pending |
+| MSG-09 | Phase 12: Wire Client Connection Lifecycle | Complete |
 | SEC-03 | Phase 4: Real-Time Chat | Complete |
-| APP-03 | Phase 12: Wire Client Connection Lifecycle | Pending |
+| APP-03 | Phase 12: Wire Client Connection Lifecycle | Complete |
 | APP-05 | Phase 4: Real-Time Chat | Complete |
-| DM-01 | Phase 12: Wire Client Connection Lifecycle | Pending |
+| DM-01 | Phase 12: Wire Client Connection Lifecycle | Complete |
 | DM-02 | Phase 5: Direct Messages | Complete |
 | DM-03 | Phase 5: Direct Messages | Complete |
 | SEC-05 | Phase 5: Direct Messages | Complete |
@@ -213,9 +213,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | P2P-04 | Phase 7: Media and Prefetching | Complete |
 | P2P-07 | Phase 7: Media and Prefetching | Complete |
 | P2P-08 | Phase 7: Media and Prefetching | Complete |
-| VOICE-01 | Phase 12: Wire Client Connection Lifecycle | Pending |
-| VOICE-02 | Phase 12: Wire Client Connection Lifecycle | Pending |
-| VOICE-03 | Phase 12: Wire Client Connection Lifecycle | Pending |
+| VOICE-01 | Phase 12: Wire Client Connection Lifecycle | Complete |
+| VOICE-02 | Phase 12: Wire Client Connection Lifecycle | Complete |
+| VOICE-03 | Phase 12: Wire Client Connection Lifecycle | Complete |
 | VOICE-04 | Phase 8: Voice Channels | Complete |
 
 **Coverage:**

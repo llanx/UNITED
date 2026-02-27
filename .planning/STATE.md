@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: active
-last_updated: "2026-02-27T04:59:09.000Z"
+last_updated: "2026-02-27T05:06:19.000Z"
 progress:
   total_phases: 12
-  completed_phases: 11
+  completed_phases: 12
   total_plans: 42
-  completed_plans: 41
+  completed_plans: 42
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 12 gap closure -- wiring client connection lifecycle (auth, WS, presence).
+**Current focus:** All phases complete. v1.0 milestone fully wired.
 
 ## Current Position
 
-Phase: 12 of 12 (Wire Client Connection Lifecycle)
-Plan: 2 of 2 in current phase
-Status: 12-01 complete -- IPC handlers for auth/WS, Welcome.tsx wired, immediate-first-retry reconnect
-Last activity: 2026-02-27 -- Completed 12-01-PLAN.md (auth IPC handlers + Welcome.tsx wiring)
+Phase: 12 of 12 (Wire Client Connection Lifecycle) -- COMPLETE
+Plan: 2 of 2 in current phase -- COMPLETE
+Status: Phase 12 complete -- WS auto-connect, usePresence, ConnectionBanner, connection-aware composers, dead code removed
+Last activity: 2026-02-27 -- Completed 12-02-PLAN.md (WS connect on mount, ConnectionBanner, composers, cleanup)
 
-Progress: [█████████▊] 98%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -73,6 +73,7 @@ Progress: [█████████▊] 98%
 | Phase 10 P01 | 2min | 2 tasks | 3 files |
 | Phase 11 P01 | 5min | 2 tasks | 2 files |
 | Phase 12 P01 | 2min | 2 tasks | 7 files |
+| Phase 12 P02 | 4min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -257,6 +258,9 @@ Recent decisions affecting current work:
 - [Phase 12]: storeTokens exported from auth.ts for cross-module import by connection.ts
 - [Phase 12]: Immediate first retry (0ms) via attempt===0 guard in WsClient scheduleReconnect, then exponential backoff
 - [Phase 12]: Auth failure on returning-user unlock keeps user on Welcome screen with error (no /app navigation)
+- [Phase 12]: ConnectionBanner uses 500ms setTimeout threshold to avoid flicker on fast reconnections
+- [Phase 12]: Disconnected placeholder shows 'Reconnecting...' in both channel and DM composers
+- [Phase 12]: isDisconnected check added to handleSend early return (defense-in-depth alongside disabled prop)
 
 ### Pending Todos
 
@@ -278,5 +282,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 12-01-PLAN.md (auth IPC handlers + Welcome.tsx wiring)
-Resume file: .planning/phases/12-wire-client-connection-lifecycle/12-02-PLAN.md
+Stopped at: Completed 12-02-PLAN.md -- Phase 12 complete, all plans executed
+Resume file: N/A -- all phases and plans complete

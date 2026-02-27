@@ -23,7 +23,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 9: Milestone Gap Closure** - Fix integration breaks (invite validation, voice identity), verify Electron security (SEC-08), and clean up traceability
 - [x] **Phase 10: Fix Media Attachment Wiring** - Parse block_refs in REST history and WS live paths so media attachments render in messages
 - [x] **Phase 11: Phase 1 Formal Verification** - Create missing Phase 1 VERIFICATION.md for 6 orphaned requirements (SEC-01, SEC-02, SEC-09, SEC-10, SEC-11, SRVR-07)
-- [ ] **Phase 12: Wire Client Connection Lifecycle** - Wire WS connection into auth flows (returning + new user) and mount usePresence() so all real-time features activate at startup
+- [x] **Phase 12: Wire Client Connection Lifecycle** - Wire WS connection into auth flows (returning + new user) and mount usePresence() so all real-time features activate at startup (completed 2026-02-27)
 
 ## Phase Details
 
@@ -236,7 +236,7 @@ Plans:
   3. Presence updates from the server are received and displayed in the member list sidebar
   4. All WS-dependent features (chat delivery, DM push, voice signaling, typing indicators, P2P auto-start) function at runtime
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] 12-01-PLAN.md — Wire challenge-response auth into returning-user flow, add IPC handlers for auth + WS connect, tweak backoff (Wave 1, client)
@@ -262,4 +262,4 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phases 9-12 are gap closu
 | 9. Milestone Gap Closure | 4/4 | Complete | 2026-02-27 |
 | 10. Fix Media Attachment Wiring | 1/1 | Complete    | 2026-02-27 |
 | 11. Phase 1 Formal Verification | 1/1 | Complete    | 2026-02-27 |
-| 12. Wire Client Connection Lifecycle | 1/2 | In Progress|  |
+| 12. Wire Client Connection Lifecycle | 2/2 | Complete   | 2026-02-27 |
