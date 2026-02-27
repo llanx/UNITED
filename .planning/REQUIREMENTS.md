@@ -73,7 +73,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SEC-05**: DMs use per-conversation keys negotiated via X25519 key exchange; coordination server stores only encrypted blobs
 - [x] **SEC-06**: All peer-to-peer communication is encrypted in transit (TLS for WebSocket, DTLS for WebRTC)
 - [x] **SEC-07**: User can see encryption indicators in the UI confirming that DMs are end-to-end encrypted and channel messages are signed
-- [ ] **SEC-08**: Electron renderer uses strict CSP, content sanitization, contextIsolation enabled, nodeIntegration disabled
+- [x] **SEC-08**: Electron renderer uses strict CSP, content sanitization, contextIsolation enabled, nodeIntegration disabled
 - [x] **SEC-09**: User's encrypted identity blob is stored on every server they join, enabling recovery from any server with the correct passphrase
 - [x] **SEC-10**: Servers ship with TOTP two-factor authentication enabled by default (RFC 6238 compatible, admin-configurable)
 - [x] **SEC-11**: User can rotate their identity key via signed rotation records broadcast to all joined servers, with a 72-hour cancellation window
@@ -81,7 +81,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Client Application
 
-- [ ] **APP-01**: App shell loads once from local cache; channel switches are instant DOM swaps via pushState (no full page reload)
+- [x] **APP-01**: App shell loads once from local cache; channel switches are instant DOM swaps via pushState (no full page reload)
 - [x] **APP-02**: All P2P connections persist across channel navigation
 - [x] **APP-03**: All subscribed channels receive gossip simultaneously regardless of which channel is currently viewed
 - [x] **APP-04**: All media attachments declare dimensions upfront; fixed layout with zero reflow during content loading
@@ -163,12 +163,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | SEC-01 | Phase 1: Foundation | Complete |
 | SEC-02 | Phase 1: Foundation | Complete |
-| SEC-08 | Phase 9: Milestone Gap Closure | Pending |
+| SEC-08 | Phase 9: Milestone Gap Closure | Complete |
 | SEC-09 | Phase 1: Foundation | Complete |
 | SEC-10 | Phase 1: Foundation | Complete |
 | SEC-11 | Phase 1: Foundation | Complete |
 | SEC-12 | Phase 2: Server Management | Complete |
-| APP-01 | Phase 9: Milestone Gap Closure | Pending |
+| APP-01 | Phase 9: Milestone Gap Closure | Complete |
 | SRVR-07 | Phase 1: Foundation | Complete |
 | SRVR-01 | Phase 2: Server Management | Complete |
 | SRVR-02 | Phase 2: Server Management | Complete |
@@ -225,4 +225,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-26 after milestone gap closure planning*
+*Last updated: 2026-02-26 after Phase 9 gap closure (SEC-08 and APP-01 verified)*
