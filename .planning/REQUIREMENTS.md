@@ -47,7 +47,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SRVR-04**: Server admin can assign roles to users
 - [x] **SRVR-05**: Server admin can kick users from the server
 - [x] **SRVR-06**: Server admin can ban users from the server (propagated to peers to stop relaying banned user's content)
-- [ ] **SRVR-07**: Server admin can configure server settings (name, icon, description)
+- [x] **SRVR-07**: Server admin can configure server settings (name, icon, description)
 - [x] **SRVR-08**: Server admin can generate invite links with optional expiration
 - [x] **SRVR-09**: New user can join a server via invite link, which bootstraps P2P peer discovery and begins content replication
 
@@ -66,17 +66,17 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Security
 
-- [ ] **SEC-01**: User creates an identity by generating an Ed25519 keypair protected by a passphrase (Argon2id-encrypted); a 24-word mnemonic backup is displayed at creation; no email or password is stored on any server
-- [ ] **SEC-02**: User authenticates to servers via Ed25519 challenge-response signature; server issues JWT tokens (15min access + 7-day refresh) after successful verification
+- [x] **SEC-01**: User creates an identity by generating an Ed25519 keypair protected by a passphrase (Argon2id-encrypted); a 24-word mnemonic backup is displayed at creation; no email or password is stored on any server
+- [x] **SEC-02**: User authenticates to servers via Ed25519 challenge-response signature; server issues JWT tokens (15min access + 7-day refresh) after successful verification
 - [x] **SEC-03**: All messages are signed by the author's Ed25519 private key; receiving peers verify signatures before displaying
 - [x] **SEC-04**: All content written to the local block store is encrypted with AES-256-GCM using a key derived from the user's credentials via Argon2id
 - [x] **SEC-05**: DMs use per-conversation keys negotiated via X25519 key exchange; coordination server stores only encrypted blobs
 - [x] **SEC-06**: All peer-to-peer communication is encrypted in transit (TLS for WebSocket, DTLS for WebRTC)
 - [x] **SEC-07**: User can see encryption indicators in the UI confirming that DMs are end-to-end encrypted and channel messages are signed
 - [x] **SEC-08**: Electron renderer uses strict CSP, content sanitization, contextIsolation enabled, nodeIntegration disabled
-- [ ] **SEC-09**: User's encrypted identity blob is stored on every server they join, enabling recovery from any server with the correct passphrase
-- [ ] **SEC-10**: Servers ship with TOTP two-factor authentication enabled by default (RFC 6238 compatible, admin-configurable)
-- [ ] **SEC-11**: User can rotate their identity key via signed rotation records broadcast to all joined servers, with a 72-hour cancellation window
+- [x] **SEC-09**: User's encrypted identity blob is stored on every server they join, enabling recovery from any server with the correct passphrase
+- [x] **SEC-10**: Servers ship with TOTP two-factor authentication enabled by default (RFC 6238 compatible, admin-configurable)
+- [x] **SEC-11**: User can rotate their identity key via signed rotation records broadcast to all joined servers, with a 72-hour cancellation window
 - [x] **SEC-12**: User can provision a new device by scanning a QR code from an existing device (direct encrypted key transfer, no server involvement)
 
 ### Client Application
@@ -161,15 +161,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEC-01 | Phase 11: Phase 1 Formal Verification | Pending |
-| SEC-02 | Phase 11: Phase 1 Formal Verification | Pending |
+| SEC-01 | Phase 11: Phase 1 Formal Verification | Complete |
+| SEC-02 | Phase 11: Phase 1 Formal Verification | Complete |
 | SEC-08 | Phase 9: Milestone Gap Closure | Complete |
-| SEC-09 | Phase 11: Phase 1 Formal Verification | Pending |
-| SEC-10 | Phase 11: Phase 1 Formal Verification | Pending |
-| SEC-11 | Phase 11: Phase 1 Formal Verification | Pending |
+| SEC-09 | Phase 11: Phase 1 Formal Verification | Complete |
+| SEC-10 | Phase 11: Phase 1 Formal Verification | Complete |
+| SEC-11 | Phase 11: Phase 1 Formal Verification | Complete |
 | SEC-12 | Phase 2: Server Management | Complete |
 | APP-01 | Phase 9: Milestone Gap Closure | Complete |
-| SRVR-07 | Phase 11: Phase 1 Formal Verification | Pending |
+| SRVR-07 | Phase 11: Phase 1 Formal Verification | Complete |
 | SRVR-01 | Phase 2: Server Management | Complete |
 | SRVR-02 | Phase 2: Server Management | Complete |
 | SRVR-03 | Phase 2: Server Management | Complete |
@@ -225,4 +225,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-27 after Phase 10-11 gap closure phases created (6 orphaned requirements reset to Pending)*
+*Last updated: 2026-02-27 after Phase 11 formal verification (6 orphaned requirements verified: SEC-01, SEC-02, SEC-09, SEC-10, SEC-11, SRVR-07 -- 56/56 complete)*
