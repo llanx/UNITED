@@ -24,6 +24,7 @@ import { useAppLaunchPrefetch } from '../hooks/usePrefetch'
 import { groupMessages, type MessageGroupData } from './MessageGroup'
 import MessageGroupComponent from './MessageGroup'
 import MessageComposer from './MessageComposer'
+import ConnectionBanner from './ConnectionBanner'
 import { extractMentionIds } from './MarkdownContent'
 import type { ChatMessage, ChatEvent, FileAttachment } from '@shared/ipc-bridge'
 
@@ -527,6 +528,9 @@ export default function ChatView({ memberListVisible, onToggleMemberList }: Chat
           </span>
         )}
       </div>
+
+      {/* Connection status banner (shown when WS disconnected >500ms) */}
+      <ConnectionBanner />
 
       {/* Message composer */}
       <MessageComposer
