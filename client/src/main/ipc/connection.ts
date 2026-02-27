@@ -5,6 +5,7 @@ import {
   getAccessToken,
   getServerUrl,
   setServerUrl,
+  storeTokens,
   refreshTokens
 } from './auth'
 import {
@@ -166,6 +167,23 @@ export function registerConnectionHandlers(ipcMain: IpcMain): void {
     for (const win of BrowserWindow.getAllWindows()) {
       win.webContents.send(IPC.PUSH_AUTH_ERROR, code, message)
     }
+  })
+
+  // Challenge-response auth: get JWT for a returning user
+  ipcMain.handle(IPC.AUTH_AUTHENTICATE, async (_event, serverUrl: string) => {
+    setServerUrl(serverUrl)
+    const { accessToken, refreshToken } = await performChallengeResponse(serverUrl)
+    storeTokens(accessToken, refreshToken)
+    return { success: true }
+  })
+
+  // Connect WebSocket using stored JWT
+  ipcMain.handle(IPC.AUTH_CONNECT_WS, async () => {
+    const token = getAccessToken()
+    const url = getServerUrl()
+    if (!token || !url) throw new Error('Not authenticated — no JWT or server URL')
+    connectWebSocket(url, token)
+    return { success: true }
   })
 
   // Connect to server: fetch info, optionally authenticate

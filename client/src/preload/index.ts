@@ -42,6 +42,12 @@ const api: UnitedAPI = {
     ipcRenderer.invoke(IPC.IDENTITY_UNLOCK, passphrase),
 
   // Connection & Auth
+  authenticateToServer: (serverUrl: string) =>
+    ipcRenderer.invoke(IPC.AUTH_AUTHENTICATE, serverUrl),
+
+  connectWs: () =>
+    ipcRenderer.invoke(IPC.AUTH_CONNECT_WS),
+
   connectToServer: (url: string) =>
     ipcRenderer.invoke(IPC.AUTH_CONNECT, url),
 

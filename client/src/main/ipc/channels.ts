@@ -11,6 +11,8 @@ export const IPC = {
 
   // Auth
   AUTH_CONNECT: 'auth:connect',
+  AUTH_AUTHENTICATE: 'auth:authenticate',
+  AUTH_CONNECT_WS: 'auth:connect-ws',
   AUTH_REGISTER: 'auth:register',
   AUTH_SIGN_CHALLENGE: 'auth:sign-challenge',
 

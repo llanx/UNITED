@@ -461,6 +461,19 @@ export interface UnitedAPI {
   // ---- Connection & Auth ----
 
   /**
+   * Perform challenge-response authentication against a server.
+   * Signs a challenge with the unlocked identity's private key, stores JWT.
+   * @param serverUrl - Server URL to authenticate against
+   */
+  authenticateToServer(serverUrl: string): Promise<{ success: boolean }>;
+
+  /**
+   * Connect WebSocket using stored JWT.
+   * Requires prior authentication (JWT must be in memory).
+   */
+  connectWs(): Promise<{ success: boolean }>;
+
+  /**
    * Connect to a coordination server.
    * Validates URL, establishes WebSocket, retrieves server info.
    * @param url - Server URL (e.g., "https://server.example.com:1984")
