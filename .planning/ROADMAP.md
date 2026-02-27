@@ -189,10 +189,10 @@ Plans:
 **Plans**: 4 plans (1 wave, all independent)
 
 Plans:
-- [ ] 09-01: Fix invite validation route — add GET handler or align client to server endpoint (Wave 1, full-stack)
-- [ ] 09-02: Fix voice localUserId — replace state.serverId with user pubkey in useVoice.ts (Wave 1, client)
-- [ ] 09-03: Verify and enforce SEC-08 — audit Electron security config, add strict CSP if missing (Wave 1, client)
-- [ ] 09-04: Verify APP-01 and fix traceability — confirm SPA behavior, update SEC-12 row in REQUIREMENTS.md (Wave 1, docs)
+- [ ] 09-01-PLAN.md — Fix invite validation: add GET /api/invites/{code} server handler (Wave 1, full-stack)
+- [ ] 09-02-PLAN.md — Fix voice localUserId: add localUserId to store, use user DB UUID in useVoice.ts (Wave 1, client)
+- [ ] 09-03-PLAN.md — Verify SEC-08: audit Electron security config, add comment, mark REQUIREMENTS.md complete (Wave 1, client + docs)
+- [ ] 09-04-PLAN.md — Verify APP-01: confirm SPA behavior, mark REQUIREMENTS.md complete (Wave 1, docs)
 
 ## Progress
 
