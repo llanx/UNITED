@@ -77,8 +77,8 @@ export function useVoice(): void {
           })
         }
 
-        // Get local user ID from auth state
-        const localUserId = state.serverId || ''
+        // Get local user ID (DB UUID assigned by server during registration)
+        const localUserId = state.localUserId || ''
 
         // Create and configure VoiceManager
         const manager = new VoiceManager(signaling, audio)
