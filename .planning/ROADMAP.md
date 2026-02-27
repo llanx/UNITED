@@ -20,6 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback (completed 2026-02-26)
 - [x] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching (completed 2026-02-26)
 - [x] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
+- [ ] **Phase 9: Milestone Gap Closure** - Fix integration breaks (invite validation, voice identity), verify Electron security (SEC-08), and clean up traceability
 
 ## Phase Details
 
@@ -174,12 +175,31 @@ Plans:
 - [x] 08-02: Client voice engine — WebRTC VoiceManager, AudioPipeline, PTT via uiohook-napi, Zustand VoiceSlice, IPC bridge (Wave 2, depends on 08-01)
 - [x] 08-03: Voice UI and deployment — VoiceBar, sidebar participants with speaking indicators, VoiceSettings, docker-compose with coturn (Wave 3, depends on 08-02)
 
+### Phase 9: Milestone Gap Closure
+**Goal**: Close all gaps identified by the v1.0 milestone audit — fix integration breaks, verify Electron security hardening, and update stale traceability
+**Depends on**: Phase 8
+**Requirements**: SEC-08, APP-01, SRVR-09 (fix), VOICE-01 (fix), VOICE-03 (fix)
+**Gap Closure:** Closes gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. User can enter an invite code, see it validated as valid, and join the server successfully (invite route fixed)
+  2. Voice channel correctly identifies the local user — self-participant is excluded from WebRTC peer connections and speaking detection shows the right user
+  3. Electron renderer runs with strict CSP enforced, contextIsolation enabled, and nodeIntegration disabled (verified, not just assumed)
+  4. Channel switches are instant DOM swaps with no full page reload (verified as architectural truth of React SPA)
+  5. REQUIREMENTS.md traceability table has no stale entries — SEC-12 reflects Phase 2 Complete
+**Plans**: 4 plans (1 wave, all independent)
+
+Plans:
+- [ ] 09-01: Fix invite validation route — add GET handler or align client to server endpoint (Wave 1, full-stack)
+- [ ] 09-02: Fix voice localUserId — replace state.serverId with user pubkey in useVoice.ts (Wave 1, client)
+- [ ] 09-03: Verify and enforce SEC-08 — audit Electron security config, add strict CSP if missing (Wave 1, client)
+- [ ] 09-04: Verify APP-01 and fix traceability — confirm SPA behavior, update SEC-12 row in REQUIREMENTS.md (Wave 1, docs)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
 
-Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in parallel with Phases 5-7 if desired, but is sequenced last because voice is architecturally independent and benefits from a stable platform.
+Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phase 9 is gap closure from milestone audit.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -187,7 +207,8 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. It could execute in paral
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
 | 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
-| 5. Direct Messages | 3/4 | Complete    | 2026-02-26 |
-| 6. Content Distribution | 4/4 | Complete   | 2026-02-26 |
-| 7. Media and Prefetching | 2/3 | Complete    | 2026-02-26 |
+| 5. Direct Messages | 3/4 | Complete | 2026-02-26 |
+| 6. Content Distribution | 4/4 | Complete | 2026-02-26 |
+| 7. Media and Prefetching | 2/3 | Complete | 2026-02-26 |
 | 8. Voice Channels | 3/3 | Complete | 2026-02-26 |
+| 9. Milestone Gap Closure | 0/4 | Planning | — |

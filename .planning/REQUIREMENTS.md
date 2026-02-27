@@ -77,7 +77,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SEC-09**: User's encrypted identity blob is stored on every server they join, enabling recovery from any server with the correct passphrase
 - [x] **SEC-10**: Servers ship with TOTP two-factor authentication enabled by default (RFC 6238 compatible, admin-configurable)
 - [x] **SEC-11**: User can rotate their identity key via signed rotation records broadcast to all joined servers, with a 72-hour cancellation window
-- [ ] **SEC-12**: User can provision a new device by scanning a QR code from an existing device (direct encrypted key transfer, no server involvement)
+- [x] **SEC-12**: User can provision a new device by scanning a QR code from an existing device (direct encrypted key transfer, no server involvement)
 
 ### Client Application
 
@@ -163,12 +163,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | SEC-01 | Phase 1: Foundation | Complete |
 | SEC-02 | Phase 1: Foundation | Complete |
-| SEC-08 | Phase 1: Foundation | Pending |
+| SEC-08 | Phase 9: Milestone Gap Closure | Pending |
 | SEC-09 | Phase 1: Foundation | Complete |
 | SEC-10 | Phase 1: Foundation | Complete |
 | SEC-11 | Phase 1: Foundation | Complete |
-| SEC-12 | Phase 1: Foundation | Pending |
-| APP-01 | Phase 1: Foundation | Pending |
+| SEC-12 | Phase 2: Server Management | Complete |
+| APP-01 | Phase 9: Milestone Gap Closure | Pending |
 | SRVR-07 | Phase 1: Foundation | Complete |
 | SRVR-01 | Phase 2: Server Management | Complete |
 | SRVR-02 | Phase 2: Server Management | Complete |
@@ -225,4 +225,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after roadmap creation*
+*Last updated: 2026-02-26 after milestone gap closure planning*
