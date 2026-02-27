@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Content Distribution** - Content-addressed block store, 5-layer cache cascade, tiered retention, and server fallback (completed 2026-02-26)
 - [x] **Phase 7: Media and Prefetching** - File/image/video sharing, inline rendering, blurhash placeholders, and predictive prefetching (completed 2026-02-26)
 - [x] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
-- [ ] **Phase 9: Milestone Gap Closure** - Fix integration breaks (invite validation, voice identity), verify Electron security (SEC-08), and clean up traceability
+- [x] **Phase 9: Milestone Gap Closure** - Fix integration breaks (invite validation, voice identity), verify Electron security (SEC-08), and clean up traceability
 
 ## Phase Details
 
@@ -122,7 +122,7 @@ Plans:
 - [x] 05-01: Server DM infrastructure — protobuf schemas, migration 5, REST endpoints, offline delivery, targeted WS push
 - [x] 05-02: Client DM data layer — crypto module, IPC handlers, Zustand store, hooks, preload bridge
 - [x] 05-03: DM UI — conversation list, chat view, encryption indicators
-- [ ] 05-04: Gap closure — fix WS DM push events (regenerate protobuf types, rewrite dm-events.ts to use fromBinary)
+- [x] 05-04: Gap closure — fix WS DM push events (regenerate protobuf types, rewrite dm-events.ts to use fromBinary)
 
 ### Phase 6: Content Distribution
 **Goal**: Content is stored, replicated, and retrieved through a peer-to-peer block pipeline that makes the server optional for availability while keeping all local data encrypted at rest
@@ -137,11 +137,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Server block store: protobuf schemas, migration 6, HKDF crypto, REST endpoints, retention purge
-- [ ] 06-02-PLAN.md — Client block store: types, crypto, file store, L0 cache, tiers, eviction, IPC bridge
-- [ ] 06-03-PLAN.md — Block exchange protocol and 5-layer cache cascade with parallel peer fetch
-- [ ] 06-04-PLAN.md — Gossip inline/deferred content, micro-thumbnails, content loading UI, storage settings
-- [ ] 06-05-PLAN.md — Gap closure: wire resolveBlock cascade to renderer via preload bridge
+- [x] 06-01-PLAN.md — Server block store: protobuf schemas, migration 6, HKDF crypto, REST endpoints, retention purge
+- [x] 06-02-PLAN.md — Client block store: types, crypto, file store, L0 cache, tiers, eviction, IPC bridge
+- [x] 06-03-PLAN.md — Block exchange protocol and 5-layer cache cascade with parallel peer fetch
+- [x] 06-04-PLAN.md — Gossip inline/deferred content, micro-thumbnails, content loading UI, storage settings
+- [x] 06-05-PLAN.md — Gap closure: wire resolveBlock cascade to renderer via preload bridge
 
 ### Phase 7: Media and Prefetching
 **Goal**: Users can share and view rich media seamlessly, with the P2P distribution invisible behind fast loading and predictive prefetching
@@ -155,9 +155,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Upload infrastructure: protobuf extensions, server migration, blurhash encoding, video thumbnails, blocking send with progress (Wave 1)
-- [ ] 07-02-PLAN.md — Media rendering UI: inline images/videos, adaptive grid, lightbox, composer attachments, drag-drop/paste (Wave 2, depends on 07-01)
-- [ ] 07-03-PLAN.md — Seeding stats dashboard and predictive prefetching: channel hover, scroll position, app launch (Wave 2, depends on 07-01)
+- [x] 07-01-PLAN.md — Upload infrastructure: protobuf extensions, server migration, blurhash encoding, video thumbnails, blocking send with progress (Wave 1)
+- [x] 07-02-PLAN.md — Media rendering UI: inline images/videos, adaptive grid, lightbox, composer attachments, drag-drop/paste (Wave 2, depends on 07-01)
+- [x] 07-03-PLAN.md — Seeding stats dashboard and predictive prefetching: channel hover, scroll position, app launch (Wave 2, depends on 07-01)
 
 ### Phase 8: Voice Channels
 **Goal**: Users can join voice channels and talk to each other with peer-to-peer audio that feels as responsive as centralized alternatives
@@ -189,10 +189,10 @@ Plans:
 **Plans**: 4 plans (1 wave, all independent)
 
 Plans:
-- [ ] 09-01-PLAN.md — Fix invite validation: add GET /api/invites/{code} server handler (Wave 1, full-stack)
-- [ ] 09-02-PLAN.md — Fix voice localUserId: add localUserId to store, use user DB UUID in useVoice.ts (Wave 1, client)
-- [ ] 09-03-PLAN.md — Verify SEC-08: audit Electron security config, add comment, mark REQUIREMENTS.md complete (Wave 1, client + docs)
-- [ ] 09-04-PLAN.md — Verify APP-01: confirm SPA behavior, mark REQUIREMENTS.md complete (Wave 1, docs)
+- [x] 09-01-PLAN.md — Fix invite validation: add GET /api/invites/{code} server handler (Wave 1, full-stack)
+- [x] 09-02-PLAN.md — Fix voice localUserId: add localUserId to store, use user DB UUID in useVoice.ts (Wave 1, client)
+- [x] 09-03-PLAN.md — Verify SEC-08: audit Electron security config, add comment, mark REQUIREMENTS.md complete (Wave 1, client + docs)
+- [x] 09-04-PLAN.md — Verify APP-01: confirm SPA behavior, mark REQUIREMENTS.md complete (Wave 1, docs)
 
 ## Progress
 
@@ -207,8 +207,8 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phase 9 is gap closure fr
 | 2. Server Management | 8/8 | Complete | 2026-02-25 |
 | 3. P2P Networking | 4/4 | Complete | 2026-02-26 |
 | 4. Real-Time Chat | 6/6 | Complete | 2026-02-26 |
-| 5. Direct Messages | 3/4 | Complete | 2026-02-26 |
-| 6. Content Distribution | 4/4 | Complete | 2026-02-26 |
-| 7. Media and Prefetching | 2/3 | Complete | 2026-02-26 |
+| 5. Direct Messages | 4/4 | Complete | 2026-02-26 |
+| 6. Content Distribution | 5/5 | Complete | 2026-02-26 |
+| 7. Media and Prefetching | 3/3 | Complete | 2026-02-26 |
 | 8. Voice Channels | 3/3 | Complete | 2026-02-26 |
-| 9. Milestone Gap Closure | 0/4 | Planning | — |
+| 9. Milestone Gap Closure | 4/4 | Complete | 2026-02-27 |
