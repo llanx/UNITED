@@ -44,16 +44,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 9: Milestone Gap Closure (complete).
+**Current focus:** Phase 10: Fix Media Attachment Wiring (complete).
 
 ## Current Position
 
-Phase: 9 of 9 (Milestone Gap Closure)
-Plan: 4 of 4 in current phase
-Status: Phase 9 complete -- all gap closure plans executed, all 56 v1 requirements verified
-Last activity: 2026-02-27 -- Completed 09-04-PLAN.md (APP-01 verification)
+Phase: 10 of 11 (Fix Media Attachment Wiring)
+Plan: 1 of 1 in current phase
+Status: Phase 10 complete -- block_refs wiring fixed across server WS, client REST, and client WS paths
+Last activity: 2026-02-27 -- Completed 10-01-PLAN.md (media attachment wiring)
 
-Progress: [██████████] 100%
+Progress: [█████████░] 95%
 
 ## Performance Metrics
 
@@ -96,6 +96,7 @@ Progress: [██████████] 100%
 | Phase 09 P03 | 2 | 2 tasks | 2 files |
 | Phase 09 P02 | 1 | 2 tasks | 3 files |
 | Phase 09 P04 | 3min | 1 tasks | 1 files |
+| Phase 10 P01 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -271,6 +272,9 @@ Recent decisions affecting current work:
 - [Phase 09]: localUserId hydrated from activeServer.user_id for correct voice identity (not serverId)
 - [Phase 09]: Existing CSP directives are correct and complete -- SEC-08 closed with documentation only
 - [Phase 09]: APP-01 architecturally satisfied: Electron loadFile for local cache, Zustand activeChannelId for instant DOM swaps (no pushState needed -- React SPA)
+- [10-01]: Server parse_block_refs_json converts camelCase JSON (mimeType, microThumbnail) to snake_case proto fields with graceful degradation
+- [10-01]: REST response post-processing pattern: IPC handlers fetch raw server response then transform fields (block_refs_json -> block_refs) before returning to renderer
+- [10-01]: Protobuf bytes<->base64 string conversion at boundaries: base64 decode on server (JSON->proto), base64 encode on client WS (proto->BlockRefData)
 
 ### Pending Todos
 
@@ -292,5 +296,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 09-04-PLAN.md (APP-01 verification) -- Phase 9 complete, all 56 v1 requirements verified
-Resume file: N/A -- v1 milestone complete (all 9 phases done)
+Stopped at: Completed 10-01-PLAN.md (media attachment wiring) -- Phase 10 complete
+Resume file: N/A -- Phase 11 (Phase 1 Formal Verification) remaining
