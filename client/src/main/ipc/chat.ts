@@ -88,12 +88,18 @@ export function registerChatHandlers(ipcMain: IpcMain): void {
     const body: Record<string, unknown> = { content }
     if (replyToId) body.reply_to_id = replyToId
 
-    return apiPost<ChatMessage>(
+    const raw = await apiPost<ChatMessage & { block_refs_json?: string | null }>(
       url,
       `/api/channels/${channelId}/messages`,
       body,
       token
     )
+    return {
+      ...raw,
+      block_refs: raw.block_refs_json
+        ? JSON.parse(raw.block_refs_json)
+        : undefined,
+    }
   })
 
   // Fetch paginated message history
@@ -113,7 +119,16 @@ export function registerChatHandlers(ipcMain: IpcMain): void {
     const qs = params.toString()
     const path = `/api/channels/${channelId}/messages${qs ? `?${qs}` : ''}`
 
-    return apiGet<ChatHistoryResponse>(url, path, token)
+    const raw = await apiGet<{ messages: Array<ChatMessage & { block_refs_json?: string | null }>; has_more: boolean }>(url, path, token)
+    return {
+      ...raw,
+      messages: raw.messages.map(msg => ({
+        ...msg,
+        block_refs: msg.block_refs_json
+          ? JSON.parse(msg.block_refs_json)
+          : undefined,
+      }))
+    }
   })
 
   // Edit a message
