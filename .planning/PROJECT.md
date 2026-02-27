@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A self-hosted Discord alternative where voice is peer-to-peer via WebRTC and all chat content (messages, images, video, files) is distributed across users via a torrent-inspired seeding architecture with McMaster-Carr-style predictive prefetching. The coordination server is intentionally thin — handling only auth, signaling, and content indexing — while the actual content is stored and distributed peer-to-peer across participating peers, each contributing a configurable storage buffer. Targets general audiences seeking data sovereignty without sacrificing the polished experience of centralized platforms.
+A self-hosted Discord alternative with peer-to-peer content distribution, WebRTC voice, and end-to-end encrypted DMs. The coordination server handles only auth, signaling, and content indexing while all chat content (messages, images, video, files) is stored and distributed across participating peers via a torrent-inspired seeding architecture with predictive prefetching. Desktop app (Electron + React) connects to a Rust coordination server with a full-featured chat experience: channels, categories, roles, moderation, invite-based onboarding, media sharing with inline rendering, and voice channels.
 
 ## Core Value
 
@@ -12,115 +12,159 @@ Users communicate in real-time with full data sovereignty — no third party eve
 
 ### Validated
 
-(None yet — ship to validate)
+**v1.0 MVP — shipped 2026-02-27:**
+
+*Text Messaging:*
+- ✓ Real-time gossip-based message delivery — v1.0
+- ✓ Message history with scroll-back and server fallback — v1.0
+- ✓ Markdown formatting (bold, italic, code, quotes) — v1.0
+- ✓ Emoji reactions — v1.0
+- ✓ Typing indicators — v1.0
+- ✓ Online/offline/away presence — v1.0
+- ✓ Unread channel indicators — v1.0
+- ✓ @mention notifications — v1.0
+- ✓ Desktop notifications for mentions and DMs — v1.0
+
+*Direct Messages:*
+- ✓ E2E encrypted DMs with X25519 key exchange — v1.0
+- ✓ Offline DM delivery via encrypted server blobs — v1.0
+- ✓ Separate DM conversation list — v1.0
+
+*Media:*
+- ✓ File upload/sharing (images, video, documents) — v1.0
+- ✓ Inline media rendering with blurhash placeholders — v1.0
+- ✓ Zero-reflow layout with upfront dimensions — v1.0
+- ✓ Content-addressed block distribution across swarm — v1.0
+
+*Voice:*
+- ✓ WebRTC P2P voice (2-8 participants) — v1.0
+- ✓ Mute/deafen — v1.0
+- ✓ Speaking indicators — v1.0
+- ✓ Push-to-talk — v1.0
+
+*Server Management:*
+- ✓ Channel/category CRUD — v1.0
+- ✓ Roles with permission bitflags — v1.0
+- ✓ Kick/ban moderation — v1.0
+- ✓ Invite links with expiration — v1.0
+- ✓ Server settings (name, description) — v1.0 (icon upload deferred)
+
+*P2P Distribution:*
+- ✓ Content-addressed block storage (SHA-256) — v1.0
+- ✓ Gossipsub message propagation — v1.0
+- ✓ 5-layer cache cascade (memory → local → peers → DHT → server) — v1.0
+- ✓ Predictive prefetching (hover, scroll, app launch) — v1.0
+- ✓ Parallel peer fetching (first-responder-wins) — v1.0
+- ✓ Inline critical content (<50KB gossiped immediately) — v1.0
+- ✓ Tiered retention with LRU eviction — v1.0
+- ✓ Configurable storage buffer — v1.0
+- ✓ Seeding/contribution stats dashboard — v1.0
+
+*Security:*
+- ✓ Ed25519 keypair identity with BIP39 mnemonic — v1.0
+- ✓ Challenge-response auth with JWT sessions — v1.0
+- ✓ Message signing (Ed25519) — v1.0
+- ✓ AES-256-GCM at-rest encryption — v1.0
+- ✓ X25519 DM encryption — v1.0
+- ✓ Encrypted P2P transport (TLS/DTLS) — v1.0
+- ✓ Encryption indicators in UI — v1.0
+- ✓ Strict CSP, contextIsolation, nodeIntegration disabled — v1.0
+- ✓ Identity blob recovery from any joined server — v1.0
+- ✓ TOTP 2FA enabled by default — v1.0
+- ✓ Key rotation with 72h cancellation — v1.0
+- ✓ Device provisioning via QR code — v1.0
+
+*Client App:*
+- ✓ App shell with instant channel switching — v1.0
+- ✓ Persistent P2P connections across navigation — v1.0
+- ✓ Simultaneous channel gossip subscriptions — v1.0
+- ✓ Fixed layout with zero reflow — v1.0
+- ✓ User profiles (name, avatar, status) — v1.0
 
 ### Active
 
-**P2P Chat Core:**
-- [ ] Text channels with real-time gossip-based message delivery (<100ms)
-- [ ] Voice channels using WebRTC peer-to-peer (no media server)
-- [ ] Image/video/file sharing as content-addressed chunks across the swarm
-- [ ] Threads within channels for focused conversations
-- [ ] Direct messages with end-to-end encryption (X25519 key exchange)
-- [ ] Group DMs with encrypted blobs for offline delivery
-- [ ] Reactions and embeds (link previews, rich content)
-- [ ] User presence and typing indicators via lightweight gossip
-
-**P2P Distribution Layer:**
-- [ ] Content-addressed block storage (SHA-256 hashed, fixed-size blocks)
-- [ ] Gossip-based message propagation to channel peers
-- [ ] Multi-layer cache cascade (L0 in-memory → L1 local SQLite/blocks → L2 hot peers → L3 DHT/swarm → L4 server fallback)
-- [ ] McMaster-Carr-style predictive prefetching (hover, scroll-ahead, app launch)
-- [ ] App shell architecture (UI loads once, channel switches are DOM swaps)
-- [ ] Parallel peer fetching (first-responder-wins, byte-range splitting)
-- [ ] Inline critical content (<50KB message+thumbnail gossiped immediately)
-- [ ] Fixed layout with blurhash placeholders (zero reflow)
-- [ ] Configurable storage buffer (N GB per user)
-- [ ] Tiered content retention (P1 own/pinned → P2 hot 24h → P3 warm 2-7d → P4 altruistic seeding)
-
-**Server & Trust:**
-- [ ] Thin coordination server (challenge-response auth, signaling, content index, message ordering)
-- [ ] Server as fallback super-seeder (encrypted block store)
-- [ ] Volunteer super-seeders (opt-in always-on nodes with larger storage, cosmetic rewards)
-- [ ] Server-admin moderation tools (kick, ban, delete messages) — no platform-level moderation
-- [ ] User-pinnable content (persist beyond 7-day TTL)
-
-**Discord Parity:**
-- [ ] Discord-compatible bot API (subset — gateway events, message CRUD, embeds)
-- [ ] Server discovery and invite links (tokens, peer bootstrapping)
-- [ ] Notification system (mentions, DM alerts, unread indicators via gossip)
-- [ ] Roles and permissions managed by coordination server, enforced by peers
-
-**Security:**
-- [ ] Channel messages signed by author (Ed25519), cleartext in transit over encrypted transport, encrypted at rest (AES-256-GCM)
-- [ ] DMs end-to-end encrypted (per-conversation X25519 keys)
-- [ ] Local block store encrypted with user-derived key (Argon2id KDF)
-- [ ] Strict CSP, content sanitization, contextIsolation enabled, nodeIntegration disabled in renderer
+*v2 candidates (not yet scoped):*
+- [ ] Threads within channel messages
+- [ ] Message edit/delete propagation
+- [ ] Pinned messages (persist beyond TTL)
+- [ ] Full-text search via SQLite FTS
+- [ ] Link preview embeds
+- [ ] Screen sharing in voice channels
+- [ ] Voice noise suppression
+- [ ] Group DMs (multi-party E2E)
+- [ ] Server icon upload
+- [ ] Bot API (gateway events, message CRUD)
+- [ ] Server discovery directory
+- [ ] Channel-level permission overrides
+- [ ] Audit log for admin actions
 
 ### Out of Scope
 
-- Mobile clients — desktop-only at launch; mobile P2P has severe OS restrictions (battery, background limits)
-- Server federation — each coordination server is an isolated island for v1
-- OAuth/social login — keypair-based identity eliminates need for external auth providers
-- Email/password registration — replaced by Ed25519 keypair identity (see IDENTITY-ARCHITECTURE.md)
-- Platform-level content moderation — sovereignty model delegates moderation to server admins
-- SFU for large voice channels — WebRTC mesh for v1; SFU deferred until scale demands it (20+ participants)
+- Mobile clients — desktop-only; mobile P2P has severe OS restrictions (battery, background limits). PWA not viable for P2P.
+- Server federation — each coordination server is an isolated island. Federation adds enormous complexity (see Matrix).
+- OAuth/social login — keypair-based identity eliminates need for external auth providers entirely.
+- Email/password registration — replaced by Ed25519 keypair identity with passphrase-encrypted local storage.
+- Platform-level content moderation — sovereignty model delegates moderation to server admins.
+- SFU for large voice — WebRTC mesh works for 2-8; SFU deferred until demand for 20+ participants.
+- Video channels / Go Live streaming — P2P video to many viewers is unsolved at scale.
+- Rich presence / activity status — deep OS integration for cosmetic feature, low value.
+- Automatic message translation — requires sending content to external APIs, privacy violation.
+- AI features — requires sending content to LLM APIs, privacy violation.
 
 ## Context
 
-**Motivation (three converging forces):**
+**Shipped v1.0 MVP** with ~42,000 LOC across TypeScript (17k TS + 12k TSX) and Rust (13k), 243 source files, 14 protobuf schemas, 270 commits over 5 days.
 
-1. **Data sovereignty.** Centralized platforms (Discord, Slack) own user data, govern it under their ToS, and can moderate, mine, or lose it. A self-hosted platform where content lives on users' machines eliminates third-party control.
+**Tech stack:** Electron 40 + React 19 + Zustand 5 (client), Rust + tokio + axum + SQLite (server), js-libp2p + rust-libp2p (P2P mesh), sodium-native (crypto), WebRTC (voice).
 
-2. **Cost distribution.** Hosting media-heavy chat is expensive. By distributing storage and bandwidth across participating users, the central server can run on hardware as modest as a Raspberry Pi. The community funds its own infrastructure by participating.
+**Architecture:**
+- Server: single Rust binary on port 1984 (HTTP) + 1985 (libp2p WS). SQLite + flat block files. Docker deployment with coturn sidecar for TURN.
+- Client: Electron with contextBridge IPC, Zustand slice composition (14 stores), HashRouter, Discord-style triple-column layout.
+- P2P: gossipsub D=4 for chat, custom block exchange protocol over libp2p streams, Circuit Relay v2 for NAT traversal.
 
-3. **Technical ambition.** The intersection of P2P content distribution, real-time chat, predictive prefetching, and swarm replication is a compelling engineering challenge. Techniques from BitTorrent, IPFS, and McMaster-Carr's caching philosophy haven't been combined for chat before.
+**Known tech debt (9 items):** Icon upload, REST message signing, ephemeral DM delete, block verification on read, toast for voice cap, key rotation cancel UI, dead code (ws/protocol.ts stubs, useAuth.ts export). See MILESTONES.md for full list.
 
-**Inspiration & Prior Art:**
-- **Keet** (Holepunch) — P2P chat on Hypercore/Hyperswarm, proves append-only-log-per-channel works
-- **McMaster-Carr** — predictive prefetching, multi-layer caching, app shell architecture, zero-reflow layout
-- **Matrix/Element** — federated chat with server replication (stores full copies, not P2P distributed)
-- **BitTorrent** — content-addressed pieces, rarest-first selection, swarm replication
-- **IPFS/libp2p** — content-addressed storage, gossipsub, DHT peer discovery
-- **Briar** — P2P encrypted messaging over Tor
-- **RetroShare** — friend-to-friend encrypted network with chat/forums/file sharing
-
-**Encryption Model:**
-- Channels: cleartext-in-transit (over TLS/DTLS), encrypted-at-rest per peer
-- DMs: end-to-end encrypted (only participants hold keys)
-- Stolen hardware yields only encrypted blobs
-- Coordination server cannot read DMs
+**Human verification backlog:** 47 items across all phases (multi-client testing, real-time feature round-trips). All automated checks pass.
 
 ## Constraints
 
-- **Tech Stack (Server):** Rust — single binary deployment, minimal resources, excellent async I/O (tokio). Must run on Raspberry Pi 4 / cheap VPS.
-- **Tech Stack (Client):** Electron + React — proven for desktop chat apps, native WebRTC, consistent rendering. contextIsolation enabled, nodeIntegration disabled.
-- **Tech Stack (P2P Layer):** libp2p — gossipsub for message propagation, Kademlia DHT for peer/content discovery, rust-libp2p (server) + js-libp2p (client). Battle-tested at scale.
-- **Tech Stack (Database):** SQLite — embedded, zero-config, fast. Message index, metadata, search, peer cache.
-- **Tech Stack (Block Store):** Flat files, content-addressed (SHA-256 hash as filename, 2-char hex subdirectories). AES-256-GCM encrypted.
-- **Tech Stack (Crypto):** libsodium (sodium-native for Node.js) — AES-256-GCM, X25519, Ed25519, Argon2id.
-- **Tech Stack (Voice):** WebRTC native in Chromium — ICE/STUN/TURN signaled through coordination server.
-- **Tech Stack (Transport):** WebSocket (server comms) + WebRTC DataChannels (peer-to-peer gossip and block transfer).
+- **Server:** Rust (tokio/axum), SQLite, single binary. Must run on Raspberry Pi 4 / cheap VPS.
+- **Client:** Electron + React, contextIsolation enabled, nodeIntegration disabled.
+- **P2P:** libp2p — gossipsub + Kademlia DHT. rust-libp2p (server) + js-libp2p (client).
+- **Database:** SQLite — embedded, zero-config.
+- **Block Store:** Flat files, content-addressed (SHA-256, 2-char hex subdirs), AES-256-GCM encrypted.
+- **Crypto:** libsodium (sodium-native) — XChaCha20-Poly1305 (client at-rest), AES-256-GCM (server blocks), X25519, Ed25519, Argon2id.
+- **Voice:** WebRTC native in Chromium, ICE/STUN/TURN via coordination server.
+- **Transport:** WebSocket (server comms) + WebRTC DataChannels (peer-to-peer).
 - **Deployment:** Docker container or standalone binary for server. Electron app for clients.
-- **Target Audience:** General audience — must be polished and easy to set up, not just for power users.
+- **Target Audience:** General audience — polished UX, not just for power users.
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| libp2p over Hypercore/custom WebRTC | gossipsub maps to gossip propagation, Kademlia DHT built-in, Rust + JS implementations, battle-tested at IPFS scale | — Pending |
-| React over Svelte/Solid | Largest ecosystem for chat-like UIs, most component libraries, easiest to hire for. Bundle size irrelevant in Electron | — Pending |
-| Server-admin moderation (not platform-level) | Sovereignty model — server owner is responsible for their community. No central authority inspects content. | — Pending |
-| Desktop-only v1 (no mobile) | Mobile P2P has severe OS restrictions. Better to nail desktop experience first. | — Pending |
-| No server federation in v1 | Each server is an isolated community. Federation adds enormous complexity (see Matrix). | — Pending |
+| libp2p over Hypercore/custom WebRTC | gossipsub maps to chat, Kademlia DHT built-in, Rust + JS implementations | ✓ Good — gossipsub D=4 tuning works well for chat |
+| React over Svelte/Solid | Largest ecosystem, component libraries, bundle size irrelevant in Electron | ✓ Good — React 19 + Zustand 5 very productive |
+| Server-admin moderation (not platform-level) | Sovereignty model — server owner moderates their community | ✓ Good — clean separation of concerns |
+| Desktop-only v1 (no mobile) | Mobile P2P has severe OS restrictions | ✓ Good — focused scope, complete feature set |
+| No server federation in v1 | Enormous complexity (see Matrix) | ✓ Good — kept scope achievable |
+| REST as primary message path | Simpler than gossip-first for single-server | ✓ Good — reliable, gossip for propagation |
+| Ed25519 keypair identity (no email/password) | True data sovereignty, no server-stored credentials | ✓ Good — challenge-response auth works cleanly |
+| XChaCha20-Poly1305 for client encryption | More portable than AES-GCM, no AES-NI dependency | ✓ Good — 24-byte nonces, no hardware requirements |
+| Protobuf for all wire formats | Cross-language type safety, compact binary | ✓ Good — prost + @bufbuild/protobuf seamless |
+| Actor-per-connection WebSocket | Each connection gets isolated state, clean cleanup | ✓ Good — DashMap-backed shared state works well |
+| Zustand slice composition (14 stores) | Granular reactivity, no Redux boilerplate | ✓ Good — hydration from SQLite works cleanly |
+| Gossipsub D=4 (not default D=6) | Chat has lower propagation needs than blockchain | ✓ Good — reduced connection overhead |
+| Circuit Relay v2 for NAT traversal | Built into libp2p, server-hosted relay node | ⚠️ Revisit — needs real-world NAT testing |
+| 7-day default TTL with LRU eviction | Balance storage vs. availability | — Pending real-world usage data |
 
 ## Open Questions
 
-- **Voice channel scaling:** WebRTC P2P mesh works for 2-10 people but creates O(n^2) connections. At what point is an SFU needed? Could a peer volunteer as SFU like super-seeders?
-- **Bot API scope:** "Discord-compatible" is enormous surface area. Which subset is realistic for v1? Gateway events + message CRUD + embeds?
-- **NAT traversal reliability:** How often do peers need TURN relay vs. direct hole-punch? If most need TURN, the server becomes a bandwidth bottleneck.
-- ~~**Identity/account recovery:**~~ **RESOLVED** — See [IDENTITY-ARCHITECTURE.md](IDENTITY-ARCHITECTURE.md). Three-tier recovery: (1) 24-word BIP39 mnemonic paper backup, (2) encrypted identity blob replicated to every server user joins, (3) device-to-device QR provisioning. v2 adds Kintsugi-style threshold recovery across servers.
-- **Content pinning economics:** Pinned content bypasses 7-day TTL. What's the pin quota before storage budget overflows?
+- **Voice channel scaling:** WebRTC mesh creates O(n^2) connections. SFU needed at ~10+ participants?
+- **NAT traversal reliability:** How often do peers need TURN relay vs. direct hole-punch in practice?
+- **Content pinning economics:** Pin quota vs. storage budget overflow?
+- **Bot API scope:** Which subset is realistic for v2? Gateway events + message CRUD + embeds?
+- ~~**Identity/account recovery:**~~ **RESOLVED** — Three-tier recovery: BIP39 mnemonic, encrypted blob on servers, device-to-device QR.
 
 ---
-*Last updated: 2026-02-22 after initialization*
+*Last updated: 2026-02-27 after v1.0 milestone*
