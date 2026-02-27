@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Voice Channels** - WebRTC peer-to-peer voice with mute/deafen, speaking indicators, and push-to-talk
 - [x] **Phase 9: Milestone Gap Closure** - Fix integration breaks (invite validation, voice identity), verify Electron security (SEC-08), and clean up traceability
 - [x] **Phase 10: Fix Media Attachment Wiring** - Parse block_refs in REST history and WS live paths so media attachments render in messages
-- [ ] **Phase 11: Phase 1 Formal Verification** - Create missing Phase 1 VERIFICATION.md for 6 orphaned requirements (SEC-01, SEC-02, SEC-09, SEC-10, SEC-11, SRVR-07)
+- [x] **Phase 11: Phase 1 Formal Verification** - Create missing Phase 1 VERIFICATION.md for 6 orphaned requirements (SEC-01, SEC-02, SEC-09, SEC-10, SEC-11, SRVR-07)
 
 ## Phase Details
 
@@ -222,7 +222,7 @@ Plans:
   3. All 56 v1 requirements have formal verification evidence in at least one VERIFICATION.md
 
 Plans:
-- [ ] 11-01-PLAN.md — Audit Phase 1 implementations and create VERIFICATION.md (Wave 1, docs)
+- [x] 11-01-PLAN.md — Audit Phase 1 implementations and create VERIFICATION.md (Wave 1, docs)
 
 ## Progress
 
@@ -243,4 +243,4 @@ Note: Phase 8 (Voice) depends on Phase 3, not Phase 7. Phases 9-11 are gap closu
 | 8. Voice Channels | 3/3 | Complete | 2026-02-26 |
 | 9. Milestone Gap Closure | 4/4 | Complete | 2026-02-27 |
 | 10. Fix Media Attachment Wiring | 1/1 | Complete    | 2026-02-27 |
-| 11. Phase 1 Formal Verification | 0/1 | Pending | — |
+| 11. Phase 1 Formal Verification | 1/1 | Complete | 2026-02-27 |

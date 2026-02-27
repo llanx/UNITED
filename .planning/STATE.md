@@ -2,39 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-02-26T23:38:38.333Z"
+status: complete
+last_updated: "2026-02-27T03:21:07.000Z"
 progress:
-  total_phases: 8
-  completed_phases: 8
-  total_plans: 39
-  completed_plans: 39
----
-
----
-gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: unknown
-last_updated: "2026-02-26T21:47:57.372Z"
-progress:
-  total_phases: 7
-  completed_phases: 7
-  total_plans: 36
-  completed_plans: 36
----
-
----
-gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: in-progress
-last_updated: "2026-02-26T21:38:41.000Z"
-progress:
-  total_phases: 8
-  completed_phases: 7
-  total_plans: 36
-  completed_plans: 36
+  total_phases: 11
+  completed_phases: 11
+  total_plans: 40
+  completed_plans: 40
 ---
 
 # Project State
@@ -44,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** Phase 10: Fix Media Attachment Wiring (complete).
+**Current focus:** v1.0 milestone complete -- all 56 requirements formally verified.
 
 ## Current Position
 
-Phase: 10 of 11 (Fix Media Attachment Wiring)
+Phase: 11 of 11 (Phase 1 Formal Verification)
 Plan: 1 of 1 in current phase
-Status: Phase 10 complete -- block_refs wiring fixed across server WS, client REST, and client WS paths
-Last activity: 2026-02-27 -- Completed 10-01-PLAN.md (media attachment wiring)
+Status: Phase 11 complete -- 6 orphaned Phase 1 requirements formally verified, 56/56 v1 requirements complete
+Last activity: 2026-02-27 -- Completed 11-01-PLAN.md (Phase 1 formal verification)
 
-Progress: [█████████░] 95%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -97,6 +71,7 @@ Progress: [█████████░] 95%
 | Phase 09 P02 | 1 | 2 tasks | 3 files |
 | Phase 09 P04 | 3min | 1 tasks | 1 files |
 | Phase 10 P01 | 2min | 2 tasks | 3 files |
+| Phase 11 P01 | 5min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -275,6 +250,9 @@ Recent decisions affecting current work:
 - [10-01]: Server parse_block_refs_json converts camelCase JSON (mimeType, microThumbnail) to snake_case proto fields with graceful degradation
 - [10-01]: REST response post-processing pattern: IPC handlers fetch raw server response then transform fields (block_refs_json -> block_refs) before returning to renderer
 - [10-01]: Protobuf bytes<->base64 string conversion at boundaries: base64 decode on server (JSON->proto), base64 encode on client WS (proto->BlockRefData)
+- [Phase 11]: SRVR-07 icon upload not implemented -- core settings CRUD (name, description, registration mode) is operational; icon noted as tech debt
+- [Phase 11]: SEC-10 "enabled by default" = enrollment prompted after creation with Skip option; enforced during auth/verify when enrolled
+- [Phase 11]: Traceability for retroactively-verified requirements points to verifying phase (Phase 11), not implementing phase (Phase 1)
 
 ### Pending Todos
 
@@ -296,5 +274,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 10-01-PLAN.md (media attachment wiring) -- Phase 10 complete
-Resume file: N/A -- Phase 11 (Phase 1 Formal Verification) remaining
+Stopped at: Completed 11-01-PLAN.md (Phase 1 formal verification) -- all phases complete, v1.0 milestone done
+Resume file: N/A -- v1.0 milestone complete (56/56 requirements verified)
