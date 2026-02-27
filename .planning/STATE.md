@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: complete
-last_updated: "2026-02-27T03:21:07.000Z"
+status: active
+last_updated: "2026-02-27T04:59:09.000Z"
 progress:
-  total_phases: 11
+  total_phases: 12
   completed_phases: 11
-  total_plans: 40
-  completed_plans: 40
+  total_plans: 42
+  completed_plans: 41
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users communicate in real-time with full data sovereignty — no third party ever touches their content, and the community funds its own infrastructure by participating in it.
-**Current focus:** v1.0 milestone complete -- all 56 requirements formally verified.
+**Current focus:** Phase 12 gap closure -- wiring client connection lifecycle (auth, WS, presence).
 
 ## Current Position
 
-Phase: 11 of 11 (Phase 1 Formal Verification)
-Plan: 1 of 1 in current phase
-Status: Phase 11 complete -- 6 orphaned Phase 1 requirements formally verified, 56/56 v1 requirements complete
-Last activity: 2026-02-27 -- Completed 11-01-PLAN.md (Phase 1 formal verification)
+Phase: 12 of 12 (Wire Client Connection Lifecycle)
+Plan: 2 of 2 in current phase
+Status: 12-01 complete -- IPC handlers for auth/WS, Welcome.tsx wired, immediate-first-retry reconnect
+Last activity: 2026-02-27 -- Completed 12-01-PLAN.md (auth IPC handlers + Welcome.tsx wiring)
 
-Progress: [██████████] 100%
+Progress: [█████████▊] 98%
 
 ## Performance Metrics
 
@@ -72,6 +72,7 @@ Progress: [██████████] 100%
 | Phase 09 P04 | 3min | 1 tasks | 1 files |
 | Phase 10 P01 | 2min | 2 tasks | 3 files |
 | Phase 11 P01 | 5min | 2 tasks | 2 files |
+| Phase 12 P01 | 2min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -253,6 +254,9 @@ Recent decisions affecting current work:
 - [Phase 11]: SRVR-07 icon upload not implemented -- core settings CRUD (name, description, registration mode) is operational; icon noted as tech debt
 - [Phase 11]: SEC-10 "enabled by default" = enrollment prompted after creation with Skip option; enforced during auth/verify when enrolled
 - [Phase 11]: Traceability for retroactively-verified requirements points to verifying phase (Phase 11), not implementing phase (Phase 1)
+- [Phase 12]: storeTokens exported from auth.ts for cross-module import by connection.ts
+- [Phase 12]: Immediate first retry (0ms) via attempt===0 guard in WsClient scheduleReconnect, then exponential backoff
+- [Phase 12]: Auth failure on returning-user unlock keeps user on Welcome screen with error (no /app navigation)
 
 ### Pending Todos
 
@@ -274,5 +278,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 11-01-PLAN.md (Phase 1 formal verification) -- all phases complete, v1.0 milestone done
-Resume file: N/A -- v1.0 milestone complete (56/56 requirements verified)
+Stopped at: Completed 12-01-PLAN.md (auth IPC handlers + Welcome.tsx wiring)
+Resume file: .planning/phases/12-wire-client-connection-lifecycle/12-02-PLAN.md

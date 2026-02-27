@@ -67,7 +67,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Security
 
 - [x] **SEC-01**: User creates an identity by generating an Ed25519 keypair protected by a passphrase (Argon2id-encrypted); a 24-word mnemonic backup is displayed at creation; no email or password is stored on any server
-- [ ] **SEC-02**: User authenticates to servers via Ed25519 challenge-response signature; server issues JWT tokens (15min access + 7-day refresh) after successful verification
+- [x] **SEC-02**: User authenticates to servers via Ed25519 challenge-response signature; server issues JWT tokens (15min access + 7-day refresh) after successful verification
 - [x] **SEC-03**: All messages are signed by the author's Ed25519 private key; receiving peers verify signatures before displaying
 - [x] **SEC-04**: All content written to the local block store is encrypted with AES-256-GCM using a key derived from the user's credentials via Argon2id
 - [x] **SEC-05**: DMs use per-conversation keys negotiated via X25519 key exchange; coordination server stores only encrypted blobs
@@ -162,7 +162,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | SEC-01 | Phase 11: Phase 1 Formal Verification | Complete |
-| SEC-02 | Phase 12: Wire Client Connection Lifecycle | Pending |
+| SEC-02 | Phase 12: Wire Client Connection Lifecycle | Complete |
 | SEC-08 | Phase 9: Milestone Gap Closure | Complete |
 | SEC-09 | Phase 11: Phase 1 Formal Verification | Complete |
 | SEC-10 | Phase 11: Phase 1 Formal Verification | Complete |
